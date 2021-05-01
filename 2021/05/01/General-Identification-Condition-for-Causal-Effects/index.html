@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leequant761.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="0. Abstract이 논문은 CE의 identifiability의 유용한 충분조건과 필요충분조건을 세운다.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="General-Identification-Condition-for-Causal-Effects">
+<meta property="og:url" content="https://leequant761.github.io/2021/05/01/General-Identification-Condition-for-Causal-Effects/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="0. Abstract이 논문은 CE의 identifiability의 유용한 충분조건과 필요충분조건을 세운다.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leequant761.github.io/2021/05/01/General-Identification-Condition-for-Causal-Effects/image-20210429191834077.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/05/01/General-Identification-Condition-for-Causal-Effects/image-20210429193446224.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/05/01/General-Identification-Condition-for-Causal-Effects/image-20210429232257466.png">
+<meta property="article:published_time" content="2021-05-01T07:13:58.000Z">
+<meta property="article:modified_time" content="2021-05-01T08:04:37.122Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="identifiability">
+<meta property="article:tag" content="paper review">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leequant761.github.io/2021/05/01/General-Identification-Condition-for-Causal-Effects/image-20210429191834077.png">
+
+<link rel="canonical" href="https://leequant761.github.io/2021/05/01/General-Identification-Condition-for-Causal-Effects/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>General-Identification-Condition-for-Causal-Effects | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leequant761.github.io/2021/05/01/General-Identification-Condition-for-Causal-Effects/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          General-Identification-Condition-for-Causal-Effects
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-05-01 16:13:58 / Modified: 17:04:37" itemprop="dateCreated datePublished" datetime="2021-05-01T16:13:58+09:00">2021-05-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Causality/" itemprop="url" rel="index"><span itemprop="name">Causality</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/05/01/General-Identification-Condition-for-Causal-Effects/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/05/01/General-Identification-Condition-for-Causal-Effects/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="0-Abstract"><a href="#0-Abstract" class="headerlink" title="0. Abstract"></a>0. Abstract</h1><p>이 논문은 CE의 identifiability의 유용한 충분조건과 필요충분조건을 세운다.</p>
+<span id="more"></span>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a>1. Introduction</h1><p>우리의 main task는 causal assumption의 CE가 identifiable한 지 결정하고 estimate하는 것이다.</p>
+<p>Unmeasured confounder가 없다면 $P_t(y)$는 항상 identifiable하다.</p>
+<p>만약 몇몇 confounder가 unmeasured라면 identifiability에 대한 질문이 발생하고 이는 confounder의 위치에 의존한다.</p>
+<p>Identifiability에 대한 sufficient graphical condition은 Pearl의 챕터3&amp;4에 정리되어 있다. 예를 들면,</p>
+<ul>
+<li>Valid adjustment set이 있을 경우, backdoor criterion이 있다.</li>
+<li>Valid adjustment set이 없는 경우, front-door criterion이 있다.</li>
+</ul>
+<p>일반적인 $P_t(y)$에서 아래첨자를 없애려는 do-calculus로 이들을 유도할 수도 있다.</p>
+<p>Do-calculus에 기반해서, <a href="">Galles &amp; Pearl 1995</a>은 알고리즘을 제안하였다. 이 내용은 Pearl의 114~118에 나와있다.</p>
+<hr>
+<p>이 논문은 현존하는 criteria를 간단하게 하고 일반화하는 새로운 identifiability condition을 제안한다.</p>
+<ul>
+<li>$P_x(v)$ is identifiable where $X$ is a singleton and $V$ is the set of all variables except $X$</li>
+<li>${}^{\not \exists}$consecutive sequence of confounding arcs between $X$ &amp; $Ch_X$</li>
+</ul>
+<p>전체 변수인 $V$ 대신에 이의 subset인 $S$에 관심있는 경우에 대해선 충분조건을 제공한다.</p>
+<ul>
+<li>$P_x(s)$ is identifiable if ${}^{\not \exists}$consecutive sequence of confounding arcs between $X$ &amp; $Ch_X$ in $G_{\text{An}(S)}$</li>
+</ul>
+<h1 id="2-Notation-Definitions-and-Problem-Formulation"><a href="#2-Notation-Definitions-and-Problem-Formulation" class="headerlink" title="2. Notation, Definitions, and Problem Formulation"></a>2. Notation, Definitions, and Problem Formulation</h1><h2 id="2-1-Markovian-causal-model"><a href="#2-1-Markovian-causal-model" class="headerlink" title="2.1 Markovian causal model"></a>2.1 Markovian causal model</h2><script type="math/tex; mode=display">
+P(v)=\prod_{i} P\left(v_{i} \mid p a_{i}\right) \quad \text{where } pa_i \text{ is the value of }Pa_i</script><p>모델은 $M=\left\langle V, G, P\left(v_{i} \mid p a_{i}\right)\right\rangle$들에 대한 명시를 하는 것이다.</p>
+<p>Modularity assumption은 causal effect of $X$ on $V$를 예측할 수 있게 해준다.</p>
+<script type="math/tex; mode=display">
+P_{t}(v)=\left\{\begin{array}{ll}
+\prod_{\left\{i \mid V_{i} \notin T\right\}} P\left(v_{i} \mid p a_{i}\right) & v \text { consistent with } t \\
+0 & v \text { inconsistent with } t
+\end{array}\right.</script><p>이는 기존의 joint distribution에서 $T$에 대응하는 $P(v_i\mid pa_i)$를 1또는 0으로 바꾼 것이다.</p>
+<p>$V$와 $G$는 assumption으로 둔 상황에서, $P(v_i \mid pa_i)$는 observational data로 estimate할 수 있으니 모든 CE는 identifiable하다.</p>
+<h2 id="2-2-semi-Markovian-causal-model"><a href="#2-2-semi-Markovian-causal-model" class="headerlink" title="2.2  semi-Markovian causal model"></a>2.2  semi-Markovian causal model</h2><script type="math/tex; mode=display">
+P(v)=\sum_{u} \prod_{i} P\left(v_{i} \mid p a_{i}, u^{i}\right) P(u) \quad \text{where } u^i \text{ is the unobserved parents of } V_i</script><p> 모델은 $M=\left\langle V, U, G_{V U}, P\left(v_{i} \mid p a_{i}, u^{i}\right), P(u)\right\rangle$들에 대한 명시를 하는 것이다.</p>
+<p>Factorization에서 unobserved variable $U$가 observed variable $V$의 descendent인 경우는 없다고 암묵적으로 가정한다.</p>
+<script type="math/tex; mode=display">
+P_{t}(v) =\left\{\begin{array}{ll}
+\sum_{u} \prod_{\left\{i \mid V_{i} \notin T\right\}} P\left(v_{i} \mid p a_{i}, u^{i}\right) P(u) & v \text { consistent with } t \\
+0 & v \text { inconsistent with } t
+\end{array}\right.</script><p>자연스럽게 $P_t(v)$를 observational distribution $P(v)$로 표현할 수 있을까라는 질문이 발생한다.</p>
+<p>즉 Equation $(4)$에서 $u$가 들어간 $P(u)$텀과 $P\left(v_{i} \mid p a_{i}, u^{i}\right)$텀을 없애고 $P(v)$만으로 interventional distribution이 정의가 될까?</p>
+<p><strong>Definition 1 (Causal-Effect Identifiability)</strong></p>
+<p>​    The causal effect of $T$ on $S$ is identifiable from $G$ if $P_t(s)$ can be computed uniquely from $P(v) &gt; 0$</p>
+<blockquote>
+<p>직감적으로 말하면 SCM의 세부사항에 상관없이 observational distribution으로 결정된다는 것이다.</p>
+</blockquote>
+<h1 id="3-The-Identification-of-P-x-v"><a href="#3-The-Identification-of-P-x-v" class="headerlink" title="3. The Identification of $P_x(v)$"></a>3. The Identification of $P_x(v)$</h1><p>Let $X$ be a singleton variable.</p>
+<p>We are interested in the problem of identifying the causal effect of $X$ on $V’ = V \setminus \{X\}$</p>
+<p>표기의 편의를 위해 $P_x(v)$로 나타내겠다.</p>
+<h2 id="3-1-The-easiest-case"><a href="#3-1-The-easiest-case" class="headerlink" title="3.1 The easiest case"></a>3.1 The easiest case</h2><p><strong>Theorem 1</strong></p>
+<p>​     ${}^{\not \exists}$bidirected edge connected to $X$ $\quad \Rightarrow \quad $ $P_{x}(v)=P\left(v \mid x, p a_{x}\right) P\left(p a_{x}\right)$</p>
+<p>(Proof)</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P(v) &= \sum_{u} \prod_{i} P\left(v_{i} \mid p a_{i}, u^{i}\right) P(u)
+\\ 
+&= P\left(x \mid p a_{x}\right) \sum_{u} \prod_{\left\{i \mid V_{i} \neq X\right\}} P\left(v_{i} \mid p a_{i}, u^{i}\right) P(u) 
+\\
+&=P\left(x \mid p a_{x}\right) P_{x}(v)
+\end{aligned}</script><p>Hence, $P_{x}(v)=P(v) / P\left(x \mid p a_{x}\right)=P\left(v \mid x, p a_{x}\right) P\left(p a_{x}\right) .$</p>
+<h2 id="3-2-A-more-interesting-case"><a href="#3-2-A-more-interesting-case" class="headerlink" title="3.2 A more interesting case"></a>3.2 A more interesting case</h2><p><strong>Theorem 2</strong></p>
+<p>​    ${}^{\not \exists}$bidirected edge connected to $Ch_X$ $\quad \Rightarrow \quad $ $P_{x}(v)=\left(\prod_{\left\{i \mid V_{i} \in C h_{x}\right\}} P\left(v_{i} \mid p a_{i}\right)\right) \sum_{x} \frac{P(v)}{\prod_{\left\{i \mid V_{i} \in C h_{x}\right\}} P\left(v_{i} \mid p a_{i}\right)}$</p>
+<p>(Proof)</p>
+<p>​    Let $S=V \backslash\left(C h_{x} \cup\{X\}\right)$ and $A=\prod_{\left\{i \mid V_{i} \in S\right\}} P\left(v_{i} \mid p a_{i}, u^{i}\right)$.</p>
+<ul>
+<li>Then,<ul>
+<li>$\begin{aligned}P_x(v) &amp;= \sum_{u} \prod_{\left\{i \mid V_{i} \in V \setminus \{X\}\right\}} P\left(v_{i} \mid p a_{i}, u^{i}\right) P(u) \\&amp;= \prod_{\left\{i \mid V_{i} \in C h_{x}\right\}}  \Big( P(v_{i} \mid p a_{i}) \Big)\prod_{\{i \mid V_i \in Ch_X\} }\sum_{u} A \cdot P(u) \end{aligned}$</li>
+<li>$\begin{aligned}\sum_{u} A \cdot P(u) &amp;= \sum_{u} \left(\sum_{x}P\left(x \mid p a_{x}, u^{x}\right) \cdot A \right)\cdot P(u) \quad \because A\text{ does not depend on }x\\ &amp;=  \sum_{x} \left( \sum_{u} P\left(x \mid p a_{x}, u^{x}\right) \cdot A \cdot P(u)\right ) \\ &amp;= \sum_{x} \left( \sum_{u} P\left(x \mid p a_{x}, u^{x}\right)\cdot \frac{\prod_{\left\{i \mid V_{i} \in C h_{x}\right\}} P\left(v_{i} \mid p a_{i}\right)}{\prod_{\left\{i \mid V_{i} \in C h_{x}\right\}} P\left(v_{i} \mid p a_{i}\right)} \cdot A \cdot P(u)\right ) \\ &amp;=\sum_{x} \frac{P(v)}{\prod_{\left\{i \mid V_{i} \in C h_{x}\right\}} P\left(v_{i} \mid p a_{i}\right)} \end{aligned}$</li>
+</ul>
+</li>
+<li>Hence, $P_{x}(v)=\left(\prod_{\left\{i \mid V_{i} \in C h_{x}\right\}} P\left(v_{i} \mid p a_{i}\right)\right) \sum_{x} \frac{P(v)}{\prod_{\left\{i \mid V_{i} \in C h_{x}\right\}} P\left(v_{i} \mid p a_{i}\right)}$</li>
+</ul>
+<hr>
+<p>Thm2의 유용성은 <img src="/2021/05/01/General-Identification-Condition-for-Causal-Effects/image-20210429191834077.png" class="">이 상당히 복잡해보이나 간단하게 구할 수 있다.</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P_{x}\left(z_{1}, z_{2}, z_{3}, y\right) &= P\left(z_{1} \mid x, z_{2}\right) \sum_{x^{\prime}} \frac{P\left(x^{\prime}, z_{1}, z_{2}, z_{3}, y\right)}{P\left(z_{1} \mid x^{\prime}, z_{2}\right)}
+\\
+&= P\left(z_{1} \mid x, z_{2}\right) \sum_{x^{\prime}} P\left(y, z_{3} \mid x^{\prime}, z_{1}, z_{2}\right) P\left(x^{\prime}, z_{2}\right)
+\end{aligned}</script><h2 id="3-3-The-general-case"><a href="#3-3-The-general-case" class="headerlink" title="3.3 The general case"></a>3.3 The general case</h2><p>Bidirected edge가 $X$에도 있고 $Ch_X$에 있어도 $P_x(v)$가 identifiable일 수 있다. 예를 들어, <img src="/2021/05/01/General-Identification-Condition-for-Causal-Effects/image-20210429193446224.png" class="">의 경우,</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P_{x}(v) &=\sum _{u_1, u_2} \prod _{\{i \mid V_i \neq X\}}p(v_i \mid pa_i, u^i) p(u_1)p(u_2)
+\\
+&= \sum_{u_{1}} P\left(z_{2} \mid z_{1}, u_{1}\right) P\left(u_{1}\right) \cdot \sum_{u_{2}} P\left(z_{1} \mid x, u_{2}\right) P\left(y \mid x, z_{1}, z_{2}, u_{2}\right) P\left(u_{2}\right)
+\end{aligned}</script><p>Let</p>
+<p>​    $Q_{1}=\sum_{u_{1}} P\left(x \mid u_{1}\right) P\left(z_{2} \mid z_{1}, u_{1}\right) P\left(u_{1}\right)$</p>
+<p>​    $Q_{2}=\sum_{u_{2}} P\left(z_{1} \mid x, u_{2}\right) P\left(y \mid x, z_{1}, z_{2}, u_{2}\right) P\left(u_{2}\right)$.</p>
+<p>Then,</p>
+<p>​    $P(v) = Q_1 \cdot Q_2$</p>
+<p>​    $P_x(v) = Q_2 \sum_{x’} Q_1$</p>
+<p>그러므로, $Q_1$이나 $Q_2$가 identifiable하다면 그 나머지는 알아서 identifiable하고 $P_x(v)$도 identifiable하다.</p>
+<ul>
+<li>$Q_1$이 identifiable함을 보이겠다.<ul>
+<li>$\begin{aligned}P\left(x, z_{1}, z_{2}\right)&amp;= \sum_y P(v) \\&amp;= Q_1\cdot\sum_y Q_2\\&amp;=Q_{1} \cdot \sum_{u_{2}} P\left(z_{1} \mid x, u_{2}\right) P\left(u_{2}\right) \\ &amp;= Q_1 \cdot \sum_{u_{2}} P\left(z_{1} \mid x, u_{2}\right) P\left(u_{2}\mid x\right) \quad \because D-separation \\ &amp;= Q_1 \cdot P(z_1\mid x)\end{aligned}$</li>
+</ul>
+</li>
+<li>그러므로,<ul>
+<li>$Q_1 = \frac{P\left(x, z_{1}, z_{2}\right)}{P(z_1 \mid x)} = P\left(z_{2} \mid x, z_{1}\right) P(x)$</li>
+<li>$Q_{2}=P(v) / Q_{1}=P\left(y \mid x, z_{1}, z_{2}\right) P\left(z_{1} \mid x\right)$</li>
+<li>$P_{x}(v)=P\left(y \mid x, z_{1}, z_{2}\right) P\left(z_{1} \mid x\right) \sum_{x^{\prime}} P\left(z_{2} \mid x^{\prime}, z_{1}\right) P\left(x^{\prime}\right)$</li>
+</ul>
+</li>
+</ul>
+<p>사실, bidirected edge가 $Ch_X$와 $X$에 있었으나 두 bidirected edge가 이어진 구조가 아니었다.</p>
+<p>그렇기 때문에 $P(v)$가 $U_1$에 관한 $Q_1$텀과 $U_2$에 관한 $Q_2$텀이 서로 분리되었었다.</p>
+<h2 id="3-3-1-C-components"><a href="#3-3-1-C-components" class="headerlink" title="3.3.1 C-components"></a>3.3.1 C-components</h2><p>Bidirected path는 bidirected edge로만 이어진 path를 의미한다.</p>
+<p>Bidirected path상의 노드들끼리 묶어서 graph의 component라고 하자.</p>
+<p>$V = \{ S_1, \cdots, S_k\}$ component들의 부모인 unobserved variable들을 $U = \{ N_1, \cdots, N_k \}$로 표기하자.</p>
+<script type="math/tex; mode=display">
+Q_{j}:=\sum_{n_{j}} \prod_{\left\{i \mid V_{i} \in S_{j}\right\}} P\left(v_{i} \mid p a_{i}, u^{i}\right) P\left(n_{j}\right) \quad \text{for } j=1, \ldots, k</script><p>Then, $P(v)=\prod_{j=1}^{k} Q_{j} \quad \because \text{$N_{1}, \ldots, N_{k}$ are disjoint}$</p>
+<hr>
+<p>각 $S_j$를 c-component of $G$라 부르고 $Q_j$를 c-factor corresponding to $S_j$라고 부르겠다.</p>
+<p>예를들어, Figure 2에서 $S_{1}=\left\{X, Z_{2}\right\}$, $S_{2}=\left\{Z_{1}, Y\right\}$이다.</p>
+<hr>
+<p><strong>c-factor $Q_j$에 대한 두가지 해석</strong></p>
+<p>​    Let $P a(S)=S \cup\left(\cup_{V_{i} \in S} PA_{i}\right)$. Then,</p>
+<ul>
+<li>$Q_j$는 $Pa(S_j)$의 함수이다.<ul>
+<li>왜냐면 $Pa(S_j)$의 값이 주어졌을 때 c-factor가 실수 값으로 결정되기 때문이다,</li>
+</ul>
+</li>
+<li>$Q_j$는 $S_j$ 이외의 변수들을 intervention을 줬을 때의 분포이다.<ul>
+<li>왜냐면 $Q_j = P_{v\setminus s_j}(s_j)$이기 때문이다.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p><strong>Lemma 1</strong></p>
+<p>​    Let a topological order over $V$ be $V_1 &lt; \cdots &lt; V_n$.</p>
+<p>​    Let $V^{(i)}=\left\{V_{1}, \ldots, V_{i}\right\}, \quad \text{for }i=1, \ldots, n$ and $V^{(0)}=\emptyset$,</p>
+<p>​    For any $C \in V$, let $G_C$ denote the subgraph of $G$ composed only of $C$.</p>
+<p>​    Then,</p>
+<ol>
+<li>Each c-factor $Q_j$ is identifiable and is given by $Q_{j}=\prod_{\left\{i \mid V_{i} \in S_{j}\right\}} P\left(v_{i} \mid v^{(i-1)}\right)$<ol>
+<li>Each factor $P\left(v_{i} \mid v^{(i-1)}\right) = P\left(v_{i} \mid p a\left(T_{i}\right) \backslash\left\{v_{i}\right\}\right) \quad $ where $T_i$ is the c-component of $G_{V^{(i)}}$ that contains $V_i$</li>
+</ol>
+</li>
+</ol>
+<p>(Proof) 수학적 귀납법</p>
+<p>​    <strong>Base (n=1)</strong></p>
+<ul>
+<li>$Q_1 = \sum_{u^1} p(v_1 \mid u^1)p(u^1)$ satisfies 1</li>
+<li>$P(v_1 \mid v^{(0)}) = P(v_1 \mid \emptyset)$ satisfies 2</li>
+</ul>
+<p>​    <strong>Hypothesis (|V| = n인 상황)</strong></p>
+<ul>
+<li>all $n$ c-factors are $Q_{j}=\prod_{\left\{i \mid V_{i} \in S_{j}\right\}} P\left(v_{i} \mid v^{(i-1)}\right)$</li>
+<li>all $V_i$ satisfies 2</li>
+</ul>
+<p>​    <strong>Induction</strong></p>
+<ul>
+<li><p>$|V|= n+1$인 상황에서</p>
+</li>
+<li><p>Assume</p>
+<ul>
+<li>$V$ is partitioned into c-components $S_{1}, \ldots, S_{l}, S^{\prime}$</li>
+<li>이 때, $S’$이 $V_{n+1}$이 속한 c-component라고 가정한다.</li>
+</ul>
+</li>
+<li><p>Then, we have</p>
+<ul>
+<li>$P(v)=Q^{\prime} \prod_{i} Q_{i}$</li>
+<li>$P\left(v^{(n)}\right)= \sum_{v_{n+1}}P(v) = \left(\sum_{v_{n+1}} Q^{\prime}\right) \prod_{i} Q_{i} \quad \because \text{topological order &amp; $Q_i$ is a function of $Pa(S_i)$}$</li>
+</ul>
+</li>
+<li><p>Clearly, each $S_1 , \cdots, S_l$ is a c-component of $G_{V^{(n)}}$</p>
+<ul>
+<li><p>Therefore, by the induction hypothesis, each $Q_i$ is identifiable and is given by</p>
+<p>$Q_j = \prod _{\{ i \mid V_i \in S_j\}} P(v_i \mid v^{(i-1)})$</p>
+</li>
+<li><p>Hence, $Q^{\prime}=\frac{P(v)}{\prod_{i} Q_{i}} = \frac{\prod _i P(v_i \mid v^{(i-1)})}{\prod _{\{ i \mid V_i \in S_j\}} P(v_i \mid v^{(i-1)})} = \prod_{\left\{i \mid V_{i} \in S^{\prime}\right\}} P\left(v_{i} \mid v^{(i-1)}\right)$</p>
+</li>
+</ul>
+</li>
+<li><p>WTS, $P(v_{n+1} \mid v^{(n)}) = P\left(v_{n+1} \mid p a\left(T_{n+1}\right) \backslash\left\{v_{n+1}\right\}\right)$</p>
+<ul>
+<li><p>$T_{n+1}$은 $S’$이다.</p>
+</li>
+<li><p>$Q’= \prod_{\left\{i \mid V_{i} \in S^{\prime}\right\}} P\left(v_{i} \mid v^{(i-1)}\right)$은 $Pa(S’)$의 함수이다.</p>
+</li>
+<li><p>이미 hypothesis에서 $V_{n+1}$빼고는 $P\left(v_{i} \mid v^{(i-1)}\right) = P\left(v_{i} \mid p a\left(T_{i}\right) \backslash\left\{v_{i}\right\}\right)$ 라고 가정하였다.</p>
+</li>
+<li><p>$Pa(T_i)$는 $Pa(S’)$의 부분집합이다.</p>
+</li>
+<li><p>결국, $P(v_{n+1} \mid v^{(n)}) = \frac{Q’}{\prod_{\left\{i \mid V_{i} \in S^{\prime}\setminus \{V_{n+1}\}\right\}} P\left(v_{i} \mid v^{(i-1)}\right)}$ 역시 $Pa(S’)$의 함수이다.</p>
+</li>
+<li><p>그렇기에, $P(v_{n+1} \mid v^{(n)}) $는 $C:= V \setminus Pa(S’)$에 독립인 함수이다.</p>
+</li>
+<li><script type="math/tex; mode=display">
+\begin{array}{l}
+
+P\left(v_{n+1} \mid v^{(n)}\right)&=P\left(v_{n+1} \mid v^{(n)}\right) \sum_{c} P\left(c \mid p a\left(S^{\prime}\right) \backslash\left\{v_{n+1}\right\}\right) \quad \because \text{independence} \\&=\sum_{c} P\left(v_{n+1} \mid v^{(n)}\right) P\left(c \mid p a\left(S^{\prime}\right) \backslash\left\{v_{n+1}\right\}\right) \\
+&=P\left(v_{n+1} \mid p a\left(S^{\prime}\right) \backslash\left\{v_{n+1}\right\}\right)
+\end{array}</script></li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>Lemma 1을 <img src="/2021/05/01/General-Identification-Condition-for-Causal-Effects/image-20210429232257466.png" class="">에 적용하면 $S_{1}=\left\{X_{2}, X_{4}\right\}$과 $S_{2}=\left\{X_{1}, X_{3}, Y\right\}$에 대응하는 c-factor를 구할 수 있다.</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+Q_{1} &=\sum_{u_{2}} P\left(x_{2} \mid x_{1}, u_{2}\right) P\left(x_{4} \mid x_{3}, u_{2}\right) P\left(u_{2}\right) = P\left(x_{4} \mid x_{1}, x_{2}, x_{3}\right) P\left(x_{2} \mid x_{1}\right) \\
+Q_{2} &=\sum_{u_{1}, u_{3}} P\left(x_{1} \mid u_{1}\right) P\left(x_{3} \mid x_{2}, u_{1}, u_{3}\right) P\left(y \mid x_{4}, u_{3}\right)= P\left(y \mid x_{1}, x_{2}, x_{3}, x_{4}\right) P\left(x_{3} \mid x_{1}, x_{2}\right) P\left(x_{1}\right)
+\end{aligned}</script><h2 id="3-4-The-identification-criterion-for-P-x-v"><a href="#3-4-The-identification-criterion-for-P-x-v" class="headerlink" title="3.4 The identification criterion for $P_x(v)$"></a>3.4 The identification criterion for $P_x(v)$</h2><p>Let $X$ belong to the component $S^X$ with corresponding c-factor $Q^X$.</p>
+<p>Let $Q_x^X$ denote the c-factor $Q^X$ with the term $P(x \mid pa_x , u^x)$ removed.</p>
+<script type="math/tex; mode=display">
+Q_{x}^{X}=\sum_{n^{X}} \prod_{\left\{i \mid V_{i} \neq X, V_{i} \in S^{X}\right\}} P\left(v_{i} \mid p a_{i}, u^{i}\right) P\left(n^{X}\right)</script><p>Then, we have $\begin{aligned}<br>P(v) &amp;=Q^{X} \prod_{i} Q_{i} \\<br>P_{x}(v) &amp;=Q_{x}^{X} \prod_{i} Q_{i}<br>\end{aligned}$</p>
+<p>Since all $Q_i$ are identifiable by lemma 1, $P_x(v)$ is identifiable if and only if $Q_x^X$ is identifiable.</p>
+<hr>
+<p><strong>Theorem 3</strong></p>
+<p>​    $P_x(v)$ is identifiable if and only if ${}^{\not \exists}\text{Bidirected path between $X$ and $Ch_X$} $</p>
+<p>​    When $P_x(v)$ is identifiable, it is given by $P_{x}(v)=\frac{P(v)}{Q^{X}} \sum_{x} Q^{X}$</p>
+<p>(Proof)</p>
+<p>(&lt;==)</p>
+<p>​    If ${}^{\not \exists}$BP btw $(X, Ch_X)$, then $Ch_X \cap S^X = \emptyset$</p>
+<p>​    Therefore, in $Q^{X}=\sum_{n^{X}} \prod_{\left\{i \mid  V_{i} \in S^{X}\right\}} P\left(v_{i} \mid p a_{i}, u^{i}\right) P\left(n^{X}\right)$, the only term $P(x \mid pa_x, u^X)$ has the $x$ variable.</p>
+<p>​    So, we have $Q_{x}^{X}=\sum_{x} Q^{X}$.</p>
+<p>​    Hence, $P_{x}(v) =Q_{x}^{X} \prod_{i} Q_{i}= \sum_{x} Q^{X}\prod_{i} Q_{i} =\left(\sum_{x} Q^{X}\right) \frac{P(v)}{Q^{X}} $</p>
+<p>(==&gt;)</p>
+<p>​    ${}^{\exists}$BP btw $(X, Ch_X)$인 상황에서 $P(v)$는 같지만 $P_x(v)$가 다른 두개의 SCM을 찾아서 반례로 들면 된다. </p>
+<hr>
+<p>Figure 3에 Thm 3을 적용해보자.</p>
+<script type="math/tex; mode=display">
+P_{x_{1}}\left(x_{2}, x_{3}, x_{4}, y\right)=Q_{1} \sum_{x_{1}'} Q_{2} = P\left(x_{4} \mid x_{1}, x_{2}, x_{3}\right) P\left(x_{2} \mid x_{1}\right) \sum_{x_1'} P\left(y \mid x_{1}, x_{2}, x_{3}, x_{4}\right) P\left(x_{3} \mid x_{1}', x_{2}\right) P\left(x_{1}'\right)</script><h2 id="3-5-A-Criterion-for-Identifying-P-x-s"><a href="#3-5-A-Criterion-for-Identifying-P-x-s" class="headerlink" title="3.5 A Criterion for Identifying $P_{x}(s)$"></a>3.5 A Criterion for Identifying $P_{x}(s)$</h2><p>Let $X$ be a singleton variable and $S \subset V$.</p>
+<p>당연히, $P_x(v)$가 identifiable이면, $P_x(s)$도 identifiable하다.</p>
+<p>하지만, 반대의 경우는 아니다.</p>
+<p>Let $An(S) = S \cup \{ \text{ancestors of } S\}$ and $G_{An(S)}$ denote the subgraph of $G$ composed only $An(S)$</p>
+<p>$An(S)$의 marmignal distribution은 주어진 SCM은 유지하되 $V \setminus An(S)$ 변수를 noise로 취급했을 때의 분포이다.</p>
+<p>결론은 $P_x(s)$가 $G_{An(S)}$에서 identifiable하다는 것은 $P(an(S))$로 계산이 된다는 것이다.</p>
+<p>여기에 Theorem 3을 적용하면, $G_(An(S))$에서 BP btw $(X, Ch_X)$가 없다면 identifiable하다는 것이다.</p>
+<p>이는 강력한 충분조건에 해당한다.</p>
+<hr>
+<p>이 criterion은 backdoor, frontdoor도 커버하면서 더 일반적인 기준이다.</p>
+<h1 id="4-Appendix"><a href="#4-Appendix" class="headerlink" title="4. Appendix"></a>4. Appendix</h1><p>여기는 도저히 이해 못하겠다.</p>
+<p>요즘 좀 추상적인 고민이 있는데 그래프에서의 모든 케이스에 대해서 대처하는 논법이 정말 어렵다는 생각을 한다.</p>
+<p>과연 이 난관이 중요한 것인지 넘겨도 되는 것인지, 중요하다면 이 능력을 키우기에 적합한 방법이 있을 지 선천적인 건지…? </p>
+<p>물론 어쩌면 다음주에 다시 왔을 때 한번에 이해할 수도 있을 수 있다.</p>
+<p>일단 다음 논문인 <a href="">Shpitser&amp; Pearl 2006</a>를 읽어보자.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/identifiability/" rel="tag"># identifiability</a>
+              <a href="/tags/paper-review/" rel="tag"># paper review</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/16/post-image/" rel="prev" title="post image">
+      <i class="fa fa-chevron-left"></i> post image
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-Abstract"><span class="nav-text">0. Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1. Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Notation-Definitions-and-Problem-Formulation"><span class="nav-text">2. Notation, Definitions, and Problem Formulation</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Markovian-causal-model"><span class="nav-text">2.1 Markovian causal model</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-semi-Markovian-causal-model"><span class="nav-text">2.2  semi-Markovian causal model</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-The-Identification-of-P-x-v"><span class="nav-text">3. The Identification of $P_x(v)$</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-The-easiest-case"><span class="nav-text">3.1 The easiest case</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-A-more-interesting-case"><span class="nav-text">3.2 A more interesting case</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-The-general-case"><span class="nav-text">3.3 The general case</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-1-C-components"><span class="nav-text">3.3.1 C-components</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-The-identification-criterion-for-P-x-v"><span class="nav-text">3.4 The identification criterion for $P_x(v)$</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5-A-Criterion-for-Identifying-P-x-s"><span class="nav-text">3.5 A Criterion for Identifying $P_{x}(s)$</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Appendix"><span class="nav-text">4. Appendix</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://leequant761.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://leequant761.github.io/2021/05/01/General-Identification-Condition-for-Causal-Effects/";
+    this.page.identifier = "2021/05/01/General-Identification-Condition-for-Causal-Effects/";
+    this.page.title = "General-Identification-Condition-for-Causal-Effects";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://leequant761.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

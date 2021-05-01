@@ -923,7 +923,7 @@ pre .javascript .function {
   margin: 0 auto;
   width: 700px;
 }
-@media (min-width: 1200px) {
+@media (min-width: 991px) {
   .main-inner {
     width: 800px;
   }
@@ -945,7 +945,7 @@ pre .javascript .function {
   margin: 0 auto;
   width: 700px;
 }
-@media (min-width: 1200px) {
+@media (min-width: 991px) {
   .header-inner {
     width: 800px;
   }
@@ -1384,7 +1384,7 @@ pre .javascript .function {
   text-align: center;
   width: 700px;
 }
-@media (min-width: 1200px) {
+@media (min-width: 991px) {
   .footer-inner {
     width: 800px;
   }
@@ -1516,7 +1516,7 @@ pre .javascript .function {
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
-@media (min-width: 1200px) {
+@media (min-width: 991px) {
   .post-body {
     font-size: 1.125em;
   }

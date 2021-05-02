@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leequant761.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Model-free policy evaluation(control)은 다음의 상황에서 유용하다.  MDP 모델이 안알려졌지만, MDP로부터 trajectory sampling이 되는 경우 MDP 모델은 알려졌으나, value function 계산이 infeasible한 경우">
+<meta property="og:type" content="article">
+<meta property="og:title" content="3_Model-Free-Policy-Control">
+<meta property="og:url" content="https://leequant761.github.io/2021/05/02/3-Model-Free-Policy-Control/index.html">
+<meta property="og:site_name" content="Study Repo">
+<meta property="og:description" content="Model-free policy evaluation(control)은 다음의 상황에서 유용하다.  MDP 모델이 안알려졌지만, MDP로부터 trajectory sampling이 되는 경우 MDP 모델은 알려졌으나, value function 계산이 infeasible한 경우">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leequant761.github.io/2021/05/02/3-Model-Free-Policy-Control/Inkedimage-20210406225043831_LI.jpg">
+<meta property="og:image" content="https://leequant761.github.io/2021/05/02/3-Model-Free-Policy-Control/Inkedimage-20210406225133755_LI.jpg">
+<meta property="og:image" content="https://leequant761.github.io/2021/05/02/3-Model-Free-Policy-Control/image-20210406231613625.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/05/02/3-Model-Free-Policy-Control/image-20210406233057352.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/05/02/3-Model-Free-Policy-Control/image-20210406235356375.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/05/02/3-Model-Free-Policy-Control/image-20210407003151799.png">
+<meta property="article:published_time" content="2021-05-02T08:28:20.000Z">
+<meta property="article:modified_time" content="2021-05-02T08:37:16.053Z">
+<meta property="article:author" content="JaeHyun Lee">
+<meta property="article:tag" content="CS234">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leequant761.github.io/2021/05/02/3-Model-Free-Policy-Control/Inkedimage-20210406225043831_LI.jpg">
+
+<link rel="canonical" href="https://leequant761.github.io/2021/05/02/3-Model-Free-Policy-Control/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>3_Model-Free-Policy-Control | Study Repo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Study Repo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leequant761.github.io/2021/05/02/3-Model-Free-Policy-Control/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="JaeHyun Lee">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Study Repo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          3_Model-Free-Policy-Control
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-05-02 17:28:20 / Modified: 17:37:16" itemprop="dateCreated datePublished" datetime="2021-05-02T17:28:20+09:00">2021-05-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Reinforcement/" itemprop="url" rel="index"><span itemprop="name">Reinforcement</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/05/02/3-Model-Free-Policy-Control/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/05/02/3-Model-Free-Policy-Control/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Model-free policy evaluation(control)은 다음의 상황에서 유용하다.</p>
+<ol>
+<li>MDP 모델이 안알려졌지만, MDP로부터 trajectory sampling이 되는 경우</li>
+<li>MDP 모델은 알려졌으나, value function 계산이 infeasible한 경우</li>
+</ol>
+<span id="more"></span>
+<h2 id="5-1-Generalized-Policy-Iteration"><a href="#5-1-Generalized-Policy-Iteration" class="headerlink" title="5.1 Generalized Policy Iteration"></a>5.1 Generalized Policy Iteration</h2><img src="/2021/05/02/3-Model-Free-Policy-Control/Inkedimage-20210406225043831_LI.jpg" class="">
+<img src="/2021/05/02/3-Model-Free-Policy-Control/Inkedimage-20210406225133755_LI.jpg" class="">
+<p>Model-based는 직접적으로 policy를 업데이트하는 꼴이고 Model-free는 Q-function에 기반해서 업데이트한다. </p>
+<p>Model-free의 경우 주의할 점은 policy $\pi$는 어떤 action이든 선택할 확률이 있긴 해야 $Q^\pi(s,a)$를 정의할 수 있다.</p>
+<h2 id="5-2-Importance-of-Exploration"><a href="#5-2-Importance-of-Exploration" class="headerlink" title="5.2 Importance of Exploration"></a>5.2 Importance of Exploration</h2><h3 id="5-2-1-Exploration"><a href="#5-2-1-Exploration" class="headerlink" title="5.2.1 Exploration"></a>5.2.1 Exploration</h3><p>Policy $\pi$는 어디든 갈 확률이 있어야 Q-value를 구할 수 있다.</p>
+<h3 id="5-2-2-epsilon-greedy-policy"><a href="#5-2-2-epsilon-greedy-policy" class="headerlink" title="5.2.2 $\epsilon$-greedy policy"></a>5.2.2 $\epsilon$-greedy policy</h3><p>현재의 Q-value estimate에 대해 exploration(suboptimal)과 exploitation(greedy) 사이를 조절해야한다.</p>
+<p>가장 단순한 방법은 random action을 취할 확률 $\epsilon$과 greedy action을 취할 확률 $1-\epsilon$을 주는 것이다.</p>
+<script type="math/tex; mode=display">
+\pi(a \mid s)=\left\{\begin{array}{ll}
+a & \text { with probability } \frac{\epsilon}{|A|} \\
+\arg \max _{a} Q^{\pi}(s, a) & \text { with probability } 1-\epsilon
+\end{array}\right.</script><h3 id="5-2-3-Monotonic-epsilon-greedy-Policy-Improvement"><a href="#5-2-3-Monotonic-epsilon-greedy-Policy-Improvement" class="headerlink" title="5.2.3 Monotonic $\epsilon$-greedy Policy Improvement"></a>5.2.3 Monotonic $\epsilon$-greedy Policy Improvement</h3><p><strong>Theorem 5.1</strong> (Monotonic $\epsilon$-greedy Policy Improvement)</p>
+<p>​    Let $\pi_i$ be an $\epsilon$-greedy policy.</p>
+<p>​    Let $\pi_{i+1}$ be the $\epsilon$-greedy policy w.r.t. $Q^{\pi_i}$</p>
+<p>​    $\pi_{i+1}$ is a monotonic improvement on policy $\pi_i$; $V^{\pi_{i+1}} \geq V^{\pi_{i}}$</p>
+<p>(증명)</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+Q^{\pi_{i}}\left(s, \pi_{i+1}(s)\right) &=\sum_{a \in A} \pi_{i+1}(a \mid s) Q^{\pi_{i}}(s, a) \\
+&=\frac{\epsilon}{|A|} \sum_{a \in A} Q^{\pi_{i}}(s, a)+(1-\epsilon) \max _{a^{\prime}} Q^{\pi_{i}}\left(s, a^{\prime}\right) \\
+&=\frac{\epsilon}{|A|} \sum_{a \in A} Q^{\pi_{i}}(s, a)+(1-\epsilon) \max _{a^{\prime}} Q^{\pi_{i}}\left(s, a^{\prime}\right) \frac{1-\epsilon}{1-\epsilon} \\
+&=\frac{\epsilon}{|A|} \sum_{a \in A} Q^{\pi_{i}}(s, a)+(1-\epsilon) \max _{a^{\prime}} Q^{\pi_{i}}\left(s, a^{\prime}\right) \sum_{a \in A} \frac{\pi_{i}(a \mid s)-\frac{\epsilon}{|A|}}{1-\epsilon} \\
+&=\frac{\epsilon}{|A|} \sum_{a \in A} Q^{\pi_{i}}(s, a)+(1-\epsilon) \sum_{a \in A} \frac{\pi_{i}(a \mid s)-\frac{\epsilon}{|A|}}{1-\epsilon} \max _{a^{\prime}} Q^{\pi_{i}}\left(s, a^{\prime}\right) \\
+& \geq \frac{\epsilon}{|A|} \sum_{a \in A} Q^{\pi_{i}}(s, a)+(1-\epsilon) \sum_{a \in A} \frac{\pi_{i}(a \mid s)-\frac{\epsilon}{|A|}}{1-\epsilon} Q^{\pi_{i}}(s, a) \\
+&=\sum_{a \in A} \pi_{i}(a \mid s) Q^{\pi_{i}}(s, a) \\
+&=V^{\pi_{i}}(s)
+\end{aligned}</script><p>​    그리고, <em>policy improvement theorem</em>이 말하길 $Q^{\pi_{i}}\left(s, \pi_{i+1}(s)\right) \geq V^{\pi_{i}}(s)$는 $V^{\pi_{i+1}}(s) \geq V^{\pi_{i}}(s)$를 의미한다.</p>
+<h3 id="5-2-3-Greedy-in-the-limit-of-exploration"><a href="#5-2-3-Greedy-in-the-limit-of-exploration" class="headerlink" title="5.2.3 Greedy in the limit of exploration"></a>5.2.3 Greedy in the limit of exploration</h3><p>Convergence를 보장하기 위해 naive한 $\epsilon$-greedy policy를 좀 더 정제해보자.</p>
+<p><strong>Definition 5.1</strong> (Greedy in the Limit of Infinite Exploration (GLIE)).</p>
+<p>​    Policy $\pi$ is <strong><em>GLIE</em></strong> if</p>
+<ol>
+<li><p>All state-action pairs are visited an infinite times; </p>
+<p>즉, $i$번째 episode까지의 $(s,a)$ 방문수를 $N_i(s,a)$라고 하면, $\lim _{i \rightarrow \infty} N_{i}(s, a) \rightarrow \infty$</p>
+</li>
+<li><p>The behavior policy converges to the greedy policy w.r.t. the learned Q-function $q(s,a)$;<br>$\lim _{i \rightarrow \infty} \pi_{i}(a \mid s)=\arg \max _{a} q(s, a) \text { with probability } 1$</p>
+</li>
+</ol>
+<hr>
+<p>GLIE를 만족하는 greedy policy의 대표적인 예시는 $\epsilon_i = \frac{1}{i}$로 두는 것이다.</p>
+<h2 id="5-3-Monte-Carlo-Control"><a href="#5-3-Monte-Carlo-Control" class="headerlink" title="5.3 Monte Carlo Control"></a>5.3 Monte Carlo Control</h2><img src="/2021/05/02/3-Model-Free-Policy-Control/image-20210406231613625.png" class="">
+<p><strong>Theorem 5.2</strong></p>
+<p>​    알고리즘 3의 $\epsilon$-greedy policy가 GLIE면 optimal Q-function으로 수렴이 보장된다. $Q(s, a) \rightarrow q(s, a)$</p>
+<h2 id="5-4-Temporal-Difference-Methods-for-Control"><a href="#5-4-Temporal-Difference-Methods-for-Control" class="headerlink" title="5.4 Temporal Difference Methods for Control"></a>5.4 Temporal Difference Methods for Control</h2><p>TD-style model-free control은 on-policy와 off-policy가 있다.</p>
+<p><strong><em>SARSA</em></strong>는 Q-value를 update하는데 $(s,a,r, s’, a’)$을 사용한다.</p>
+<p>이는 on-policy 알고리즘으로 $s\rightarrow a$와 $s’\rightarrow a’$이 똑같은 policy를 따른다.</p>
+<img src="/2021/05/02/3-Model-Free-Policy-Control/image-20210406233057352.png" class="">
+<p>MC처럼 SARSA의 수렴은 extra condition에 의해 만족될 수 있다.</p>
+<p><strong>Theorem 5.3</strong></p>
+<p>​    SARSA for finite-state and finite-action MDP converges to optimal action-value $Q(s, a) \rightarrow q(s, a)$ if</p>
+<ol>
+<li>The sequence of policies $\pi$ is GLIE</li>
+<li>Step-size $\alpha_t$ satisfies Robin-Munro sequence $\begin{array}{l}<br> \sum_{t=1}^{\infty} \alpha_{t}=\infty \\<br> \sum_{t=1}^{\infty} \alpha_{t}^{2}&lt;\infty<br> \end{array}$</li>
+</ol>
+<h2 id="5-5-Importance-sampling-for-off-policy-TD"><a href="#5-5-Importance-sampling-for-off-policy-TD" class="headerlink" title="5.5 Importance sampling for off-policy TD"></a>5.5 Importance sampling for off-policy TD</h2><p>TD policy evaluation은 $V(s) \leftarrow V(s)+\alpha\left(r+\gamma V\left(s^{\prime}\right)-V(s)\right)$으로 이뤄진다.</p>
+<p>만약 estimate policy $\pi_e$와 behavior policy $\pi_b$가 다른 경우,</p>
+<script type="math/tex; mode=display">
+V^{\pi_{e}}(s) \rightarrow V^{\pi_{e}}(s)+\alpha\left[\frac{\pi_{e}(a \mid s)}{\pi_{b}(a \mid s)}\left(r+\gamma V^{\pi_{e}}\left(s^{\prime}\right)-V^{\pi_{e}}(s)\right)\right]</script><p>MC method로 이를 하려면 importance weight을 history의 길이만큼 곱해야 때문에 분산이 크다.</p>
+<p>TD method의 경우 one step이라 importance weight을 한번만 곱해서 구하고 분산이 작다.</p>
+<h2 id="5-6-Q-learning"><a href="#5-6-Q-learning" class="headerlink" title="5.6 Q-learning"></a>5.6 Q-learning</h2><p>SARSA가 $s \rightarrow a$와 $s’\rightarrow a’$의 policy가 같다는 sense에서 on-policy라고 하였다.</p>
+<p>이게 다르다는 sense에서 off-policy 알고리즘인 <strong><em>Q-learning</em></strong>을 소개하겠다.</p>
+<img src="/2021/05/02/3-Model-Free-Policy-Control/image-20210406235356375.png" class="">
+<p>이는 TD error $r_{t}+\gamma Q\left(s_{t+1}, a_{t+1}\right)$을 $r_{t}+\gamma \max _{a^{\prime}} Q\left(s_{t+1}, a^{\prime}\right)$로 대체한 것이다.</p>
+<p>next state $s’$에서, 현재 policy에 기반해서 next action $a’$이  나오는 게 아니라 현재 $Q$에 maximization으로 나온다.</p>
+<h2 id="6-Maximization-Bias"><a href="#6-Maximization-Bias" class="headerlink" title="6 Maximization Bias"></a>6 Maximization Bias</h2><h2 id="6-1-Examples-Coins"><a href="#6-1-Examples-Coins" class="headerlink" title="6.1 Examples: Coins"></a>6.1 Examples: Coins</h2><p>두개의 identical fair coin이 있는데 아무것도 모르는 상황이다.</p>
+<p>앞면이면 +1 뒷면이면 -1의 reward가 발생한다고 하자.</p>
+<p>Q1. 어떤 코인이 돈을 더 벌어다줄까?</p>
+<p>Q2. Q1에서 말한 코인은 얼마나 줄까?</p>
+<p>이 질문에 대한 답을 위해 두개의 동전을 던지고 잘나온 동전을 골라서 답을 한다면 Q2에 대한 답은 $\frac{3}{4} \times(1)+\frac{1}{4} \times(-1)=0.5$이다.</p>
+<hr>
+<p>이런 문제는 두 선택지 중에 결과가 더 나은걸 골라서 estimate하는 경우에 발생한다.</p>
+<p>이를 피하기 위해선 더 나은 코인을 선택한 다음에 한번 더 던져서 Q2를 답해야 한다.</p>
+<h2 id="6-2-Maximization-Bias-in-Reinforcement-Learning"><a href="#6-2-Maximization-Bias-in-Reinforcement-Learning" class="headerlink" title="6.2 Maximization Bias in Reinforcement Learning"></a>6.2 Maximization Bias in Reinforcement Learning</h2><p>Coins의 예시에 맞춰서 One-step MDP with $\left\{\begin{array}{l}<br>\text{two actions } a_1, a_2\\<br>R(s, a_1) = R(s, a_2)=0<br>\end{array}\right.$을 고려해보자.</p>
+<p>이 경우엔, $Q(s, a_1) = Q(s, a_2) = V(s) = 0$이다.</p>
+<p>샘플링을 통해 Q에 대한 estimator를 $\hat Q (s, a_1), \hat Q(s, a_2)$라고 하자. 이들은 unbiased estimator이다.</p>
+<p>Let $\hat \pi = \arg \max _a \hat Q(s, a)$. Then,</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\hat{V}(s) &=E\left[\max \left(\hat{Q}\left(s, a_{1}\right), \hat{Q}\left(s, a_{2}\right)\right]\right.\\
+& \geq \max \left(E\left[\hat{Q}\left(s, a_{1}\right)\right], E\left[\hat{Q}\left(s, a_{2}\right)\right]\right) \\
+&=\max (0,0) \\
+&=0=V^{*}(s)
+\end{aligned}</script><h2 id="6-3-Double-Q-Learning"><a href="#6-3-Double-Q-Learning" class="headerlink" title="6.3 Double Q-Learning"></a>6.3 Double Q-Learning</h2><p>max와 estimate을 구분해놓음으로 bias를 제거할 수 있다.</p>
+<p>Double Q-Learning의 핵심은 $Q_1$과 $Q_2$중에 랜덤하게 하나는 max에 사용하고 하나는 estimate에 사용하는 것이다.</p>
+<img src="/2021/05/02/3-Model-Free-Policy-Control/image-20210407003151799.png" class="">
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CS234/" rel="tag"># CS234</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/02/2-Model-Free-Policy-Evaluation/" rel="prev" title="2_Model-Free-Policy-Evaluation">
+      <i class="fa fa-chevron-left"></i> 2_Model-Free-Policy-Evaluation
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-Generalized-Policy-Iteration"><span class="nav-text">5.1 Generalized Policy Iteration</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-Importance-of-Exploration"><span class="nav-text">5.2 Importance of Exploration</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-1-Exploration"><span class="nav-text">5.2.1 Exploration</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-2-epsilon-greedy-policy"><span class="nav-text">5.2.2 $\epsilon$-greedy policy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-3-Monotonic-epsilon-greedy-Policy-Improvement"><span class="nav-text">5.2.3 Monotonic $\epsilon$-greedy Policy Improvement</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-3-Greedy-in-the-limit-of-exploration"><span class="nav-text">5.2.3 Greedy in the limit of exploration</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-Monte-Carlo-Control"><span class="nav-text">5.3 Monte Carlo Control</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-4-Temporal-Difference-Methods-for-Control"><span class="nav-text">5.4 Temporal Difference Methods for Control</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-5-Importance-sampling-for-off-policy-TD"><span class="nav-text">5.5 Importance sampling for off-policy TD</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-6-Q-learning"><span class="nav-text">5.6 Q-learning</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-Maximization-Bias"><span class="nav-text">6 Maximization Bias</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-1-Examples-Coins"><span class="nav-text">6.1 Examples: Coins</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-2-Maximization-Bias-in-Reinforcement-Learning"><span class="nav-text">6.2 Maximization Bias in Reinforcement Learning</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-3-Double-Q-Learning"><span class="nav-text">6.3 Double Q-Learning</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">JaeHyun Lee</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JaeHyun Lee</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://leequant761.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://leequant761.github.io/2021/05/02/3-Model-Free-Policy-Control/";
+    this.page.identifier = "2021/05/02/3-Model-Free-Policy-Control/";
+    this.page.title = "3_Model-Free-Policy-Control";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://leequant761.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

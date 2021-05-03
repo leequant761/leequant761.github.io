@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://leequant761.github.io/2021/05/02/1-MDP/image-20210405140402224.png">
 <meta property="og:image" content="https://leequant761.github.io/2021/05/02/1-MDP/image-20210405150636321.png">
 <meta property="article:published_time" content="2021-05-02T06:20:26.000Z">
-<meta property="article:modified_time" content="2021-05-02T06:33:45.227Z">
+<meta property="article:modified_time" content="2021-05-03T14:03:51.813Z">
 <meta property="article:author" content="JaeHyun Lee">
 <meta property="article:tag" content="CS234">
 <meta name="twitter:card" content="summary">
@@ -194,10 +194,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2021-05-02 15:20:26 / Modified: 15:33:45" itemprop="dateCreated datePublished" datetime="2021-05-02T15:20:26+09:00">2021-05-02</time>
+              <time title="Created: 2021-05-02 15:20:26" itemprop="dateCreated datePublished" datetime="2021-05-02T15:20:26+09:00">2021-05-02</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-05-03 23:03:51" itemprop="dateModified" datetime="2021-05-03T23:03:51+09:00">2021-05-03</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -241,6 +247,7 @@
 <li>stationary transition probability</li>
 <li>stationary reward</li>
 <li>stationary policy</li>
+<li>$\gamma &lt; 1$</li>
 </ol>
 <hr>
 <ul>
@@ -308,15 +315,14 @@
 \left(B^{*} U\right)(s)=\max _{a \in A}\left[R(s, a)+\gamma \sum_{s^{\prime} \in S} P\left(s^{\prime} \mid s, a\right) U\left(s^{\prime}\right)\right], \forall s \in S</script><p>이는 $\gamma &lt;1$인 경우에 contraction map이 되기에 unique한 fixed point $V^{\pi^*} (s)$를 갖는다.</p>
 <h2 id="3-6-MDP-control-in-the-infinite-horizon-setting"><a href="#3-6-MDP-control-in-the-infinite-horizon-setting" class="headerlink" title="3.6 MDP control in the infinite horizon setting"></a>3.6 MDP control in the infinite horizon setting</h2><p>MDP에선 optimal policy search에 stationary policy만 고려해도 됨을 예제 3.18에서 보였다.</p>
 <p><strong>Theorem 3.8</strong> (Bellman optimality backup operator의 적용)</p>
-<p>​    For given policy $\pi$,</p>
+<p>​    Let $\pi$ be a given stationary policy</p>
+<p>​    Then, there exists a deterministic stationary policy $\hat \pi$ s.t. $V^{\hat \pi}(s) \geq V^\pi(s)$.</p>
+<p>​    One such policy $\hat \pi$ is given by</p>
 <script type="math/tex; mode=display">
-\hat{\pi}(s):=\underset{a \in A}{\arg \max }\left[R(s, a)+\gamma \sum_{s^{\prime} \in S} P\left(s^{\prime} \mid s, a\right) V^{\pi}\left(s^{\prime}\right)\right], \forall s \in S,</script><p>​    Then,</p>
-<ol>
-<li>$\left(B^{\hat{\pi}} V^{\pi}\right)(s)=\left(B^{*} V^{\pi}\right)(s) \geq V^{\pi}(s)$</li>
-<li>$V^{\hat{\pi}}(s)=V^{\pi}(s)$ <strong>i.f.f.</strong> $\left(B^{*} V^{\pi}\right)(s)=V^{\pi}(s)$</li>
-</ol>
+\hat{\pi}(s)=\underset{a \in A}{\arg \max }\left[R(s, a)+\gamma \sum_{s^{\prime} \in S} P\left(s^{\prime} \mid s, a\right) V^{\pi}\left(s^{\prime}\right)\right], \forall s \in S,</script><p>​    , satisfying $\left(B^{\hat{\pi}} V^{\pi}\right)(s)=\left(B^{*} V^{\pi}\right)(s) \geq V^{\pi}(s)$</p>
+<p>​    Moreover, $V^{\hat{\pi}}(s)=V^{\pi}(s)$ <strong>i.f.f.</strong> $\left(B^{*} V^{\pi}\right)(s)=V^{\pi}(s)$</p>
 <hr>
-<p>$V^{*}(s) :=\max _{\pi \in \Pi} V^{\pi}(s)$</p>
+<p>즉, Bellman optimality backup operator의 fixed point가 optimal value function이다.</p>
 <hr>
 <h3 id="3-6-1-Policy-search"><a href="#3-6-1-Policy-search" class="headerlink" title="3.6.1 Policy search"></a>3.6.1 Policy search</h3><img src="/2021/05/02/1-MDP/image-20210405135654107.png" class="">
 <p>브루트포스 알고리즘으로 $|A| ^S$개의 deterministic policy를 비교하여 최적의 policy를 찾는다.</p>

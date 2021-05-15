@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leequant761.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="가장 노테이션이 깔끔하다 생각된 버클리 CS294에 대한 요약이다. 목표 : optimal policy 함수의 parameter $\theta^{\star}&#x3D;\arg \max _{\theta} E_{\tau \sim p_{\theta}(\tau)}\left[\sum_{t} r\left(\mathbf{s}_{t}, \mathbf{a}_{t}\right)\ri">
+<meta property="og:type" content="article">
+<meta property="og:title" content="4-Policy-Gradients">
+<meta property="og:url" content="https://leequant761.github.io/2021/05/16/4-Policy-Gradients/index.html">
+<meta property="og:site_name" content="Study Repo">
+<meta property="og:description" content="가장 노테이션이 깔끔하다 생각된 버클리 CS294에 대한 요약이다. 목표 : optimal policy 함수의 parameter $\theta^{\star}&#x3D;\arg \max _{\theta} E_{\tau \sim p_{\theta}(\tau)}\left[\sum_{t} r\left(\mathbf{s}_{t}, \mathbf{a}_{t}\right)\ri">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leequant761.github.io/2021/05/16/4-Policy-Gradients/image-20210516011236028.png">
+<meta property="article:published_time" content="2021-05-15T16:45:51.000Z">
+<meta property="article:modified_time" content="2021-05-15T16:50:21.240Z">
+<meta property="article:author" content="JaeHyun Lee">
+<meta property="article:tag" content="summary">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leequant761.github.io/2021/05/16/4-Policy-Gradients/image-20210516011236028.png">
+
+<link rel="canonical" href="https://leequant761.github.io/2021/05/16/4-Policy-Gradients/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>4-Policy-Gradients | Study Repo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Study Repo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leequant761.github.io/2021/05/16/4-Policy-Gradients/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="JaeHyun Lee">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Study Repo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          4-Policy-Gradients
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-05-16 01:45:51 / Modified: 01:50:21" itemprop="dateCreated datePublished" datetime="2021-05-16T01:45:51+09:00">2021-05-16</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Reinforcement/" itemprop="url" rel="index"><span itemprop="name">Reinforcement</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/05/16/4-Policy-Gradients/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/05/16/4-Policy-Gradients/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>가장 노테이션이 깔끔하다 생각된 버클리 CS294에 대한 요약이다.</p>
+<p>목표 : optimal policy 함수의 parameter $\theta^{\star}=\arg \max _{\theta} E_{\tau \sim p_{\theta}(\tau)}\left[\sum_{t} r\left(\mathbf{s}_{t}, \mathbf{a}_{t}\right)\right]$을 찾기</p>
+<span id="more"></span>
+<p>노테이션의 간편함을 위해 finite horizon $T$를 가정하겠다.</p>
+<p>$\tau$는 $(s_1, a_1, \cdots, s_T, a_T, s_{T+1})$ trajectory를 나타낸다.</p>
+<h1 id="1-Evaluation-Objective"><a href="#1-Evaluation-Objective" class="headerlink" title="1. Evaluation : Objective"></a>1. Evaluation : Objective</h1><script type="math/tex; mode=display">
+J(\theta)=E_{\tau \sim p_{\theta}(\tau)}\left[\sum_{t} r\left(\mathbf{s}_{t}, \mathbf{a}_{t}\right)\right] \approx \frac{1}{N} \sum_{i} \sum_{t} r\left(\mathbf{s}_{i, t}, \mathbf{a}_{i, t}\right)</script><h1 id="2-Differentiation-Objective"><a href="#2-Differentiation-Objective" class="headerlink" title="2. Differentiation : Objective"></a>2. Differentiation : Objective</h1><script type="math/tex; mode=display">
+\begin{aligned}
+\nabla_{\theta} J(\theta) &=\int \nabla_{\theta} \pi_{\theta}(\tau) r(\tau) d \tau \quad \quad \text{where } r(\tau) = \sum_{t=1}^T r(s_t, a_t)
+\\
+&= \int \pi_{\theta}(\tau) \nabla_{\theta} \log \pi_{\theta}(\tau) r(\tau) d \tau
+\\
+&= E_{\tau \sim \pi_{\theta}(\tau)}\left[\nabla_{\theta} \log \pi_{\theta}(\tau) r(\tau)\right]
+\\
+&= E_{\tau \sim \pi_{\theta}(\tau)}\left[\left(\sum_{t=1}^{T} \nabla_{\theta} \log \pi_{\theta}\left(\mathbf{a}_{t} \mid \mathbf{s}_{t}\right)\right)r(\tau)\right] \because \nabla_{\theta} \log p\left(\mathbf{s}_{t+1} \mid \mathbf{s}_{t}, \mathbf{a}_{t}\right) = 0
+\\
+& \approx \frac{1}{N} \sum_{i=1}^{N}\left(\sum_{t=1}^{T} \nabla_{\theta} \log \pi_{\theta}\left(\mathbf{a}_{i, t} \mid \mathbf{s}_{i, t}\right)\right)\left(\sum_{t=1}^{T} r\left(\mathbf{s}_{i, t}, \mathbf{a}_{i, t}\right)\right)
+\end{aligned}</script><p>이를 활용하여 policy gradient optimization을 하는 <em>REINFORCE algorithm</em>이 있다.</p>
+<ol>
+<li>sample $\{ \tau^i \}$ from $\pi_{\theta} (\mathbf{a}_t \mid \mathbf s_t)$</li>
+<li>$\nabla_{\theta} J(\theta)  \approx \frac{1}{N} \sum_{i=1}^{N}\left(\sum_{t=1}^{T} \nabla_{\theta} \log \pi_{\theta}\left(\mathbf{a}_{i, t} \mid \mathbf{s}_{i, t}\right)\right)\left(\sum_{t=1}^{T} r\left(\mathbf{s}_{i, t}, \mathbf{a}_{i, t}\right)\right)$</li>
+<li>$\theta \leftarrow \theta+\alpha \nabla_{\theta} J(\theta)$</li>
+<li>repeat 1</li>
+</ol>
+<h1 id="3-Comparison-to-maximum-likelihood"><a href="#3-Comparison-to-maximum-likelihood" class="headerlink" title="3. Comparison to maximum likelihood"></a>3. Comparison to maximum likelihood</h1><script type="math/tex; mode=display">
+\begin{array}{l}
+\text { policy gradient: } \nabla_{\theta} J(\theta) \approx \frac{1}{N} \sum_{i=1}^{N}\left(\sum_{t=1}^{T} \nabla_{\theta} \log \pi_{\theta}\left(\mathbf{a}_{i, t} \mid \mathbf{s}_{i, t}\right)\right)\left(\sum_{t=1}^{T} r\left(\mathbf{s}_{i, t}, \mathbf{a}_{i, t}\right)\right) \\
+\text { maximum likelihood: } \nabla_{\theta} J_{\mathrm{ML}}(\theta) \approx \frac{1}{N} \sum_{i=1}^{N}\left(\sum_{t=1}^{T} \nabla_{\theta} \log \pi_{\theta}\left(\mathbf{a}_{i, t} \mid \mathbf{s}_{i, t}\right) \cdot 1\right) 
+\end{array}</script><blockquote>
+<p>ML 파트는 supervised setting으로, action에 대한 label을 사람이 붙여준 것이다.</p>
+</blockquote>
+<p>Reward가 양이면 likelihood를 높이고 음이면 likelihood를 낮추라고 gradient를 주게 된다.</p>
+<p>Policy gradient를 trajectory term으로 표기하면</p>
+<script type="math/tex; mode=display">
+\begin{array}{l}
+\text { policy gradient: } \nabla_{\theta} J(\theta) \approx \frac{1}{N} \sum_{i=1}^{N} \nabla_{\theta} \log \pi_{\theta}\left(\tau_{i}\right) r\left(\tau_{i}\right) \\
+\text { maximum likelihood: } \nabla_{\theta} J_{\mathrm{ML}}(\theta) \approx \frac{1}{N} \sum_{i=1}^{N} \nabla_{\theta} \log \pi_{\theta}\left(\tau_{i}\right)
+\end{array}</script><p>좋은 trajectory는 나오게끔, 안좋은 trajectory는 안나오게끔 gradient를 주게 됨을 확인할 수 있다.</p>
+<h1 id="4-What-is-wrong-with-the-policy-gradient"><a href="#4-What-is-wrong-with-the-policy-gradient" class="headerlink" title="4. What is wrong with the policy gradient?"></a>4. What is wrong with the policy gradient?</h1><img src="/2021/05/16/4-Policy-Gradients/image-20210516011236028.png" class="">
+<p>Density plot은 trajectory 상의 분포를 의미하며 점선은 policy gradient로 한번 update했을 때의 trajectory 상의 분포이다.</p>
+<p>초록색 선은 original reward를 의미하며 노랑색 선은 reward 들에 constant를 더해준 것이다.</p>
+<ul>
+<li><p>Original updated distribution은 굉장히 좁은 형태의 density를 갖는다.</p>
+</li>
+<li><p>Constant를 더해서 reward를 줬을 때의 distribution은 넓은 형태의 density를 갖는다.</p>
+</li>
+</ul>
+<p>Reward는 사람이 정의하기 나름인 함수라 굉장히 어색함을 느끼고 있을 것이다.</p>
+<h1 id="5-Reducing-variance-Causality"><a href="#5-Reducing-variance-Causality" class="headerlink" title="5. Reducing variance : Causality"></a>5. Reducing variance : Causality</h1><script type="math/tex; mode=display">
+\begin{aligned}
+\nabla_{\theta} J(\theta) &\approx \frac{1}{N} \sum_{i=1}^{N}\left(\sum_{t=1}^{T} \nabla_{\theta} \log \pi_{\theta}\left(\mathbf{a}_{i, t} \mid \mathbf{s}_{i, t}\right)\right)\left(\sum_{t=1}^{T} r\left(\mathbf{s}_{i, t}, \mathbf{a}_{i, t}\right)\right)
+\\
+
+&\approx \frac{1}{N} \sum_{i=1}^{N}\left(\sum_{t=1}^{T} \nabla_{\theta} \log \pi_{\theta}\left(\mathbf{a}_{i, t} \mid \mathbf{s}_{i, t}\right) \sum_{t'=t}^{T} r\left(\mathbf{s}_{i, t'}, \mathbf{a}_{i, t'}\right)\right)
+\\
+
+&=: \frac{1}{N} \sum_{i=1}^{N}\left(\sum_{t=1}^{T} \nabla_{\theta} \log \pi_{\theta}\left(\mathbf{a}_{i, t} \mid \mathbf{s}_{i, t}\right) \hat{Q}_{i, t}\right)
+\\
+\end{aligned}</script><p>이는 $E_{\tau \sim p_{\theta}(\tau)} \left[ \nabla_{\theta} \log \pi_{\theta}\left(\mathbf{a}_{t+1} \mid \mathbf{s}_{t+1}\right) \times r\left(\mathbf{s}_{t}, \mathbf{a}_{t}\right)\right] = 0$ 을 확인해보면 된다.</p>
+<blockquote>
+<p>이를 관용적으로 causality라고 하는 지는 모르겠다.</p>
+</blockquote>
+<h1 id="6-Reducing-variance-Baselines"><a href="#6-Reducing-variance-Baselines" class="headerlink" title="6. Reducing variance : Baselines"></a>6. Reducing variance : Baselines</h1><script type="math/tex; mode=display">
+\nabla_{\theta} J(\theta) \approx \frac{1}{N} \sum_{i=1}^{N}\left(\sum_{t=1}^{T} \nabla_{\theta} \log \pi_{\theta}\left(\mathbf{a}_{i, t} \mid \mathbf{s}_{i, t}\right)\right)\left(\sum_{t=1}^{T} r\left(\mathbf{s}_{i, t}, \mathbf{a}_{i, t}\right) -b\right)</script><p>where $b=\frac{1}{N} \sum_{i=1}^{N} r(\tau)$</p>
+<p>단순하게 평균을 내는 방법은 간단하고 나쁘지 않은 baseline 선택지이다.</p>
+<p>실제 optimal baseline이 tractable할 일은 없기 때문이다.</p>
+<h1 id="7-On-policy-vs-Off-policy-learning"><a href="#7-On-policy-vs-Off-policy-learning" class="headerlink" title="7. On-policy vs Off-policy learning"></a>7. On-policy vs Off-policy learning</h1><p><em>REINFORCE</em> 기반의 알고리즘들은 모두 on-policy learning이고 sample efficiency가 떨어진다.</p>
+<blockquote>
+<p>뽑은 trajectory들을 한번만 gradient update하고 버린다.</p>
+</blockquote>
+<ul>
+<li>$\pi_{\theta}(\tau)=p\left(\mathbf{s}_{1}\right) \prod_{t=1}^{T} \pi_{\theta}\left(\mathbf{a}_{t} \mid \mathbf{s}_{t}\right) p\left(\mathbf{s}_{t+1} \mid \mathbf{s}_{t}, \mathbf{a}_{t}\right)$</li>
+<li>$\frac{\pi_{\theta}(\tau)}{\bar{\pi}(\tau)}=\frac{\prod_{t=1}^{T} \pi_{\theta}\left(\mathbf{a}_{t} \mid \mathbf{s}_{t}\right)}{\prod_{t=1}^{T} \bar{\pi}\left(\mathbf{a}_{t} \mid \mathbf{s}_{t}\right)}$</li>
+</ul>
+<p>Objective를 importance sampling form으로 표현하면</p>
+<script type="math/tex; mode=display">
+J\left(\theta^{\prime}\right)=E_{\tau \sim \pi_{\theta}(\tau)}\left[\frac{\pi_{\theta^{\prime}}(\tau)}{\pi_{\theta}(\tau)} r(\tau)\right]</script><p>이다. 이의 gradient는</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\nabla_{\theta^{\prime}} J\left(\theta^{\prime}\right) &=E_{\tau \sim \pi_{\theta}(\tau)}\left[\frac{\nabla_{\theta^{\prime}} \pi_{\theta^{\prime}}(\tau)}{\pi_{\theta}(\tau)} r(\tau)\right]
+\\
+&= E_{\tau \sim \pi_{\theta}(\tau)}\left[\frac{\pi_{\theta^{\prime}}(\tau)}{\pi_{\theta}(\tau)} \nabla_{\theta^{\prime}} \log \pi_{\theta^{\prime}}(\tau) r(\tau)\right]
+\\
+&=E_{\tau \sim \pi_{\theta}(\tau)}\left[\left(\prod_{t=1}^{T} \frac{\pi_{\theta^{\prime}}\left(\mathbf{a}_{t} \mid \mathbf{s}_{t}\right)}{\pi_{\theta}\left(\mathbf{a}_{t} \mid \mathbf{s}_{t}\right)}\right)\left(\sum_{t=1}^{T} \nabla_{\theta^{\prime}} \log \pi_{\theta^{\prime}}\left(\mathbf{a}_{t} \mid \mathbf{s}_{t}\right)\right)\left(\sum_{t=1}^{T} r\left(\mathbf{s}_{t}, \mathbf{a}_{t}\right)\right)\right]
+\\
+&=E_{\tau \sim \pi_{\theta}(\tau)}\left[\sum_{t=1}^{T} \nabla_{\theta^{\prime}} \log \pi_{\theta^{\prime}}\left(\mathbf{a}_{t} \mid \mathbf{s}_{t}\right)\left(\prod_{t^{\prime}=1}^{T} \frac{\pi_{\theta^{\prime}}\left(\mathbf{a}_{t^{\prime}} \mid \mathbf{s}_{t^{\prime}}\right)}{\pi_{\theta}\left(\mathbf{a}_{t^{\prime}} \mid \mathbf{s}_{t^{\prime}}\right)}\right)\left(\sum_{t^{\prime}=t}^{T} r\left(\mathbf{s}_{t^{\prime}}, \mathbf{a}_{t^{\prime}}\right)\right)\right]
+\\
+&=E_{\tau \sim \pi_{\theta}(\tau)}\left[\sum_{t=1}^{T} \nabla_{\theta^{\prime}} \log \pi_{\theta^{\prime}}\left(\mathbf{a}_{t} \mid \mathbf{s}_{t}\right)\left(\prod_{t^{\prime}=1}^{t} \frac{\pi_{\theta^{\prime}}\left(\mathbf{a}_{t^{\prime}} \mid \mathbf{s}_{t^{\prime}}\right)}{\pi_{\theta}\left(\mathbf{a}_{t^{\prime}} \mid \mathbf{s}_{t^{\prime}}\right)}\right)\left(\sum_{t^{\prime}=t}^{T} r\left(\mathbf{s}_{t^{\prime}}, \mathbf{a}_{t^{\prime}}\right)\right)\right]
+\end{aligned}</script><p>마지막에서 두번째 줄은 causality를 적용한 것이다.</p>
+<p>마지막 줄은 아래의 식이 서로 같다는 것을 보이면 된다.</p>
+<ul>
+<li>$E_{\tau \sim \pi_{\theta}(\tau)}\left[\nabla_{\theta^{\prime}} \log \pi_{\theta^{\prime}}\left(\mathbf{a}_{t} \mid \mathbf{s}_{t}\right)\left(\prod_{t^{\prime}=1}^{t+1} \frac{\pi_{\theta^{\prime}}\left(\mathbf{a}_{t^{\prime}} \mid \mathbf{s}_{t^{\prime}}\right)}{\pi_{\theta}\left(\mathbf{a}_{t^{\prime}} \mid \mathbf{s}_{t^{\prime}}\right)}\right)\right]$</li>
+<li>$E_{\tau \sim \pi_{\theta}(\tau)}\left[\nabla_{\theta^{\prime}} \log \pi_{\theta^{\prime}}\left(\mathbf{a}_{t} \mid \mathbf{s}_{t}\right)\left(\prod_{t^{\prime}=1}^{t} \frac{\pi_{\theta^{\prime}}\left(\mathbf{a}_{t^{\prime}} \mid \mathbf{s}_{t^{\prime}}\right)}{\pi_{\theta}\left(\mathbf{a}_{t^{\prime}} \mid \mathbf{s}_{t^{\prime}}\right)}\right)\right]$</li>
+</ul>
+<blockquote>
+<p>Causality에선 summation이라 $t \sim T$ term까지 살린 것이고</p>
+<p>이번엔 product라 $1\sim t$까지 살린 것이다.</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/summary/" rel="tag"># summary</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/04/Playing-Atari-with-Deep-Reinforcement-Learning/" rel="prev" title="Playing-Atari-with-Deep-Reinforcement-Learning">
+      <i class="fa fa-chevron-left"></i> Playing-Atari-with-Deep-Reinforcement-Learning
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Evaluation-Objective"><span class="nav-text">1. Evaluation : Objective</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Differentiation-Objective"><span class="nav-text">2. Differentiation : Objective</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Comparison-to-maximum-likelihood"><span class="nav-text">3. Comparison to maximum likelihood</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-What-is-wrong-with-the-policy-gradient"><span class="nav-text">4. What is wrong with the policy gradient?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Reducing-variance-Causality"><span class="nav-text">5. Reducing variance : Causality</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-Reducing-variance-Baselines"><span class="nav-text">6. Reducing variance : Baselines</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-On-policy-vs-Off-policy-learning"><span class="nav-text">7. On-policy vs Off-policy learning</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">JaeHyun Lee</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JaeHyun Lee</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://leequant761.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://leequant761.github.io/2021/05/16/4-Policy-Gradients/";
+    this.page.identifier = "2021/05/16/4-Policy-Gradients/";
+    this.page.title = "4-Policy-Gradients";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://leequant761.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

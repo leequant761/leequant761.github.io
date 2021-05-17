@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leequant761.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="0. AbstractMonotonic improvement가 보장된 policy gradient 알고리즘을 설명하겠다. 비록 이론적 결과에 대한 approximation을 하게 되지만 여전히 monotonic improvement를 주는 경향이 있다.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Trust-Region-Policy-Optimization">
+<meta property="og:url" content="https://leequant761.github.io/2021/05/17/Trust-Region-Policy-Optimization/index.html">
+<meta property="og:site_name" content="Study Repo">
+<meta property="og:description" content="0. AbstractMonotonic improvement가 보장된 policy gradient 알고리즘을 설명하겠다. 비록 이론적 결과에 대한 approximation을 하게 되지만 여전히 monotonic improvement를 주는 경향이 있다.">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-05-17T14:15:54.000Z">
+<meta property="article:modified_time" content="2021-05-17T14:17:27.701Z">
+<meta property="article:author" content="JaeHyun Lee">
+<meta property="article:tag" content="paper review">
+<meta property="article:tag" content="deep reinforcement learning">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://leequant761.github.io/2021/05/17/Trust-Region-Policy-Optimization/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Trust-Region-Policy-Optimization | Study Repo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Study Repo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leequant761.github.io/2021/05/17/Trust-Region-Policy-Optimization/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="JaeHyun Lee">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Study Repo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Trust-Region-Policy-Optimization
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-05-17 23:15:54 / Modified: 23:17:27" itemprop="dateCreated datePublished" datetime="2021-05-17T23:15:54+09:00">2021-05-17</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Reinforcement/" itemprop="url" rel="index"><span itemprop="name">Reinforcement</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/05/17/Trust-Region-Policy-Optimization/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/05/17/Trust-Region-Policy-Optimization/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="0-Abstract"><a href="#0-Abstract" class="headerlink" title="0. Abstract"></a>0. Abstract</h1><p>Monotonic improvement가 보장된 policy gradient 알고리즘을 설명하겠다.</p>
+<p>비록 이론적 결과에 대한 approximation을 하게 되지만 여전히 monotonic improvement를 주는 경향이 있다.</p>
+<span id="more"></span>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a>1. Introduction</h1><p>이론적 결과로 특정한 surrogate objective function을 최적화한다면 policy improvement가 보장됨을 보이겠다. (Algorithm 1)</p>
+<p>그 다음, 실용성을 위해 이에 대한 근사인 TRPO를 소개하도록 하겠다.</p>
+<blockquote>
+<p>TRPO에 2가지 버전 single-path와 vine이 있는데 후자는 simulation에서만 가능하다.</p>
+</blockquote>
+<p>실험적으로, TRPO가 Atari, swimming, walking 등에서 complex policy를 학습할 수 있음을 보이겠다.</p>
+<h1 id="2-Preliminaries"><a href="#2-Preliminaries" class="headerlink" title="2. Preliminaries"></a>2. Preliminaries</h1><p>Infinite-horizon discounted Markov decision process (MDP) $\left(\mathcal{S}, \mathcal{A}, P, r, \rho_{0}, \gamma\right)$</p>
+<ul>
+<li>$\mathcal S$ is a finite set of states</li>
+<li>$\mathcal A$ is a finite set of actions</li>
+<li>$P: \mathcal{S} \times \mathcal{A} \times \mathcal{S} \rightarrow \mathbb{R}$ is the transition probability distribution</li>
+<li>$r: \mathcal{S} \rightarrow \mathbb{R}$ is the reward function</li>
+<li>$\rho_{0}: \mathcal{S} \rightarrow \mathbb{R}$ is the distribution of the initial state $s_0$</li>
+<li>$\gamma \in(0,1)$ is the discount factor</li>
+</ul>
+<p>Let</p>
+<ul>
+<li>$\pi: \mathcal{S} \times \mathcal{A} \rightarrow[0,1]$ is a stochastic policy</li>
+<li>$\eta(\pi)=\mathbb{E}_{s_{0}, a_{0}, \ldots}\left[\sum_{t=0}^{\infty} \gamma^{t} r\left(s_{t}\right)\right]$ is the expected discounted reward<ul>
+<li>$s_{0} \sim \rho_{0}\left(s_{0}\right)$ </li>
+<li>$a_{t} \sim \pi\left(a_{t} \mid s_{t}\right)$</li>
+<li>$s_{t+1} \sim P\left(s_{t+1} \mid s_{t}, a_{t}\right)$</li>
+</ul>
+</li>
+<li>$Q_{\pi}\left(s_{t}, a_{t}\right)=\mathbb{E}_{s_{t+1}, a_{t+1}, \ldots}\left[\sum_{l=0}^{\infty} \gamma^{l} r\left(s_{t+l}\right)\right]$ is the state-action value function</li>
+<li>$V_{\pi}\left(s_{t}\right)=\mathbb{E}_{a_{t}, s_{t+1}, \ldots}\left[\sum_{l=0}^{\infty} \gamma^{l} r\left(s_{t+l}\right)\right]$ is the state value function</li>
+<li>$A_{\pi}(s, a)=Q_{\pi}(s, a)-V_{\pi}(s)$ is the advantage function</li>
+</ul>
+<hr>
+<p><a target="_blank" rel="noopener" href="https://people.eecs.berkeley.edu/~pabbeel/cs287-fa09/readings/KakadeLangford-icml2002.pdf">Kakede &amp; Langford (2002)</a>에 대한 요약</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\eta(\tilde{\pi}) &=\eta(\pi)+\mathbb{E}_{s_{0}, a_{0}, \cdots \sim \tilde{\pi}}\left[\sum_{t=0}^{\infty} \gamma^{t} A_{\pi}\left(s_{t}, a_{t}\right)\right]
+\\
+&=\eta(\pi)+\sum_{s} \rho_{\tilde{\pi}}(s) \sum_{a} \tilde{\pi}(a \mid s) A_{\pi}(s, a)
+\end{aligned}</script><p>where $\rho_{\pi}(s)=P\left(s_{0}=s\right)+\gamma P\left(s_{1}=s\right)+\gamma^{2} P\left(s_{2}=s\right)+\ldots$</p>
+<ul>
+<li>직감적으로, $\tilde \pi$에 대한 evaluation을 $\pi$를 가지고 할 수 있다는 것이다.</li>
+<li>만약 모든 state $s$에 대해서, $\sum_{a} \tilde{\pi}(a \mid s) A_{\pi}(s, a) \geq 0$ 일 경우 policy improvement가 보장된다.</li>
+</ul>
+<p>하지만, 실제로는 $A_{\pi}(s, a)$는 샘플링 기반으로 approximation하게 될 것이다.</p>
+<p>그 때, trajectory sample은 old policy $\pi$에서 뽑은 것을 사용할 것이다.</p>
+<p>그 경우엔 $\rho_{\tilde{\pi}}(s)$는 장애물이 될 것이다.</p>
+<p>이를 대처하기 위해 local approximation을 도입한다.</p>
+<script type="math/tex; mode=display">
+L_{\pi}(\tilde{\pi})=\eta(\pi)+\sum_{s} \rho_{\pi}(s) \sum_{a} \tilde{\pi}(a \mid s) A_{\pi}(s, a)</script><p>이는 굉장히 좋은 근사이다.</p>
+<ol>
+<li>$L_{\pi_{\theta_{0}}}\left(\pi_{\theta_{0}}\right)=\eta\left(\pi_{\theta_{0}}\right)$</li>
+<li>$\left.\nabla_{\theta} L_{\pi_{\theta_{0}}}\left(\pi_{\theta}\right)\right|_{\theta=\theta_{0}}=\left.\nabla_{\theta} \eta\left(\pi_{\theta}\right)\right|_{\theta=\theta_{0}} \quad \because$ <a target="_blank" rel="noopener" href="https://proceedings.neurips.cc/paper/1999/file/464d828b85b0bed98e80ade0a5c43b0f-Paper.pdf">Sutton, 1999</a></li>
+</ol>
+<p>결론은, 작은 step만큼 policy update할 경우 $L$의 증가가 곧 $\eta$의 증가를 의미한다.</p>
+<p>하지만 충분히 작은 step에 대한 애매모호함이 있기에 이들은 conservative policy iteration을 도입하였다.</p>
+<ul>
+<li>Let $\pi^{\prime}=\arg \max _{\pi^{\prime}} L_{\pi_{\mathrm{old}}}\left(\pi^{\prime}\right)$</li>
+<li>Let $\pi_{\text {new }}(a \mid s)=(1-\alpha) \pi_{\text {old }}(a \mid s)+\alpha \pi^{\prime}(a \mid s)$</li>
+<li>Then, $\eta\left(\pi_{\text {new }}\right) \geq L_{\pi_{\text {old }}}\left(\pi_{\text {new }}\right)-\frac{2 \epsilon \gamma}{(1-\gamma)^{2}} \alpha^{2}$ where $\epsilon=\max _{s}\left|\mathbb{E}_{a \sim \pi^{\prime}(a \mid s)}\left[A_{\pi}(s, a)\right]\right|$</li>
+</ul>
+<hr>
+<p>하지만 이 lower bound는 mixture policy에서 적용되기 때문에 일반적이지 못하다.</p>
+<h1 id="3-Monotonic-Improvement-Guarantee-for-General-Stochastic-Policies"><a href="#3-Monotonic-Improvement-Guarantee-for-General-Stochastic-Policies" class="headerlink" title="3. Monotonic Improvement Guarantee for General Stochastic Policies"></a>3. Monotonic Improvement Guarantee for General Stochastic Policies</h1><p>Let</p>
+<ul>
+<li>$D_{T V}(p | q)=\frac{1}{2} \sum_{i}\left|p_{i}-q_{i}\right|$</li>
+<li>$D_{\mathrm{TV}}^{\max }(\pi, \tilde{\pi})=\max _{s} D_{T V}(\pi(\cdot \mid s) | \tilde{\pi}(\cdot \mid s))$</li>
+</ul>
+<p><strong>Theorem 1</strong></p>
+<p>​    Let $\alpha=D_{\mathrm{TV}}^{\max }\left(\pi_{\mathrm{old}}, \pi_{\mathrm{new}}\right)$. Then,</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+
+\eta\left(\pi_{\text {new}}\right) &\geq L_{\pi_{\text {old}}}\left(\pi_{\text {new }}\right)-\frac{4 \epsilon \gamma}{(1-\gamma)^{2}} \alpha^{2} \quad \text{where } \epsilon=\max _{s, a}\left|A_{\pi}(s, a)\right|
+\\
+&\geq L_{\pi_{\text{old }}}(\pi_{\text{new }})-\frac{4 \epsilon \gamma}{(1-\gamma)^{2}} D_{\mathrm{KL}}^{\max }(\pi_{\text{old }}, {\pi_{\text{new }}}) \quad \quad \because D_{T V}(p \| q)^{2} \leq D_{\mathrm{KL}}(p \| q)
+
+\end{aligned}</script><hr>
+<p>위의 정리에 기반하여 monotonic increasing policy iteration algorithm을 제안한다.</p>
+
+<p>이 알고리즘은 $A_{\pi}$에 대한 evaluation이 가능하다고 암묵적으로 가정한다.</p>
+<p>그 상황에서 monotonically improving sequence of policies가 생성된다.</p>
+<p>Let $M_i(\pi) = L_{\pi_i}(\pi_{i+1}) - C D_{\mathrm{KL}}^{\max }\left(\pi_{i}, \pi\right)$.</p>
+<p>Since $\eta\left(\pi_{i+1}\right) \geq M_{i}\left(\pi_{i+1}\right) \quad$ and $ \quad \eta\left(\pi_{i}\right)=M_{i}\left(\pi_{i}\right)$,</p>
+<script type="math/tex; mode=display">
+\eta\left(\pi_{i+1}\right)-\eta\left(\pi_{i}\right) \geq M_{i}\left(\pi_{i+1}\right)-M\left(\pi_{i}\right) \geq 0</script><hr>
+<p>TRPO는 알고리즘 1에 대한 근사이다.</p>
+<p>Large update를 robust하게 허용하기 위해 페널티 텀 $C D_{\mathrm{KL}}^{\max }\left(\pi_{i}, \pi\right)$을 없애고 constraint를 건다.</p>
+<h1 id="4-Optimization-of-Parameterized-Policies"><a href="#4-Optimization-of-Parameterized-Policies" class="headerlink" title="4. Optimization of Parameterized Policies"></a>4. Optimization of Parameterized Policies</h1><p>이론적인 알고리즘 1은 $A_{\pi}$에 대한 evaluation이 가능함을 가정하였고 policy search $\pi_{i+1}=\underset{\pi}{\arg \max }\left[…\right]$의 computational complexity를 고려하지 않았다.</p>
+<p>이번 장과 다음 장에서 finite sample과 parameter로 구현되는 practical algorithm을 도출하겠다.</p>
+<p>Let</p>
+<ul>
+<li>$\eta(\theta):=\eta\left(\pi_{\theta}\right)$</li>
+<li>$L_{\theta}(\tilde{\theta}):=L_{\pi_{\theta}}\left(\pi_{\tilde{\theta}}\right)$</li>
+<li>$D_{\mathrm{KL}}(\theta | \tilde{\theta}):=D_{\mathrm{KL}}\left(\pi_{\theta} | \pi_{\tilde{\theta}}\right)$</li>
+</ul>
+<p>Then, $\pi_{i+1}=\underset{\pi}{\arg \max }\left[L_{\pi_{i}}(\pi)-C D_{\mathrm{KL}}^{\max }\left(\pi_{i}, \pi\right)\right]$ is expressed as</p>
+<script type="math/tex; mode=display">
+\underset{\theta}{\operatorname{maximize}}\left[L_{\theta_{\text {old }}}(\theta)-C D_{\mathrm{KL}}^{\max }\left(\theta_{\text {old }}, \theta\right)\right]</script><p>페널티 텀을 집어 넣는 방식의 경우 step size가 정말 작을 수도 있다.</p>
+<p>Robust한 방식으로 large step을 취하기 위해서,  trust region constraint를 채택하자.</p>
+<script type="math/tex; mode=display">
+\underset{\theta}{\operatorname{maximize}} L_{\theta_{\text {old }}}(\theta) \quad \text { subject to } D_{\mathrm{KL}}^{\max }\left(\theta_{\mathrm{old}}, \theta\right) \leq \delta</script><blockquote>
+<p>$\delta$를 허용된 step size라고 해석하면 된다.</p>
+</blockquote>
+<p>$D_{\mathrm{KL}}^{\max }\left(\theta_{\mathrm{old}}, \theta\right) \leq \delta$를 확인하기 위해서 모든 state에 대해 KL-divergence를 구하는 것은 비실용적이다.</p>
+<p>Approximation (sampling 기반)으로 constraint를 확인하기 위해 average KLD로 바꾸자.</p>
+<script type="math/tex; mode=display">
+\underset{\theta}{\operatorname{maximize}} L_{\theta_{\text {old }}}(\theta) \quad \text { subject to } \overline{D}_{\mathrm{KL}}^{\rho_{\theta_{\mathrm{old}}}}\left(\theta_{\mathrm{old}}, \theta\right) \leq \delta</script><p>실험적으로 이러한 constraint의 변경은 큰 성능차이를 불러일으키지 않음을 확인하였다.</p>
+<h1 id="5-Sample-Based-Estimation-of-the-Objective-and-Constraint"><a href="#5-Sample-Based-Estimation-of-the-Objective-and-Constraint" class="headerlink" title="5.  Sample-Based Estimation of the Objective and Constraint"></a>5.  Sample-Based Estimation of the Objective and Constraint</h1><p>4장에서 정의한 objective function과 constraint function을</p>
+<script type="math/tex; mode=display">
+\underset{\theta}{\operatorname{maximize}} \sum_{s} \rho_{\theta_{\text {old }}}(s) \sum_{a} \pi_{\theta}(a \mid s) A_{\theta_{\text {old }}}(s, a) \quad \text { subject to } \overline{D}_{\mathrm{KL}}^{\rho_{\theta_{\mathrm{old}}}}\left(\theta_{\mathrm{old}}, \theta\right) \leq \delta</script><p>approximation하는 방법을 소개한다.</p>
+<ol>
+<li>$\sum_{s} \rho_{\theta_{\text {old }}}(s)[\ldots] \quad \Longrightarrow \quad  \frac{1}{1-\gamma} \mathbb{E}_{s \sim \rho_{\theta_{\text {old }}}}[\ldots]$  ; </li>
+<li>$A_{\theta_{\mathrm{old}}} \quad \Longrightarrow \quad  Q_{\theta_{\text {old }}}$ ; </li>
+<li>$\sum_{a} \pi_{\theta}\left(a \mid s_{n}\right) A_{\theta_{\text {old }}}\left(s_{n}, a\right)=\mathbb{E}_{a \sim q}\left[\frac{\pi_{\theta}\left(a \mid s_{n}\right)}{q\left(a \mid s_{n}\right)} A_{\theta_{\text {old }}}\left(s_{n}, a\right)\right]$</li>
+</ol>
+<blockquote>
+<p>위의 세가지 사실들은 1. normalize; 2. $V$텀은 $\theta$에 독립적임; 3. policy $\pi_{old}$에서 뽑은 샘플로 MC approximation을 하기 위해 importance samling 도입한 것이다.</p>
+</blockquote>
+<p>위의 세가지 사실을 활용하면 optimization 식을 다르게 표현할 수 있다.</p>
+<script type="math/tex; mode=display">
+\underset{\theta}{\operatorname{maximize}} \mathbb{E}_{s \sim \rho_{\theta_{\text {old }}}, a \sim q}\left[\frac{\pi_{\theta}(a \mid s)}{q(a \mid s)} Q_{\theta_{\text {old }}}(s, a)\right] \quad \text { subject to } \mathbb{E}_{s \sim \rho_{\theta_{\text {old }}}}\left[D_{\mathrm{KL}}\left(\pi_{\theta_{\text {old }}}(\cdot \mid s) \| \pi_{\theta}(\cdot \mid s)\right)\right] \leq \delta</script><p>이제 objective function과 constraint function을 estimate하는 두가지 방법을 소개하겠다.</p>
+<h2 id="5-1-Single-path"><a href="#5-1-Single-path" class="headerlink" title="5.1 Single path"></a>5.1 Single path</h2><p>Individualized trajectories sampling에 기반한 방식이다.</p>
+<p>이는 policy gradient estimation에서 일반적으로 사용된다.</p>
+<ol>
+<li>Sample $s_0 \sim \rho_0$</li>
+<li>Simulate one trajectory $a_{0}, s_{1}, a_{1}, \ldots, s_{T-1}, a_{T-1}, s_{T} \sim\pi_{\theta_{\text{old}}} \times P$</li>
+<li>MC approximation</li>
+</ol>
+<h2 id="5-2-Vine"><a href="#5-2-Vine" class="headerlink" title="5.2 Vine"></a>5.2 Vine</h2><ol>
+<li>Sample $s_0 \sim \rho_0$</li>
+<li>Simulate multiple trajectories $a_{0}, s_{1}, a_{1}, \ldots, s_{T-1}, a_{T-1}, s_{T} \sim\pi_{\theta_{\text{old}}} \times P$</li>
+<li>Choose $N$ states along these trajectories; $\{ s_{1}, s_{2}, \ldots, s_{N}\}$, called rollout set</li>
+<li>For each state $s_n$ in the rollout set, sample $K$ actions; $a_{n, k} \sim q\left(\cdot \mid s_{n}\right)$ s.t.<ul>
+<li>$ \text{supp}(\pi_{\text{old}}(\cdot \mid s_n)) \subseteq  \text{supp}(q(\cdot \mid s_n))$</li>
+<li>continuous action을 다룰 땐, $q\left(\cdot \mid s_{n}\right)=\pi_{\theta_{\text{old}}}\left(\cdot \mid s_{n}\right)$이 좋고</li>
+<li>discrete action을 다룰 땐, $q\left(\cdot \mid s_{n}\right) = \text{Uni}$가 좋다. (exploration 측면에서)</li>
+</ul>
+</li>
+<li>…</li>
+</ol>
+<p>모르겠다.</p>
+<p>Vine은 single path method보다 분산이 낮아서 좋다.</p>
+<p>하지만 simulation 밖에서는 안되는 방법이다.</p>
+<h1 id="6-Practical-Algorithm"><a href="#6-Practical-Algorithm" class="headerlink" title="6. Practical Algorithm"></a>6. Practical Algorithm</h1><p>이해하려면 appendix 정리에 대한 증명을 봐야하는데 할 게 많아서 엄두가 안나서 여기까지 하고 PPO 논문을 읽겠다 ㅎㅎ;;</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/paper-review/" rel="tag"># paper review</a>
+              <a href="/tags/deep-reinforcement-learning/" rel="tag"># deep reinforcement learning</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/17/5-Actor-Critic/" rel="prev" title="5-Actor-Critic">
+      <i class="fa fa-chevron-left"></i> 5-Actor-Critic
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-Abstract"><span class="nav-text">0. Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1. Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Preliminaries"><span class="nav-text">2. Preliminaries</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Monotonic-Improvement-Guarantee-for-General-Stochastic-Policies"><span class="nav-text">3. Monotonic Improvement Guarantee for General Stochastic Policies</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Optimization-of-Parameterized-Policies"><span class="nav-text">4. Optimization of Parameterized Policies</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Sample-Based-Estimation-of-the-Objective-and-Constraint"><span class="nav-text">5.  Sample-Based Estimation of the Objective and Constraint</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-Single-path"><span class="nav-text">5.1 Single path</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-Vine"><span class="nav-text">5.2 Vine</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-Practical-Algorithm"><span class="nav-text">6. Practical Algorithm</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">JaeHyun Lee</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JaeHyun Lee</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://leequant761.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://leequant761.github.io/2021/05/17/Trust-Region-Policy-Optimization/";
+    this.page.identifier = "2021/05/17/Trust-Region-Policy-Optimization/";
+    this.page.title = "Trust-Region-Policy-Optimization";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://leequant761.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

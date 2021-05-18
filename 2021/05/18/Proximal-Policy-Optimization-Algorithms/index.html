@@ -20,23 +20,24 @@
     var CONFIG = {"hostname":"leequant761.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="0. AbstractDeep learning model을 사용하여 high dimensional sensory input으로부터 policy를 학습한다.">
+  <meta name="description" content="0. AbstractStandard policy gradient method는 sample마다 한번의 gradient update를 하고 버린다. PPO는  minibatch를 갖고서 여러번의 update를 한다. TRPO의 일부 장점들을 가져온다. TRPO보다 더 간단하고 더 나은 sample-complexity를 갖는다.">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Playing-Atari-with-Deep-Reinforcement-Learning">
-<meta property="og:url" content="https://leequant761.github.io/2021/05/04/Playing-Atari-with-Deep-Reinforcement-Learning/index.html">
+<meta property="og:title" content="Proximal-Policy-Optimization-Algorithms">
+<meta property="og:url" content="https://leequant761.github.io/2021/05/18/Proximal-Policy-Optimization-Algorithms/index.html">
 <meta property="og:site_name" content="Study Repo">
-<meta property="og:description" content="0. AbstractDeep learning model을 사용하여 high dimensional sensory input으로부터 policy를 학습한다.">
+<meta property="og:description" content="0. AbstractStandard policy gradient method는 sample마다 한번의 gradient update를 하고 버린다. PPO는  minibatch를 갖고서 여러번의 update를 한다. TRPO의 일부 장점들을 가져온다. TRPO보다 더 간단하고 더 나은 sample-complexity를 갖는다.">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://leequant761.github.io/2021/05/04/Playing-Atari-with-Deep-Reinforcement-Learning/image-20210504022831665.png">
-<meta property="article:published_time" content="2021-05-03T17:37:34.000Z">
-<meta property="article:modified_time" content="2021-05-15T16:51:29.505Z">
+<meta property="og:image" content="https://leequant761.github.io/2021/05/18/Proximal-Policy-Optimization-Algorithms/image-20210518122143561.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/05/18/Proximal-Policy-Optimization-Algorithms/image-20210518152305050.png">
+<meta property="article:published_time" content="2021-05-18T06:25:36.000Z">
+<meta property="article:modified_time" content="2021-05-18T06:28:30.899Z">
 <meta property="article:author" content="JaeHyun Lee">
 <meta property="article:tag" content="paper review">
 <meta property="article:tag" content="deep reinforcement learning">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://leequant761.github.io/2021/05/04/Playing-Atari-with-Deep-Reinforcement-Learning/image-20210504022831665.png">
+<meta name="twitter:image" content="https://leequant761.github.io/2021/05/18/Proximal-Policy-Optimization-Algorithms/image-20210518122143561.png">
 
-<link rel="canonical" href="https://leequant761.github.io/2021/05/04/Playing-Atari-with-Deep-Reinforcement-Learning/">
+<link rel="canonical" href="https://leequant761.github.io/2021/05/18/Proximal-Policy-Optimization-Algorithms/">
 
 
 <script id="page-configurations">
@@ -49,7 +50,7 @@
   };
 </script>
 
-  <title>Playing-Atari-with-Deep-Reinforcement-Learning | Study Repo</title>
+  <title>Proximal-Policy-Optimization-Algorithms | Study Repo</title>
   
 
 
@@ -169,7 +170,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://leequant761.github.io/2021/05/04/Playing-Atari-with-Deep-Reinforcement-Learning/">
+    <link itemprop="mainEntityOfPage" href="https://leequant761.github.io/2021/05/18/Proximal-Policy-Optimization-Algorithms/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -182,7 +183,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Playing-Atari-with-Deep-Reinforcement-Learning
+          Proximal-Policy-Optimization-Algorithms
         </h1>
 
         <div class="post-meta">
@@ -191,16 +192,10 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2021-05-04 02:37:34" itemprop="dateCreated datePublished" datetime="2021-05-04T02:37:34+09:00">2021-05-04</time>
+              <time title="Created: 2021-05-18 15:25:36 / Modified: 15:28:30" itemprop="dateCreated datePublished" datetime="2021-05-18T15:25:36+09:00">2021-05-18</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-05-16 01:51:29" itemprop="dateModified" datetime="2021-05-16T01:51:29+09:00">2021-05-16</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -220,8 +215,8 @@
       </span>
       <span class="post-meta-item-text">Disqus: </span>
     
-    <a title="disqus" href="/2021/05/04/Playing-Atari-with-Deep-Reinforcement-Learning/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/05/04/Playing-Atari-with-Deep-Reinforcement-Learning/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2021/05/18/Proximal-Policy-Optimization-Algorithms/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/05/18/Proximal-Policy-Optimization-Algorithms/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -236,48 +231,85 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="0-Abstract"><a href="#0-Abstract" class="headerlink" title="0. Abstract"></a>0. Abstract</h1><p>Deep learning model을 사용하여 high dimensional sensory input으로부터 policy를 학습한다.</p>
-<span id="more"></span>
-<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a>1. Introduction</h1><p>이미지나 음성같은 high dimension input으로 학습하는 건 RL에서 오래된 challenging task이다.</p>
-<p>수렴에 대한 보장을 주는, hand-crafted feature linear value function approximation에 의존했었다.</p>
-<p>딥러닝으로 이미 sensor 데이터에서 high level feature 뽑는 데에 강점이 있다는 것을 보였다.</p>
-<hr>
-<p>딥러닝 관점에서 RL을 보면 몇가지 문제가 있다.</p>
+        <h1 id="0-Abstract"><a href="#0-Abstract" class="headerlink" title="0. Abstract"></a>0. Abstract</h1><p>Standard policy gradient method는 sample마다 한번의 gradient update를 하고 버린다.</p>
+<p>PPO는</p>
 <ol>
-<li><p>Label이 없다</p>
-</li>
-<li><p>Reward가 sparse, noisy, delay된 경향이 있다.</p>
-</li>
-<li><p>딥러닝은 Loss function 정의할 때 데이터에 i.i.d distributed를 가정하지만</p>
-<p>RL의 Loss function은 iteration마다 바뀐다.</p>
-</li>
+<li>minibatch를 갖고서 여러번의 update를 한다.</li>
+<li>TRPO의 일부 장점들을 가져온다.</li>
+<li>TRPO보다 더 간단하고 더 나은 sample-complexity를 갖는다.</li>
 </ol>
-<hr>
-<p>Q-learning 관점에서 우리의 알고리즘엔 2가지 테크닉이 들어간다.</p>
+<span id="more"></span>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a>1. Introduction</h1><p>DQN은 discrete action space에만 적용이 된다.</p>
+<p>Continuous action space의 경우 policy gradient method를 생각할 수 있다.</p>
+<p>하지만 Vanilla policy rgadient method는 robustness와 data efficiency가 낮다.</p>
+<blockquote>
+<p>Robustness는 hyperparameter tuning 없이 다른 문제들에 적용이 가능함을 말한다.</p>
+</blockquote>
+<p>TRPO는 이 문제들을 해결했으나</p>
+<ol>
+<li>너무 복잡하고</li>
+<li>architecture에 noise를 줄 수 없고 (dropout 불가능)</li>
+<li>value function과 policy간의 parameter 공유가 불가능하다.</li>
+</ol>
+<p>PPO는 TRPO의 안정적 성능과 data efficiency를 챙기지만 일차미분만 활용하는 알고리즘이다.</p>
+<p>Continuous control에선 다른 알고리즘을 압도하고 Atari에선 A2C보다 낫고 ACER와 비슷하다.</p>
+<h1 id="2-Background-Policy-Optimization"><a href="#2-Background-Policy-Optimization" class="headerlink" title="2. Background: Policy Optimization"></a>2. Background: Policy Optimization</h1><h2 id="2-1-Policy-Gradient-Methods"><a href="#2-1-Policy-Gradient-Methods" class="headerlink" title="2.1 Policy Gradient Methods"></a>2.1 Policy Gradient Methods</h2><p>가장 흔히 사용되는 gradient estimator $\hat{g}=\hat{\mathbb{E}}_{t}\left[\nabla_{\theta} \log \pi_{\theta}\left(a_{t} \mid s_{t}\right) \hat{A}_{t}\right]$</p>
 <ul>
-<li>Correlation between $(s_t, s_{t+1})$ under policy $\pi$를 약화시키기 위해 experience replay를 사용한다.</li>
-<li>Non stationary target value는 학습의 불안정성을 가져오기에 $C$ timestep동안은 target network를 유지한다.</li>
+<li>$\hat{\mathbb{E}}_{t}[\ldots]$ 은 $t$ 시점에서 finite batch of samples에 대한 empirical average</li>
+<li>$\hat{A}_{t}$ 은 $t$ 시점에서 advantage function에 대한 estimator</li>
 </ul>
-<blockquote>
-<p>후자는 네이처지에 올라온 DQN 논문의 테크닉인데 정말 비슷하기에 그냥 포함시켰다.</p>
-</blockquote>
-<h1 id="2-Background"><a href="#2-Background" class="headerlink" title="2. Background"></a>2. Background</h1><p>RL의 목표는 total return을 최대로 키우는 policy를 찾는 것이다.</p>
-<p>Optimal policy를 찾는 것은 optimal $Q$-function을 찾는 것과 동일하다.</p>
+<ol>
+<li>Sampling $\tau$</li>
+<li>Optimizing value function $\hat V$ and policy function $\pi$</li>
+<li>repeat 1.</li>
+</ol>
+<p>2번의 Opimization 과정에서 gradient descent를 여러번 하는 건 objective function이 수식적으로 정의가 안된 최적화이고 종종 collapse된다.</p>
+<h2 id="2-2-Trust-Region-Methods"><a href="#2-2-Trust-Region-Methods" class="headerlink" title="2.2 Trust Region Methods"></a>2.2 Trust Region Methods</h2><script type="math/tex; mode=display">
+\begin{array}{ll}
+\underset{\theta}{\operatorname{maximize}} & \hat{\mathbb{E}}_{t}\left[\frac{\pi_{\theta}\left(a_{t} \mid s_{t}\right)}{\pi_{\theta_{\text {old}}}\left(a_{t} \mid s_{t}\right)} \hat{A}_{t}\right] \\
+\text { subject to } & \widehat{\mathbb{E}}_{t}\left[\operatorname{KL}\left[\pi_{\theta_{\text {old}}}\left(\cdot \mid s_{t}\right), \pi_{\theta}\left(\cdot \mid s_{t}\right)\right]\right] \leq \delta
+\end{array}</script><p>이는 objective function에 linear approximation을 하고 constraint에 quadratic approximation을 한 후에 conjugate gradient algorithm을 사용해서 근사적으로 풀 수 있다.</p>
+<p>TRPO의 논문에서 이론적으로 제시했던 바는</p>
 <script type="math/tex; mode=display">
-Q^{*}(s, a)=\max _{\pi} \mathbb{E}\left[R_{t} \mid s_{t}=s, a_{t}=a, \pi\right]</script><p>Tabular setting에선 model-based와 model-free로 모두 policy control이 가능하다.</p>
-<p>Tabular setting이 아닌 경우 interpolation이 안된다는 의미에서 generalization에 문제가 있다고 한다.</p>
-<p>이 때, value function approximator $\hat Q(s, a, \theta)$로 optimal $Q^*$ function을 근사하는 방식으로 접근한다.</p>
-<p>Function approximator를 neural network로 사용할 경우 $\hat Q(s, a, \theta)$를 Q-network라고 부른다.</p>
-<h1 id="3-Related-Works"><a href="#3-Related-Works" class="headerlink" title="3. Related Works"></a>3. Related Works</h1><h1 id="4-Deep-Reinforcement-Learning"><a href="#4-Deep-Reinforcement-Learning" class="headerlink" title="4. Deep Reinforcement Learning"></a>4. Deep Reinforcement Learning</h1><img src="/2021/05/04/Playing-Atari-with-Deep-Reinforcement-Learning/image-20210504022831665.png" class="">
-<p>Experience replay를 적용하기 위해 agent의 experience $e_t = (s_t, a_t, r_t, s_{t+1})$를 buffer $D$에 저장한다.</p>
-<p>그 다음, $D$에서 무작위 추출로 뽑은 experience를 가지고 Q-learning update를 적용한다.</p>
-<p>이 때 loss function은 $L_{i}\left(\theta_{i}\right)=\mathbb{E}_{\left(s, a, r, s^{\prime}\right) \sim U(D)}\left[\left(r+\gamma \max _{a^{\prime}} Q\left(s^{\prime}, a^{\prime} ; \theta_{i}^{-}\right)-Q\left(s, a ; \theta_{i}\right)\right)^{2}\right]$이고,</p>
-<p>SGD를 적용하기 위해 minibatch sampling으로 loss function을 MC approximation한 뒤에 gradient를 취한다.</p>
-<p>Non stationary target value는 학습의 불안정성을 가져오기에 $C$ timestep동안은 target network를 유지한다.</p>
-<blockquote>
-<p>CS234강의와 Human-level control through deep reinforcement learning를 동시에 참조하였다.</p>
-</blockquote>
-
+\underset{\theta}{\operatorname{maximize}} \hat{\mathbb{E}}_{t}\left[\frac{\pi_{\theta}\left(a_{t} \mid s_{t}\right)}{\pi_{\theta_{\text {old }}}\left(a_{t} \mid s_{t}\right)} \hat{A}_{t}-\beta \mathrm{KL}\left[\pi_{\theta_{\text {old}}}\left(\cdot \mid s_{t}\right), \pi_{\theta}\left(\cdot \mid s_{t}\right)\right]\right]</script><p>였지만, penalty term 대신 constraint를 했던 이유는 $\beta$의 선택이 문제가 됐기 때문이다.</p>
+<p>PPO는 추가적인 modification을 더해서 penalty term이 있는 꼴로 최적화할 것이다.</p>
+<p>그 경우 일차미분으로 최적화가 가능해진다.</p>
+<h1 id="3-Clipped-Surrogate-Objective"><a href="#3-Clipped-Surrogate-Objective" class="headerlink" title="3. Clipped Surrogate Objective"></a>3. Clipped Surrogate Objective</h1><p>미분을 했을 때 policy gradient가 나오는 대리 함수를 surrogate objective function이라 한다.</p>
+<ul>
+<li>$L^{P G}(\theta)=\hat{\mathbb{E}}_{t}\left[\log \pi_{\theta}\left(a_{t} \mid s_{t}\right) \hat{A}_{t}\right]$ ; 이 때 $\hat {\mathbb E}_t$는 $\theta$로 뽑은 것의 empirical average</li>
+<li>$L^{C P I}(\theta)=\hat{\mathbb{E}}_{t}\left[\frac{\pi_{\theta}\left(a_{t} \mid s_{t}\right)}{\pi_{\theta_{\text {old }}}\left(a_{t} \mid s_{t}\right)} \hat{A}_{t}\right]$ ; 이 때 $\hat {\mathbb E}_t$는 $\theta_{\text{old}}$로 뽑은 것의 empirical average</li>
+</ul>
+<p>TRPO에서도 사용했던 두 번째 surrogate objective를 단순하게 gradient로 update하는 것은 확률의 ratio에 따라서 너무 큰 step을 갖게 된다.</p>
+<p>어를 방지하기 위해, $r_t(\theta):= \frac{\pi_{\theta}\left(a_{t} \mid s_{t}\right)}{\pi_{\theta_{\mathrm{old}}}\left(a_{t} \mid s_{t}\right)}$ 이 $\hat{A}_{t}$을 너무 키우지 않게끔 penalize를 하는 objective를 제안한다.</p>
+<script type="math/tex; mode=display">
+L^{C L I P}(\theta)=\hat{\mathbb{E}}_{t}\left[\min \left(r_{t}(\theta) \hat{A}_{t}, \operatorname{clip}\left(r_{t}(\theta), 1-\epsilon, 1+\epsilon\right) \hat{A}_{t}\right)\right]</script><img src="/2021/05/18/Proximal-Policy-Optimization-Algorithms/image-20210518122143561.png" class="">
+<ul>
+<li>objective를 향상시키는 policy의 변화에서 $r$이 주는 incentive가 있다면 버리게 된다.</li>
+<li>objective를 하향시키는 policy의 변화에서 $r$이 주는 incentive가 있다면 취하게 된다.</li>
+</ul>
+<hr>
+<p>Note that</p>
+<ol>
+<li>$L^{C L I P}(\theta)=L^{C P I}(\theta)$ if $\theta = \theta_{\text {old }}$</li>
+<li>$\nabla _{\theta}L^{C L I P}(\theta)= \nabla _{\theta}L^{C P I}(\theta)$ if $\theta \approx \theta_{\text {old }}$</li>
+</ol>
+<h1 id="4-Adaptive-KL-Penalty-Coefficient"><a href="#4-Adaptive-KL-Penalty-Coefficient" class="headerlink" title="4. Adaptive KL Penalty Coefficient"></a>4. Adaptive KL Penalty Coefficient</h1><p>TRPO 논문에서 제안됐지만 penalty coefficient의 적절함이 없어서 못 쓴</p>
+<script type="math/tex; mode=display">
+L^{K L P E N}(\theta)=\hat{\mathbb{E}}_{t}\left[\frac{\pi_{\theta}\left(a_{t} \mid s_{t}\right)}{\pi_{\theta_{\text {old }}}\left(a_{t} \mid s_{t}\right)} \hat{A}_{t}-\beta \mathrm{KL}\left[\pi_{\theta_{\text {old }}}\left(\cdot \mid s_{t}\right), \pi_{\theta}\left(\cdot \mid s_{t}\right)\right]\right]</script><p>를 휴리스틱하게 KL divergence가 크면 $\beta$를 늘려주고 작으면 $\beta$를 줄여주는 방법도 있다.</p>
+<h1 id="5-Algorithm"><a href="#5-Algorithm" class="headerlink" title="5. Algorithm"></a>5. Algorithm</h1><p>Asynchronous methods for deep reinforcement learning</p>
+<script type="math/tex; mode=display">
+\hat{A}_{t}=-V\left(s_{t}\right)+r_{t}+\gamma r_{t+1}+\cdots+\gamma^{T-t+1} r_{T-1}+\gamma^{T-t} V\left(s_{T}\right)</script><p>​    은  (T-t) step TD error를 advantage function estimator로 쓴 것이다.</p>
+<p>High-Dimensional Continuous Control Using Generalized Advantage Estimation</p>
+<script type="math/tex; mode=display">
+\begin{array}{l}
+\hat{A}_{t}=\delta_{t}+(\gamma \lambda) \delta_{t+1}+\cdots+\cdots+(\gamma \lambda)^{T-t+1} \delta_{T-1} \\
+\text { where } \delta_{t}=r_{t}+\gamma V\left(s_{t+1}\right)-V\left(s_{t}\right)
+\end{array}</script><p>​    은  1~(T-t) step TD error의 exponential average를 advantage function estimator로 쓴 것이다.</p>
+<hr>
+<p>Value function 학습엔 MSELoss를 사용한다.</p>
+<p>추가로 sufficient exploration을 보장하기 위해 entropy bonus를 더하자.</p>
+<script type="math/tex; mode=display">
+L_{t}^{C L I P+V F+S}(\theta)=\hat{\mathbb{E}}_{t}\left[L_{t}^{C L I P}(\theta)-c_{1} L_{t}^{V F}(\theta)+c_{2} S\left[\pi_{\theta}\right]\left(s_{t}\right)\right]</script><img src="/2021/05/18/Proximal-Policy-Optimization-Algorithms/image-20210518152305050.png" class="">
     </div>
 
     
@@ -296,13 +328,10 @@ Q^{*}(s, a)=\max _{\pi} \mathbb{E}\left[R_{t} \mid s_{t}=s, a_{t}=a, \pi\right]<
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/05/02/3-Model-Free-Policy-Control/" rel="prev" title="3_Model-Free-Policy-Control">
-      <i class="fa fa-chevron-left"></i> 3_Model-Free-Policy-Control
+    <a href="/2021/05/17/Trust-Region-Policy-Optimization/" rel="prev" title="Trust-Region-Policy-Optimization">
+      <i class="fa fa-chevron-left"></i> Trust-Region-Policy-Optimization
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/05/16/4-Policy-Gradients/" rel="next" title="4-Policy-Gradients">
-      4-Policy-Gradients <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -368,7 +397,7 @@ Q^{*}(s, a)=\max _{\pi} \mathbb{E}\left[R_{t} \mid s_{t}=s, a_{t}=a, \pi\right]<
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-Abstract"><span class="nav-text">0. Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1. Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Background"><span class="nav-text">2. Background</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Related-Works"><span class="nav-text">3. Related Works</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Deep-Reinforcement-Learning"><span class="nav-text">4. Deep Reinforcement Learning</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-Abstract"><span class="nav-text">0. Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1. Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Background-Policy-Optimization"><span class="nav-text">2. Background: Policy Optimization</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Policy-Gradient-Methods"><span class="nav-text">2.1 Policy Gradient Methods</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Trust-Region-Methods"><span class="nav-text">2.2 Trust Region Methods</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Clipped-Surrogate-Objective"><span class="nav-text">3. Clipped Surrogate Objective</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Adaptive-KL-Penalty-Coefficient"><span class="nav-text">4. Adaptive KL Penalty Coefficient</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Algorithm"><span class="nav-text">5. Algorithm</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -549,9 +578,9 @@ Q^{*}(s, a)=\max _{\pi} \mathbb{E}\left[R_{t} \mid s_{t}=s, a_{t}=a, \pi\right]<
 </script>
 <script>
   var disqus_config = function() {
-    this.page.url = "https://leequant761.github.io/2021/05/04/Playing-Atari-with-Deep-Reinforcement-Learning/";
-    this.page.identifier = "2021/05/04/Playing-Atari-with-Deep-Reinforcement-Learning/";
-    this.page.title = "Playing-Atari-with-Deep-Reinforcement-Learning";
+    this.page.url = "https://leequant761.github.io/2021/05/18/Proximal-Policy-Optimization-Algorithms/";
+    this.page.identifier = "2021/05/18/Proximal-Policy-Optimization-Algorithms/";
+    this.page.title = "Proximal-Policy-Optimization-Algorithms";
     };
   NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
     if (window.DISQUS) {

@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://leequant761.github.io/2021/05/18/Proximal-Policy-Optimization-Algorithms/image-20210518122143561.png">
 <meta property="og:image" content="https://leequant761.github.io/2021/05/18/Proximal-Policy-Optimization-Algorithms/image-20210518152305050.png">
 <meta property="article:published_time" content="2021-05-18T06:25:36.000Z">
-<meta property="article:modified_time" content="2021-05-18T06:28:30.899Z">
+<meta property="article:modified_time" content="2021-05-18T10:10:09.856Z">
 <meta property="article:author" content="JaeHyun Lee">
 <meta property="article:tag" content="paper review">
 <meta property="article:tag" content="deep reinforcement learning">
@@ -194,7 +194,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-05-18 15:25:36 / Modified: 15:28:30" itemprop="dateCreated datePublished" datetime="2021-05-18T15:25:36+09:00">2021-05-18</time>
+              <time title="Created: 2021-05-18 15:25:36 / Modified: 19:10:09" itemprop="dateCreated datePublished" datetime="2021-05-18T15:25:36+09:00">2021-05-18</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -284,9 +284,10 @@
 <script type="math/tex; mode=display">
 L^{C L I P}(\theta)=\hat{\mathbb{E}}_{t}\left[\min \left(r_{t}(\theta) \hat{A}_{t}, \operatorname{clip}\left(r_{t}(\theta), 1-\epsilon, 1+\epsilon\right) \hat{A}_{t}\right)\right]</script><img src="/2021/05/18/Proximal-Policy-Optimization-Algorithms/image-20210518122143561.png" class="">
 <ul>
-<li>objective를 향상시키는 policy의 변화에서 $r$이 주는 incentive가 있다면 버리게 된다.</li>
-<li>objective를 하향시키는 policy의 변화에서 $r$이 주는 incentive가 있다면 취하게 된다.</li>
+<li>objective를 향상시키는 policy의 변화에서 $r$이 $1+\epsilon$ 보다 큰 경우 gradient signal을 버리게 된다.</li>
+<li>objective를 하향시키는 policy의 변화에서 $r$이 $1-\epsilon$ 보다 작은 경우 gradient signal을 버리게 된다.</li>
 </ul>
+<p>더 직감적으로 말하면, advantage의 향상을 가져오는 sample 중에서 큰 policy의 변화가 있다면 update에 사용하지 않는다.</p>
 <hr>
 <p>Note that</p>
 <ol>

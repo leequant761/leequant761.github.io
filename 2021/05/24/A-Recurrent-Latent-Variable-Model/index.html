@@ -22,7 +22,7 @@
 
   <meta name="description" content="0. AbstractVAE에 영감을 받아서 latent variable을 RNN hidden state의 input으로 포함한다. VRNN은 highly structured sequential data에서 관측되는 variability를 모델링할 수 있다. 그렇기에 latent variable이 RNN dynamics에서 굉장히 중요한 역할을 한다.">
 <meta property="og:type" content="article">
-<meta property="og:title" content="A-Recurrent-Latent-Variable-Model">
+<meta property="og:title" content="A Recurrent Latent Variable Model">
 <meta property="og:url" content="https://leequant761.github.io/2021/05/24/A-Recurrent-Latent-Variable-Model/index.html">
 <meta property="og:site_name" content="Study Repo">
 <meta property="og:description" content="0. AbstractVAE에 영감을 받아서 latent variable을 RNN hidden state의 input으로 포함한다. VRNN은 highly structured sequential data에서 관측되는 variability를 모델링할 수 있다. 그렇기에 latent variable이 RNN dynamics에서 굉장히 중요한 역할을 한다.">
@@ -34,7 +34,7 @@
 <meta property="og:image" content="https://leequant761.github.io/2021/05/24/A-Recurrent-Latent-Variable-Model/image-20210524214220568.png">
 <meta property="og:image" content="https://leequant761.github.io/2021/05/24/A-Recurrent-Latent-Variable-Model/image-20210524214458842.png">
 <meta property="article:published_time" content="2021-05-24T12:51:41.000Z">
-<meta property="article:modified_time" content="2021-05-24T13:01:59.230Z">
+<meta property="article:modified_time" content="2021-06-02T04:54:34.536Z">
 <meta property="article:author" content="JaeHyun Lee">
 <meta property="article:tag" content="paper review">
 <meta property="article:tag" content="latent variable model">
@@ -54,7 +54,7 @@
   };
 </script>
 
-  <title>A-Recurrent-Latent-Variable-Model | Study Repo</title>
+  <title>A Recurrent Latent Variable Model | Study Repo</title>
   
 
 
@@ -187,7 +187,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          A-Recurrent-Latent-Variable-Model
+          A Recurrent Latent Variable Model
         </h1>
 
         <div class="post-meta">
@@ -196,10 +196,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2021-05-24 21:51:41 / Modified: 22:01:59" itemprop="dateCreated datePublished" datetime="2021-05-24T21:51:41+09:00">2021-05-24</time>
+              <time title="Created: 2021-05-24 21:51:41" itemprop="dateCreated datePublished" datetime="2021-05-24T21:51:41+09:00">2021-05-24</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-06-02 13:54:34" itemprop="dateModified" datetime="2021-06-02T13:54:34+09:00">2021-06-02</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -394,10 +400,13 @@ q\left(\mathbf{z}_{\leq T} \mid \mathbf{x}_{\leq T}\right)=\prod_{t=1}^{T} q\lef
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/05/23/Identification-of-Joint-Interventional-Distributions-in-Recursive-Semi-Markovian-Causal-Models/" rel="prev" title="Identification-of-Joint-Interventional-Distributions-in-Recursive-Semi-Markovian-Causal-Models">
-      <i class="fa fa-chevron-left"></i> Identification-of-Joint-Interventional-Distributions-in-Recursive-Semi-Markovian-Causal-Models
+    <a href="/2021/05/23/Identification-of-Joint-Interventional-Distributions-in-Recursive-Semi-Markovian-Causal-Models/" rel="prev" title="Identification of Joint Interventional Distributions in Recursive Semi Markovian Causal Models">
+      <i class="fa fa-chevron-left"></i> Identification of Joint Interventional Distributions in Recursive Semi Markovian Causal Models
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/" rel="next" title="On the Testable Implications of Causal Models with Hidden Variables">
+      On the Testable Implications of Causal Models with Hidden Variables <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -477,7 +486,7 @@ q\left(\mathbf{z}_{\leq T} \mid \mathbf{x}_{\leq T}\right)=\prod_{t=1}^{T} q\lef
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-count">16</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -646,7 +655,7 @@ q\left(\mathbf{z}_{\leq T} \mid \mathbf{x}_{\leq T}\right)=\prod_{t=1}^{T} q\lef
   var disqus_config = function() {
     this.page.url = "https://leequant761.github.io/2021/05/24/A-Recurrent-Latent-Variable-Model/";
     this.page.identifier = "2021/05/24/A-Recurrent-Latent-Variable-Model/";
-    this.page.title = "A-Recurrent-Latent-Variable-Model";
+    this.page.title = "A Recurrent Latent Variable Model";
     };
   NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
     if (window.DISQUS) {

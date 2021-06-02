@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leequant761.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="0. AbstractCausal model의 유효성은 model이 데이터의 형성 분포에 constraint를 줄 때 검증될 수 있다.  Hidden variable이 존재하면 causal model은 두 가지 종류의 constraint를 줄 수 있다.  Conditional Independence Functional constraint  이 논문은 func">
+<meta property="og:type" content="article">
+<meta property="og:title" content="On the Testable Implications of Causal Models with Hidden Variables">
+<meta property="og:url" content="https://leequant761.github.io/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/index.html">
+<meta property="og:site_name" content="Study Repo">
+<meta property="og:description" content="0. AbstractCausal model의 유효성은 model이 데이터의 형성 분포에 constraint를 줄 때 검증될 수 있다.  Hidden variable이 존재하면 causal model은 두 가지 종류의 constraint를 줄 수 있다.  Conditional Independence Functional constraint  이 논문은 func">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leequant761.github.io/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/image-20210529001403916.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/image-20210528231824330.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/image-20210529001403916.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/image-20210529001335428.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/image-20210529172017766.png">
+<meta property="og:image" content="d:/STUDY_REPO/causal/PAPER/On%20the%20Testable%20Implications%20of%20Causal%20Models%20with%20Hidden%20Variables.assets/image-20210529174602421.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/image-20210529203200300.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/image-20210529203200300.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/image-20210531193727579.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/image-20210601204926589.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/image-20210602113444210.png">
+<meta property="article:published_time" content="2021-06-02T04:53:10.000Z">
+<meta property="article:modified_time" content="2021-06-02T05:34:18.244Z">
+<meta property="article:author" content="JaeHyun Lee">
+<meta property="article:tag" content="identifiability">
+<meta property="article:tag" content="paper review">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leequant761.github.io/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/image-20210529001403916.png">
+
+<link rel="canonical" href="https://leequant761.github.io/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>On the Testable Implications of Causal Models with Hidden Variables | Study Repo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Study Repo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leequant761.github.io/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="JaeHyun Lee">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Study Repo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          On the Testable Implications of Causal Models with Hidden Variables
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-06-02 13:53:10 / Modified: 14:34:18" itemprop="dateCreated datePublished" datetime="2021-06-02T13:53:10+09:00">2021-06-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Causality/" itemprop="url" rel="index"><span itemprop="name">Causality</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="0-Abstract"><a href="#0-Abstract" class="headerlink" title="0. Abstract"></a>0. Abstract</h1><p>Causal model의 유효성은 model이 데이터의 형성 분포에 constraint를 줄 때 검증될 수 있다. </p>
+<p>Hidden variable이 존재하면 causal model은 두 가지 종류의 constraint를 줄 수 있다.</p>
+<ol>
+<li>Conditional Independence</li>
+<li>Functional constraint</li>
+</ol>
+<p>이 논문은 functional constraint를 찾는 체계적인 방법을 제공하여, 다음의 task를 수행할 수 있다.</p>
+<ul>
+<li>test causal model from data</li>
+<li>infer the causal model from data</li>
+</ul>
+<span id="more"></span>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a>1. Introduction</h1><p>모든 변수가 observable일 때, Bayesian network(causal model)은 그저 conditional independence만 부과한다.</p>
+<p>그러나 unobserved variable이 있다면, causal model은 observed variable distribution에 functional constraint도 부과한다.</p>
+<p><a href="">Verma &amp; Pearl 1990</a>은 이에 대한 예시를 줬다.</p>
+<img src="/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/image-20210529001403916.png" class="">
+<script type="math/tex; mode=display">
+\sum_{b} P(d \mid a, b, c) P(b \mid a)=f(c, d)</script><p>이 논문은 그러한 functional constraint를 찾는 체계적인 방법을 개발한다.</p>
+<p>이를 찾게 된다면</p>
+<ol>
+<li>empirically validating causal models</li>
+<li>empirically distinguishing causal models with the same set of conditional independence</li>
+</ol>
+<p>예를 들어, 아래의 두 causal model은 같은 conditional independence among the observed variables를 갖는다.</p>
+<img src="/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/image-20210528231824330.png" class="">
+<p>그러나 Verma의 functional constraint에 의해서 이 둘 사이에서 구분할 수 있다.</p>
+<p>Conditional indenpendence relationship에만 의존한 structure-learning은 두 모델을 구분할 수 없다.</p>
+<hr>
+<p>Causal model with hidden variable에 의해 암시된 functional constraint를 찾는<br>대수적(not graphical) 메소드는 <a href="">Geiger, 1998~9</a>에서 나왔었다.</p>
+<p>그러나 이들은 계산량이 많아서 small network with small parameters에 국한됐다.</p>
+<hr>
+<p>이 논문은 F constraint를 graph를 기반으로 체계적으로 찾아내는 procedure를 보이겠다.</p>
+<h1 id="2-Bayesian-Networks-with-Hidden-Variables"><a href="#2-Bayesian-Networks-with-Hidden-Variables" class="headerlink" title="2. Bayesian Networks with Hidden Variables"></a>2. Bayesian Networks with Hidden Variables</h1><p>Bayesian network는 joint probability distribution의 factorization을 주장한다.</p>
+<script type="math/tex; mode=display">
+P(v)=\prod_{i} P\left(v_{i} \mid p a_{i}\right)</script><p>만약 몇몇 변수들이 unobserved일 때, 변수를 $V=\left\{V_{1}, \ldots, V_{n}\right\} \text { and } U=\left\{U_{1}, \ldots, U_{n^{\prime}}\right\}$로 나누면,</p>
+<p>observed probability distribution은 다음과 같다.</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P(v) &=\sum_{u} \prod_{\left\{i \mid V_{i} \in V\right\}} P\left(v_{i} \mid p a_{v_{i}}\right) \prod_{\left\{i \mid U_{i} \in U\right\}} P\left(u_{i} \mid p a_{u_{i}}\right)
+
+\\ &= \sum_{u^{\prime}} \prod_{V_{i} \in V} P\left(v_{i} \mid p a_{v_{i}}\right) \prod_{U_{i} \in U^{\prime}} P\left(u_{i} \mid p a_{u_{i}}\right) \quad \text{where $U' = An(V) \cap U$}
+
+\end{aligned}</script><blockquote>
+<p>$V$의 ancestor가 아닌 unobserved는 joint distribution에서 다 쳐낼 수 있으므로, 앞으로 이들은 없다고 가정하겠다.</p>
+</blockquote>
+<hr>
+<p>For any $S \subseteq V$</p>
+<script type="math/tex; mode=display">
+Q[S](v) :=\sum_{u} \prod_{\left\{i \mid V_{i} \in S\right\}} P\left(v_{i} \mid p a_{v_{i}}\right) \prod_{\left\{i \mid U_{i} \in U\right\}} P\left(u_{i} \mid p a_{u_{i}}\right)</script><blockquote>
+<p>$Q[S](v)$의 해석: $S$이외의 변수에 $v \setminus s$의 intervention을 줬을 때 $S$가 $s$의 값을 가질 확률</p>
+</blockquote>
+<p>Note that</p>
+<ol>
+<li>$Q[V](v)=P(v)$</li>
+<li>$Q[\emptyset](v)=1$</li>
+</ol>
+<img src="/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/image-20210529001403916.png" class="">
+<p>위의 joint distribution을 $U$를 포함한 텀과 아닌 텀을 나눠보면, $P(a, b, c, d)=P(a) P(c \mid b) Q[\{B, D\}]$ 임을 알 수 있고</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+Q[\{B, D\}] &= \sum_{u} P(b \mid a, u) P(d \mid c, u) P(u) \quad \text{by def}
+
+\\ &= \frac{P(a, b, c, d)}{P(a) P(c \mid b)} \quad \because \text{derived factorization}
+\\
+&= \frac{P(a, b, c, d)}{P(a \mid b) P(c \mid a, b)} \times \frac{p(b\mid a)}{p(b)} \quad \text{by Bayes' rule} 
+
+\\
+&= \frac{P(a, b, c, d)}{P(a, c \mid b)} \times \frac{p(b\mid a)}{p(b)}
+
+\\ &= \frac{P(a, c, d\mid b) p(b) }{P(a, c \mid b)} \times \frac{p(b\mid a)}{p(b)} 
+
+\\ &= P(d \mid a, b, c) \times P(b \mid a)
+\\
+\\
+Q[\{D\}]&= \sum_{u} P(d \mid c, u) P(u) \quad \text{by def}
+\\
+&=\sum_{b} Q[\{B, D\}] \quad \text{fortunate observation!}
+\\
+& =\sum_{b} P(d \mid a, b, c) P(b \mid a)
+\end{aligned}</script><p>애초에 $Q[\{D\}]$는 $c$의 함수이기에 $\sum_{b} P(d \mid a, b, c) P(b \mid a)$이 $a$에 의존하지 않는다는 것을 알게된다.</p>
+<p>이러한 functional constraint를 찾는 것은 c-factor $Q[\{B, D\}]$와 $Q[\{D\}]$를 $P(v)$로 표현하는 능력에 달려있다.</p>
+<img src="/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/image-20210529001335428.png" class="">
+<p>하지만 이 경우엔 애초에 $Q[\{D\}] = \sum_{u} P(d \mid c, a, u) P(u)$  $a, c, d$의 함수라서 functional constraint는 없다.</p>
+<hr>
+<p>$Q[S](v)$는 $V$의 subset의 함수이고 $P(v)$로 계산이 가능하다면, 이로부터 CI 혹은 F constraint가 유도될 수 있다.</p>
+<p>이 논문에선 $P(v)$로 계산이 가능한 $Q[S]$를 찾는 법을 보이게 된다.</p>
+<hr>
+<p>For any $C$, let</p>
+<ul>
+<li>$G_{C} :=$ the subgraph of $G$ composed only of $C$</li>
+<li>$An^u(C) := An(C) \cap U$ ; $C$의 조상 중에서 hidden variable</li>
+<li>$G(C) := G_{C \cup U(C)}$</li>
+</ul>
+<p>For any $S \subseteq V$, let</p>
+<ul>
+<li>$U(S) := An^u(S)_{G_{S\cup U}}$ ; $S$와 $U$로 구성된 subgraph에서 $S$의 조상 중에서 hidden variable</li>
+</ul>
+<p>$Q[S]$에서 $G_{S \cup U}$에서 $S$의 조상이 아닌 $U_i$는 $p(v_i \mid pa_{v_i})$ 등장하지 않아 sum-out되기 마련이다.</p>
+<blockquote>
+<p><strong>이 논문에서 sum-out은 진짜 많이 사용하는 테크닉이다.</strong></p>
+<p><strong>고려하고 있는 graph에서 해당 노드가 말단노드인 경우, sum을 하면 product에서 없어진다.</strong></p>
+</blockquote>
+<img src="/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/image-20210529172017766.png" class="">
+<ul>
+<li>$Q[S]=\sum_{u(S)\left\{i \mid V_{i} \in S\right\}} P\left(v_{i} \mid p a_{v_{i}}\right) \prod_{\left\{i \mid U_{i} \in U(S)\right\}} P\left(u_{i} \mid p a_{u_{i}}\right)$<ul>
+<li>$Q[S]$는 $S$와 $Pa^v(S)$와 $Pa^v\left(U(S) \right)$의 함수이다.</li>
+<li>이를 좀 더 명료하게 표현하기 위해</li>
+<li>If ${}^\exists \text{directed path }V_i \rightarrow V_j$ s.t. all the internal nodes are hidden variables, $V_i$ is an effective parent of $V_j$</li>
+<li>Let $Pa^+(S)$ denote $S \cup \{ V_i \in V \mid  \text{$V_i$ is an effective parent of $S$}\}$</li>
+<li>Then, $Q[S]$ is a function of $Pa^+(S)$.</li>
+</ul>
+</li>
+</ul>
+<p>만약 $Q[S](t)$이 $P(v)$로 표현될 수 있다면, $Q[S](t)$는 $T’ \supset T$의 함수이다.</p>
+<p>결국, $Q[S]$의 $P(v)$ 표현에서 $t’ \setminus t$에 의해 값이 변하지 않는다는 <strong><em>constraint</em></strong>가 생긴다.</p>
+<p><strong><em>Constraint</em></strong>는 F constraint이거나 CI constraint가 될 것이다.</p>
+<hr>
+<p>For any $C$, let</p>
+<ul>
+<li>$A n^{v}(C)=A n(C) \cap V$ ; $C$의 조상 중에서 observed variable</li>
+<li>$D e^{v}(C) = [ De(C) \cap V] \cup V(C)$ ; $C$ 혹은 $C$의 후손 중에서 observed variable</li>
+</ul>
+<p>Let</p>
+<ul>
+<li>$A \subseteq V$ is an ancestral set if $A= An^v(A)$</li>
+<li>$A \subseteq V$ is a descendent set if $A= De^v(A)$</li>
+</ul>
+<hr>
+<p><strong>Lemma 1</strong> (sum-out의 set버전이다.)</p>
+<p>​    Let $W \subseteq C \subseteq V$</p>
+<p>​    Let $W’ = C \setminus W$</p>
+<p>​    If $W$ is an ancestral set in $G(C)$, then $\sum_{w^{\prime}} Q[C]=Q[W]$</p>
+<p>​    Equivalently, if $W’$ is a descendent set in $G(C)$, then $\sum_{w^{\prime}} Q[C]=Q[W]$</p>
+<p>(Proof)</p>
+<p>​    증명을 하기 전에 테크닉적인 부분을 짚고 넘어가자.</p>
+<p>​    일단 sum-out이 되기 위해선 $\prod $</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\sum_{w^{\prime}} Q[C] &=\sum_{w^{\prime}} \sum_{u(C)} \prod_{V_{i} \in C} P\left(v_{i} \mid p a_{v_{i}}\right) \prod_{U_{i} \in U(C)} P\left(u_{i} \mid p a_{u_{i}}\right)
+\\
+&= \sum_{A n^{u}(W)_{G(C)}} \prod_{V_{i} \in W} P\left(v_{i} \mid p a_{v_{i}}\right) \prod_{U_{i} \in A n^{u}(W)_{G(C)}} P\left(u_{i} \mid p a_{u_{i}}\right)
+\\
+&= \sum_{U(W)} \prod_{V_{i} \in W} P\left(v_{i} \mid p a_{v_{i}}\right) \prod_{U_{i} \in A n^{u}(W)_{G(C)}} P\left(u_{i} \mid p a_{u_{i}}\right)
+\\
+&= Q[W]
+\end{aligned}</script><ul>
+<li>첫번째 등식은 그냥 정의이다.</li>
+<li>두번째 등식은 $W’$이 ancestral set의 여집합 느낌이라 topological order에 맞춰서 sum-out하다 보면 이 꼴이 될 것임은 명백하다.</li>
+<li>세번째 등식은 $W$이 ancestral set이기 떄문에 $A n^{u}(W)_{G(C)}=A n^{u}(W)_{G_{W \cup U}}=U(W)$ 이다.</li>
+<li>네번째 등식은 그냥 정의이다.</li>
+</ul>
+<h1 id="3-C-components"><a href="#3-C-components" class="headerlink" title="3. C-components"></a>3. C-components</h1><p><img src="D:\STUDY_REPO\causal\PAPER\On the Testable Implications of Causal Models with Hidden Variables.assets\image-20210529174602421.png" alt="image-20210529174602421"></p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P(v_1, v_2, v_3, v_4) = &\sum_{u_1, u_2, u_3} \prod_{\left\{i \mid V_{i} \in V\right\}} P\left(v_{i} \mid p a_{v_{i}}\right) \prod_{\left\{i \mid U_{i} \in U\right\}} P\left(u_{i} \mid p a_{u_{i}}\right)
+\\
+
+= &\left(\sum_{u_{1}} P\left(v_{1} \mid u_{1}\right) P\left(v_{3} \mid v_{2}, u_{1}\right) P\left(u_{1}\right)\right)
+\\
+& \left(\sum_{u_{2}, u_{3}} P\left(v_{2} \mid u_{2}, u_{3}\right) P\left(v_{4} \mid v_{3}, u_{2}\right) P\left(u_{2}\right) P\left(u_{3} \mid v_{1}\right)\right)
+
+\\
+& =Q\left[\left\{V_{1}, V_{3}\right\}\right] Q\left[\left\{V_{2}, V_{4}\right\}\right]
+\end{aligned}</script><p>위의 decomposition의 중요성은 각 $Q$들이 $P(v)$로 계산이 가능하다는 것이다.</p>
+<p>이번 섹션에선  <a href="">Tian &amp; Pearl 2002</a>의 non-root $U$를 허용하는 더 일반적인 graphical criterion을 보이겠다.</p>
+<hr>
+<p>Joint distribution에 대한 아래의 decomposition을 확인해보자겠다.</p>
+<script type="math/tex; mode=display">
+P(v)=\prod_{j}\left(\sum_{n,} \prod_{V_{i} \in S_{j}} P\left(v_{i} \mid p a_{v_{i}}\right) \prod_{U_{i} \in N_{j}} P\left(u_{i} \mid p a_{u_{i}}\right)\right) \prod_{V_{i} \in S^{0}} P\left(v_{i} \mid p a_{v_{i}}\right)</script><p>where</p>
+<ul>
+<li>$S^0$ is the set of observed variables having no hidden parents</li>
+<li>$N_k$ is the set of hidden variables s.t.<ul>
+<li>$^\forall U_i \&amp; U_j \in N_k$, they have a common child</li>
+<li>or</li>
+<li>$^ \exists $edge between $(U_i, U_j)$</li>
+</ul>
+</li>
+<li>$S_j$ is the set of observed variables whose hidden parents are in $N_j$</li>
+</ul>
+<img src="/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/image-20210529203200300.png" class="">
+<p>Note that</p>
+<ol>
+<li><p>$U_i$와 $U_j$ 사이엔 적어도 하나의 path가 있다. s.t. </p>
+<ul>
+<li>$U$로만 이뤄졌거나</li>
+<li>path상의 observed node가 모두 $\rightarrow V_{l} \leftarrow$ 꼴이거나</li>
+</ul>
+</li>
+<li><p>$ \{ \{S_i^0 \}_i, \{ S_i\}_i \}$은 $V$의 partition이다.</p>
+<blockquote>
+<p>Partition의 각 set을 <strong><em>c-component</em></strong>라고 부르겠다. </p>
+</blockquote>
+</li>
+<li><p>$U_k \not \in N_j$ 는 inner term $\prod_{V_{i} \in S_{j}} P\left(v_{i} \mid p a_{v_{i}}\right) \prod_{U_{i} \in N_{j}} P\left(u_{i} \mid p a_{u_{i}}\right)$ 에 등장하지 않는다.</p>
+</li>
+<li><p>c-component의 root node는 무조건 hidden이다.</p>
+</li>
+</ol>
+<p>2와 3을 종합해보면 decomposition이 확인할 수 있다.</p>
+<blockquote>
+<p><a href="">Tian &amp; Pearl 2002</a>에서 특수 케이스에 대해 다뤘었다.</p>
+</blockquote>
+<hr>
+<p>추가로,</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+Q\left[S_{j}\right] &=\sum_{u} \prod_{\left\{i \mid V_{i} \in S_{j}\right\}} P\left(v_{i} \mid p a_{v_{i}}\right) \prod_{\left\{i \mid U_{i} \in U\right\}} P\left(u_{i} \mid p a_{u_{i}}\right) \\
+&=\sum_{n_{j}} \prod_{V_{i} \in S_{j}} P\left(v_{i} \mid p a_{v_{i}}\right) \prod_{U_{i} \in N_{j}} P\left(u_{i} \mid p a_{u_{i}}\right) \sum_{u \setminus n_{j}} \prod_{U_{i} \in U \setminus N_{j}} P\left(u_{i} \mid p a_{u_{i}}\right)
+\\&= \sum_{n_{j}} \prod_{V_{i} \in S_{j}} P\left(v_{i} \mid p a_{v_{i}}\right) \prod_{U_{i} \in N_{j}} P\left(u_{i} \mid p a_{u_{i}}\right)
+\end{aligned}</script><p>이므로 $P(v)=Q[V]=\prod_{i} Q\left[S_{i}\right]$ c-component들의 c-factor로 분해됨을 알 수 있다.</p>
+<p>where $S_{1}, \ldots, S_{k}$ is  the c-components of $V$</p>
+<hr>
+<p>C-factor로의 분해가 중요한 이유는 이들이 $P(v)$로 계산이 가능하기 때문이다.</p>
+<blockquote>
+<p>Lemma 2와 Corollary 1을 보자.</p>
+</blockquote>
+<hr>
+<p><strong>Lemma 2</strong> (<a href="">Tian &amp; Pearl 2002</a>에서 $H = V$로 두고 hidden node는 root node임을 가정하였을 때 증명했었다. 결국 렘마의 의미는 subgraph의 c-factor마저 identifiable하다이다.)</p>
+<p>​    Let $H \subseteq V$</p>
+<p>​    Let $H_{1}, \ldots, H_{l}$ be the c-components in the subgraph $G(H) = G_{H \cup U(H)}$</p>
+<p>​    <strong>[1] :</strong> Then, $Q[H]=\prod_{i} Q\left[H_{i}\right]$</p>
+<p>​    Let $k$ be the number of variables in $H$</p>
+<p>​    Let a topological order of the variables in $H$ be $V_{h_{1}}&lt;\cdots&lt; V_{h_k}$ in $G(H)$</p>
+<p>​    Let $H^{(i)}=\left\{V_{h_{1}}, \ldots, V_{h_{i}}\right\}$ and $H^{(0)} = \emptyset$</p>
+<p>​    <strong>[2] :</strong> Then, $Q\left[H_{j}\right] =\prod_{\left\{i \mid V_{h_{i}} \in H_{j}\right\}} \frac{Q\left[H^{(i)}\right]}{Q\left[H^{(i-1)}\right]}$ where $Q\left[H^{(i)}\right] =\sum_{h \backslash h^{(i)}} Q[H] $</p>
+<blockquote>
+<p>$Q\left[H^{(i)}\right] =\sum_{h \backslash h^{(i)}} Q[H] $이 Lemma 1의 inverse임을 인지하여야 함!</p>
+</blockquote>
+<p>​    <strong>[3] :</strong> Then, $\frac{Q\left[H^{(i)}\right]}{Q\left[H^{(i-1)}\right]}$ is a function only of $P a^{+}\left(T_{i}\right)$ where $T_i$ is a c-component of $G(H^{(i)})$ that contains $V_{h_i}$</p>
+<blockquote>
+<p>$T_i$를 점점 커지는 $G(H)$에서 최근에 추가된 노드가 속한 c-component를 생각하면 직감적</p>
+</blockquote>
+<p>(Proof)</p>
+<p><strong>[1]</strong></p>
+<p>​    $\begin{aligned} Q[H] &amp;=\sum_{u(H)\left\{i \mid V_{i} \in H\right\}} P\left(v_{i} \mid p a_{v_{i}}\right) \prod_{\left\{i \mid U_{i} \in U(H)\right\}} P\left(u_{i} \mid p a_{u_{i}}\right) \\ &amp;= P(v)_{G(H)}\end{aligned}$</p>
+<p>​    즉, $G(H)$의 joint distribution이고 이는 $G(H)$에서의 c-component들로 분해가 가능하다.</p>
+<p><strong>[2, 3]</strong></p>
+<p>증명을 시작하기에 앞서 $H^{(i)}$는 ancestral set임을 인지하여 Lemma 1이 적용될 수 있다는 걸 인지하라.</p>
+<p><strong>Base</strong></p>
+<p>​    Let $H \subseteq V$ with $H = H_1 = \{ V_{h_1}\}$</p>
+<p>​    It is clear that $Q[H_1] = Q[H^{(1)}] =\sum_{h \backslash h^{(i)}} Q[H_1] $.</p>
+<p>​    Since $Q[H_1]$ is a function of $Pa^{+}(H_1)$,</p>
+<script type="math/tex; mode=display">
+\text{$Q\left[H^{(1)}\right]=\sum_{h \backslash h^{(i)}} Q[H_1] \quad $ is also a function only of $Pa^{+}(H_1)$}</script><p><strong>Hypothesis</strong> : </p>
+<p>​    Let $H \subseteq V$ with $H = \{ V_{h_1}, \cdots, V_{h_k}\}$</p>
+<p>​    Assume that</p>
+<ol>
+<li>all $Q\left[H_{j}\right] =\prod_{\left\{i \mid V_{h_{i}} \in H_{j}\right\}} \frac{Q\left[H^{(i)}\right]}{Q\left[H^{(i-1)}\right]}$</li>
+<li>$\frac{Q\left[H^{(i)}\right]}{Q\left[H^{(i-1)}\right]}$ is a function only of $P a^{+}\left(T_{i}\right)$ for $i=1, \cdots ,k$.</li>
+</ol>
+<p><strong>Induction</strong></p>
+<p>​    Let $H \subseteq V$ with $H = \{ V_{h_1}, \cdots, V_{h_k}, V_{h_{k+1}}\}$.</p>
+<p>​    Let $H_{1}, \cdots, H_{m}, H^{\prime}$ is the c-components of $G(H)$ where $V_{h_{k+1}} \in H^{\prime}$.</p>
+<p>​    Then, we have $\begin{aligned}Q[H] &amp;=Q\left[H^{(k+1)}\right] \\&amp;=Q\left[H^{\prime}\right] \prod_{i} Q\left[H_{i}\right] \quad \text{by Lemma 2 [1]}\end{aligned}$</p>
+<p>​    Then,</p>
+<script type="math/tex; mode=display">
+\begin{aligned} \sum_{v_{h_{k+1}}}Q[H] &=Q\left[H^{(k)}\right] \quad \text{by Lemma 1} \\&= \left(\sum_{v_{h_{k+1}}}Q\left[H^{\prime}\right] \right) \prod_{i} Q\left[H_{i}\right]\end{aligned}</script><p>​    It is clear that each $H_i $, $i=1, \cdots, m$, is a c-component of the subgraph $G[H^{(k)}]$.</p>
+<p>​    Therefore, by hypothesis, we have</p>
+<script type="math/tex; mode=display">
+Q\left[H_{j}\right] =\prod_{\left\{i \mid V_{h_{i}} \in H_{j}\right\}} \frac{Q\left[H^{(i)}\right]}{Q\left[H^{(i-1)}\right]} \quad \text{for $j=0, 1, \cdots, m$}</script><p>​    where $Q\left[H^{(i)}\right]=\sum_{h^{(k)} \backslash h^{(i)}} Q\left[H^{(k)}\right]=\sum_{h \backslash h^{(i)}} Q[H]$</p>
+<p>​    Hence,</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+Q\left[H^{\prime}\right] & = \frac{Q[H^{(k+1)}]}{\prod_{i=1} ^m Q[H_i]}
+\\
+&= \frac{\prod_{i=1}^{k+1}\left[ \frac{Q\left[H^{(i)}\right]}{Q\left[H^{(i-1)}\right]} \right]}{\prod_{i=1} ^m Q[H_i]}
+\\
+& = \frac{\prod_{i=1}^{k+1}\left[ \frac{Q\left[H^{(i)}\right]}{Q\left[H^{(i-1)}\right]} \right]}{\prod_{i: V_{h_i} \in H_1 \cup \cdots \cup H_m} \left [\frac{Q\left[H^{(i)}\right]}{Q\left[H^{(i-1)}\right]}\right ]} 
+
+\\
+
+&= \prod_{\left\{i \mid V_{h_{i}} \in H^{\prime}\right\}} \frac{Q\left[H^{(i)}\right]}{Q\left[H^{(i-1)}\right]}
+
+\end{aligned}</script><p>​    Now, we want to show that $\frac{Q[H^{(k+1)}]}{Q[H^{(k)}]}$ is a function of $Pa^+(H’)$</p>
+<p>​    Fact : $Q[H’]$ is a function of $Pa^+(H’)$.</p>
+<p>​    Hypothesis : For $i \in \{i : V_{h_i} \in H’ \setminus \{ V^{k+1}\} \}$, $ \frac{Q\left[H^{(i)}\right]}{Q\left[H^{(i-1)}\right]}$ is a function of $Pa^+(T_i) \subset Pa^+(H’)$</p>
+<p>​    Hence, $\frac{Q[H^{(k+1)}]}{Q[H^{(k)}]} = Q[H’] \quad / \quad \prod_{i \in \{i : V_{h_i} \in H’ \setminus \{ V^{k+1}\} \}}  \frac{Q\left[H^{(i)}\right]}{Q\left[H^{(i-1)}\right]}$ is also a function of $Pa^+(H’)$</p>
+<hr>
+<p><strong>Corollary 1</strong></p>
+<p>​    Let $V$ be partitioned into c-components $S_1, \cdots, S_k$</p>
+<p>​    Let a topological order of $V$ be $V_{1}&lt;\ldots&lt;V_{n}$</p>
+<p>​    Let $V^{(i)} = \{V_1, \cdots, V_i \}$ and $V^{(0)}= \emptyset$</p>
+<p>​    Then,</p>
+<ul>
+<li>$P(v) = \prod_i Q[S_i]$</li>
+<li>$Q[S_j] = \prod_{i : V_i \in S_j} P(v_i \mid v^{(i-1)})$</li>
+<li>$P(v_i \mid v^{(i-1)}) = P(v_i \mid Pa^+ (T_i) \setminus \{ V_i\})$</li>
+</ul>
+<p>(Proof)</p>
+<p>​    첫번째껀 $H = V$로 두고 Lemma 2 <strong>[1]</strong> 적용</p>
+<p>​    두번째껀 $\frac{Q\left[H^{(i)}\right]}{Q\left[H^{(i-1)}\right]} = P(v_i \mid v^{(i-1)})$이므로 $Q[S_j] = \prod_{i : V_i \in S_j} P(v_i \mid v^{(i-1)})$</p>
+<p>​    세번째껀 $P(v_i \mid v^{(i-1)}) = \frac{Q\left[H^{(i)}\right]}{Q\left[H^{(i-1)}\right]} $ 이고 Lemma 2 <strong>[3]</strong>에서 $\frac{Q\left[H^{(i)}\right]}{Q\left[H^{(i-1)}\right]}$이 function ofx $P a^{+}\left(T_{i}\right)$ 임을 보였다.</p>
+<h1 id="4-Finding-Constraints"><a href="#4-Finding-Constraints" class="headerlink" title="4. Finding Constraints"></a>4. Finding Constraints</h1><p>Lemma 1, 2와 Corollary 1을 갖고서, network structure에 의해 부과된 constraint를 체계적으로 찾을 수 있다.</p>
+<h1 id="4-1-Examples"><a href="#4-1-Examples" class="headerlink" title="4.1 Examples"></a>4.1 Examples</h1><img src="/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/image-20210529203200300.png" class="">
+<p>$V$ is decomposed to two c-components $\{ V_1, V_3\}, \{V_2, V_4 \}$</p>
+<p>The topological order of $V$ in $G$ is $V_{1}&lt;V_2 &lt; V_3 &lt; V_{4}$</p>
+<p>Applying corollary 1, we can get</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+Q\left[\left\{V_{1}, V_{3}\right\}\right]\left(v_{1}, v_{2}, v_{3}\right) &=P\left(v_{3} \mid v_{2}, v_{1}\right) P\left(v_{1}\right)
+\\
+Q\left[\left\{V_{2}, V_{4}\right\}\right]\left(v_{1}, v_{2}, v_{3}, v_{4}\right) &=P\left(v_{4} \mid v_{3}, v_{2}, v_{1}\right) P\left(v_{2} \mid v_{1}\right)
+\end{aligned}</script><p>이들 자체적으론 $P(v)$에 constraint를 주진 않는다. 추가적으로,</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+Q[V_4] &= Q[V_4](v_3, v_4) \quad \because Pa^+(V_4) = \{ V_3, V_4\}
+\\
+&= \sum_{v_2} Q\left[\left\{V_{2}, V_{4}\right\}\right]\left(v_{1}, v_{2}, v_{3}, v_{4}\right)  \quad \because \text{Lemma 1}
+\\
+&=\sum _{v_2} P\left(v_{4} \mid v_{3}, v_{2}, v_{1}\right) P\left(v_{2} \mid v_{1}\right)
+\\
+&= f(v_1, v_2, v_4)
+\end{aligned}</script><p>$Q[V_4]$에 의해서, $f(v_1, v_2, v_4)$가 $v_1$에 의존하지 않는다고 $P(v)$에 constraint가 들어간다.</p>
+<blockquote>
+<p>참고로 나머지 $Q[V_1], Q[v_2], Q[V_3]$는 constraint를 부과하지 않는다.</p>
+</blockquote>
+<hr>
+<img src="/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/image-20210531193727579.png" class="">
+<p>$G$</p>
+<ul>
+<li>has two c-components $\{ V_2\}, \{V_1, V_3, V_4 \} =: S$</li>
+<li>has a topological order $V_1 &lt; V_2 &lt; V_3 &lt; V_4$</li>
+<li>Applying corollary 1,<ul>
+<li>$Q[V_2] (v_1, v_2) = P(v_2 \mid v_1)$</li>
+<li>$Q[S](v) = P\left(v_{4} \mid v_{3}, v_{2}, v_{1}\right) P\left(v_{3} \mid v_{2}, v_{1}\right) P\left(v_{1}\right)$</li>
+</ul>
+</li>
+</ul>
+<p>$G(S) = G\left(\left\{V_{1}, V_{3}, V_{4}\right\}\right)$</p>
+<ul>
+<li><p>$H:= S \setminus \{ V_1\} = \{ V_3, V_4\}$</p>
+</li>
+<li><script type="math/tex; mode=display">
+\begin{aligned}
+Q[H]\left(v_{2}, v_{3}, v_{4}\right) &= \sum_{v_1} Q[S] \quad \because \text{Lemma 1}
+\\
+&= \sum_{v_{1}} P\left(v_{4} \mid v_{3}, v_{2}, v_{1}\right) P\left(v_{3} \mid v_{2}, v_{1}\right) P\left(v_{1}\right)
+\end{aligned}</script></li>
+</ul>
+<p>$G(H) = G\left(\left\{V_{3}, V_{4}\right\}\right)$</p>
+<ul>
+<li><p>has two c-components $\left\{V_{3}\right\}, \left\{V_{4}\right\}$</p>
+</li>
+<li><p>has a topological order $V_3 &lt; V_4$</p>
+</li>
+<li><script type="math/tex; mode=display">
+\begin{aligned}
+Q[H]\left(v_{2}, v_{3}, v_{4}\right) &= Q[\{V_3\}] Q[ \{V_4\}] \quad \because \text{Lemma 2}
+\\
+\\
+Q[\{V_3\}](v_2, v_3) &= \sum_{v_4} Q[H] = \sum_{v_{1}} P\left(v_{3} \mid v_{2}, v_{1}\right) P\left(v_{1}\right) \quad \because \text{Lemma 1}
+\\
+\\
+Q\left[\left\{V_{4}\right\}\right]\left(v_{3}, v_{4}\right)&=\frac{Q[H]}{\sum_{v_{4}} Q[H]}
+\quad \because \text{by the first equation}
+\\
+&=\frac{\sum_{v_{1}} P\left(v_{4} \mid v_{3}, v_{2}, v_{1}\right) P\left(v_{3} \mid v_{2}, v_{1}\right) P\left(v_{1}\right)}{\sum_{v_{1}} P\left(v_{3} \mid v_{2}, v_{1}\right) P\left(v_{1}\right)}
+\end{aligned}</script></li>
+<li><p>결국, $P(v)$에 RHS가 $v_2$에 의존하지 않는다는 constraint를 준다.</p>
+</li>
+</ul>
+<hr>
+<p>두 예제로 부터, Lemma 1과 Lemma 2를 번갈아 적용하면 constraint를 찾을 수도 있다는 걸 발견했다.</p>
+<p>이를 체계적으로 하는 과정을 소개하겠다.</p>
+<h2 id="4-2-Identifying-constraints-systematically"><a href="#4-2-Identifying-constraints-systematically" class="headerlink" title="4.2 Identifying constraints systematically"></a>4.2 Identifying constraints systematically</h2><p>Let a topological order over $V$ be $V_{1}&lt;\ldots&lt;V_{n}$.</p>
+<p>Let $V^{(i)} = \left\{V_{1}, \ldots, V_{i}\right\}$ for $i=1, \cdots, n$</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">for i &#x3D; 1:n</span><br><span class="line">	do A1</span><br><span class="line">	do A2</span><br></pre></td></tr></table></figure>
+<p><strong>A1</strong></p>
+<ul>
+<li>Assume $G(V^{(i)})$ has more than one c-components ; (두 개 이상의)</li>
+<li>Let $V_i \in S_i \in \{\text{c-components of }G(V^{(i)}) \}$</li>
+<li>Then, by corollary 1,<ul>
+<li>$Q[S_i]$ is computable from $P(v)$</li>
+<li>$P(v_i \mid v^{(i-1)}) = P(v_i \mid Pa^+ (S_i) \setminus \{ V_i\})$ implies conditional independence constraint<ul>
+<li>$V_i \perp \Big[ V^{(i)} \setminus Pa^+(S_i) \Big ] \mid \Big[ Pa^+(S_i)\setminus\{ V_i \} \Big]$</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>A2</strong></p>
+<ul>
+<li><p>Consider $Q[S_i]$ in the subgraph $G(S_i)$</p>
+</li>
+<li><p>For each descendent set $D \in S_i$ in $G(S_i)$ that does not contain $V_i$,</p>
+<script type="math/tex; mode=display">
+\sum_{d} Q\left[S_{i}\right]=Q\left[S_{i} \backslash D\right] \quad \because \text{by Lemma 1}</script><ul>
+<li><p>왼쪽 식은 $Pa^+(S_i) \setminus D$의 함수이고 오른쪽 식은 $P a^{+}\left(S_{i} \setminus D\right)$의 함수이다.</p>
+</li>
+<li><p>$ \Big[P a^{+}\left(S_{i} \setminus D\right) \Big] \subseteq Pa^+(S_i) \setminus D$ 임은 명백하다.</p>
+<blockquote>
+<p>effective parent of $D$가 effective parent of $(S \setminus D)$에 속하지 않을 때 차이가 있다.</p>
+</blockquote>
+</li>
+<li><p>결국 $\Big [Pa^+(S_i) \setminus D \Big] \setminus \Big[P a^{+}\left(S_{i} \setminus D\right) \Big] \neq \emptyset$일 때, $P(v)$에 CI constraint를 준다.</p>
+<ul>
+<li>$\sum_{d} Q\left[S_{i}\right]$ is independent of $\Big [Pa^+(S_i) \setminus D \Big] \setminus \Big[P a^{+}\left(S_{i} \setminus D\right) \Big]$</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Let $D’ = S_i \setminus D$</p>
+</li>
+<li><p>If $G(D’)$ has more than one c-components, (else just $D’=E_i$, skip )</p>
+<ul>
+<li>let $V_i \in E_i$ where $E_i$ is the c-component of $G(D’)$</li>
+<li>By Lemma 2, $\left \{\begin{array}{l}<br>Q[E_i] \text{ is computable from } Q[D’] \\<br>Q[D’] = Q[E_i] \prod_{ C \in \{\text{other c-comp}\}} Q[C]<br>\end{array}\right.$</li>
+<li>By Lemma 1, $\begin{aligned}Q[D’ \setminus \{ V_i\}] &amp;= \sum_{v_i} Q[D’] \\&amp;= \sum_{v_i}Q[E_i] \prod_{ C \in \{\text{other c-comp}\}} Q[C] \\ &amp;=Q[E_i \setminus \{ V_i\}] \prod_{ C \in \{\text{other c-comp}\}} Q[C] \end{aligned}$</li>
+<li>Therefore, $\frac{Q[D’]}{Q[D’ \setminus \{V_i\}]} = \frac{Q\left[D^{\prime}\right]}{\sum_{v_{i}} Q\left[D^{\prime}\right]} = \frac{Q[E_i]}{Q[E_i \setminus \{ V_i\}]}$ is a function only of $Pa^+(E_i)$</li>
+<li>결국 $P a^{+}\left(D^{\prime}\right) \backslash P a^{+}\left(E_{i}\right) \neq \emptyset$ 일 때, $P(v)$에 F constraint를 준다.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>위의 알고리즘은 체계적으로 constraint를 찾는 과정을 준다.</p>
+<img src="/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/image-20210601204926589.png" class="">
+<p>$i=1,\cdots, 4$까진 아래의 조건이 만족된다.</p>
+<ol>
+<li>$V^{(i)} = Pa^+(S_i)$</li>
+<li>$Pa^+(S_i) \setminus D = Pa^+(S_i \setminus D)$</li>
+<li>$Pa^+(D’) = Pa^+(E_i)$</li>
+</ol>
+<p>$i=5$일 때 </p>
+<ul>
+<li>$S_i = \{ V_1, V_3, V_5\}$이다.</li>
+<li>$G(S_i)$의 descendent set $D = \{ V_1\} , \{ V_3\}, \{ V_1,V_3\}$이 있다.</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>$D$</th>
+<th>$\{V_1\}$</th>
+<th>$\{V_3\}$</th>
+<th>$\{ V_1, V_3\}$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$Pa^+(S_i \setminus D)$</td>
+<td>$\{ V_2, V_3, V_4, V_5\}$</td>
+<td>$\{ V_1, V_4, V_5\}$</td>
+<td>$\{ V_4, V_5\}$</td>
+</tr>
+<tr>
+<td>$Pa^+(S_i)\setminus D)$</td>
+<td>$\{V_2, V_3, V_4, V_5\}$</td>
+<td>$\{V_1, V_2, V_4, V_5\}$</td>
+<td>$\{ V_2, V_4, V_5\}$</td>
+</tr>
+<tr>
+<td>$D’$</td>
+<td>$\{ V_3, V_5\}$</td>
+<td>$\{ V_1, V_5\}$</td>
+<td>$\{ V_5\}$</td>
+</tr>
+<tr>
+<td>$E_i$</td>
+<td>$\{ V_5\}$</td>
+<td>$\{V_1, V_5\}$</td>
+<td>$\{ V_5\}$</td>
+</tr>
+<tr>
+<td>$Pa^+(D’)$</td>
+<td>$\{ V_2, V_3, V_4, V_5\}$</td>
+<td>$\{V_1, V_4, V_5 \}$</td>
+<td>$\{ V_4, V_5\}$</td>
+</tr>
+<tr>
+<td>$Pa^+(E_i)$</td>
+<td>$\{ V_4, V_5\}$</td>
+<td>$\{V_1, V_4, V_5\}$</td>
+<td>$\{ V_4, V_5\}$</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="D-V-1-일-때"><a href="#D-V-1-일-때" class="headerlink" title="$D = V_1$일 때"></a>$D = V_1$일 때</h3><script type="math/tex; mode=display">
+Q\left[\left\{V_{3}, V_{5}\right\}\right]\left(v_{2}, v_{3}, v_{4}, v_{5}\right)=\sum_{v_{1}} P\left(v_{5} \mid v_{4}, v_{3}, v_{2}, v_{1}\right) P\left(v_{3} \mid v_{2}, v_{1}\right) P\left(v_{1}\right)</script><p>는 아무런 constraint를 주지 않는다.</p>
+<script type="math/tex; mode=display">
+Q\left[\left\{V_{5}\right\}\right]\left(v_{4}, v_{5}\right)=\frac{Q\left[\left\{V_{3}, V_{5}\right\}\right]}{\sum_{v_{5}} Q\left[\left\{V_{3}, V_{5}\right\}\right]} = \frac{\sum_{v_{1}} P\left(v_{5} \mid v_{4}, v_{3}, v_{2}, v_{1}\right) P\left(v_{3} \mid v_{2}, v_{1}\right) P\left(v_{1}\right)}{\sum_{v_{1}} P\left(v_{3} \mid v_{2}, v_{1}\right) P\left(v_{1}\right)}</script><p>는 RHS가 $v_2, v_3$에 독립이라고 constraint를 준다.</p>
+<h3 id="D-V-3-일-때"><a href="#D-V-3-일-때" class="headerlink" title="$D = V_3$일 때"></a>$D = V_3$일 때</h3><script type="math/tex; mode=display">
+Q\left[\left\{V_{1}, V_{5}\right\}\right]\left(v_{1}, v_{4}, v_{5}\right)=\sum_{v_{3}} P\left(v_{5} \mid v_{4}, v_{3}, v_{2}, v_{1}\right) P\left(v_{3} \mid v_{2}, v_{1}\right) P\left(v_{1}\right)</script><p>는 RHS가 $v_2,$에 독립이라고 constraint를 준다.</p>
+<h3 id="D-V-1-V-3-일-때"><a href="#D-V-1-V-3-일-때" class="headerlink" title="$D = \{V_1, V_3\}$일 때"></a>$D = \{V_1, V_3\}$일 때</h3><script type="math/tex; mode=display">
+Q\left[\left\{V_{5}\right\}\right]\left(v_{4}, v_{5}\right) =\sum_{v_{1}, v_{3}} P\left(v_{5} \mid v_{4}, v_{3}, v_{2}, v_{1}\right) P\left(v_{3} \mid v_{2}, v_{1}\right) P\left(v_{1}\right)</script><p>는 RHS가 $v_2$에 독립이라고 constraint를 준다.</p>
+<p>이는 $D=V_1$일 때 얻은 constraint와 똑같다. (summation $v_3$ 해보면 앎)</p>
+<h1 id="5-Projection-to-Semi-Markovian-Models"><a href="#5-Projection-to-Semi-Markovian-Models" class="headerlink" title="5. Projection to Semi-Markovian Models"></a>5. Projection to Semi-Markovian Models</h1><p>Semi-Markovian Model은 hidden variable이 root node이며 두개의 자식만 갖는 Bayesian network를 말한다.</p>
+<p>SMM이 일반적인 Bayesian network with hidden variables보다 작업하기 쉽다.</p>
+<p>BN with hidden variables가 SMM with same set of constraints on $P(v)$으로 변환될 수 있음을 보이겠다.</p>
+<h2 id="5-1-Semi-Markovian-models"><a href="#5-1-Semi-Markovian-models" class="headerlink" title="5.1 Semi-Markovian models"></a>5.1 Semi-Markovian models</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>BN</th>
+<th>SMM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$P(v)$</td>
+<td>$\sum_{u} \prod_{\left\{i \mid V_{i} \in V\right\}} P\left(v_{i} \mid p a_{v_{i}}\right) \prod_{\left\{i \mid U_{i} \in U\right\}} P\left(u_{i} \mid p a_{u_{i}}\right)$</td>
+<td>$\sum_{u} \prod_{\left\{i \mid V_{i} \in V\right\}} P\left(v_{i} \mid p a_{v_{i}}\right) \prod_{\left\{i \mid U_{i} \in U\right\}} P\left(u_{i}\right)$</td>
+</tr>
+<tr>
+<td>$Q[S]$</td>
+<td>$\sum_{u} \prod_{\left\{i \mid V_{i} \in S\right\}} P\left(v_{i} \mid p a_{v_{i}}\right) \prod_{\left\{i \mid U_{i} \in U\right\}} P\left(u_{i} \mid p a_{u_{i}}\right)$</td>
+<td>$\sum_{u} \prod_{\left\{i \mid V_{i} \in S\right\}} P\left(v_{i} \mid p a_{v_{i}}\right) \prod_{\left\{i \mid U_{i} \in U\right\}} P\left(u_{i} \right)$</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>편의를 위해 더 이상 hidden variable을 node로 표기하지 않는다.</p>
+<img src="/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/image-20210602113444210.png" class="">
+<p>그 경우 Bidirected path는 Bidirected edge만으로 이어진 path를 의미한다.</p>
+<p>C-component는 Bidirected path상의 노드들로 간단하게 정의된다.</p>
+<p>$Pa(S) := S \cup \Big [ \cup_{S_i \in S }\{ Pa(S_i) \} \Big ]$</p>
+<hr>
+<p>이러한 SMM의 셋팅에서 Lemma 1, Lemma 2의 statement에서</p>
+<ul>
+<li>$G(C) \Rightarrow G_C$, $G(H) \Rightarrow G_H$<ul>
+<li>더 이상 unobserved node를 node취급을 안하고 confounding arc로 처리함</li>
+</ul>
+</li>
+<li>$Pa^+ (\cdot) \Rightarrow Pa(\cdot)$<ul>
+<li>unobserved node는 root node이므로 effective parent와 parent는 동일한 말이다.</li>
+<li>$Pa$도 이제 자기 자신을 포함함</li>
+</ul>
+</li>
+</ul>
+<h2 id="5-2-Projection"><a href="#5-2-Projection" class="headerlink" title="5.2 Projection"></a>5.2 Projection</h2><p>Bayesian network with hidden variables를 Semi-Markovian Model로 project해보겠다.</p>
+<p><strong>Definition 1</strong></p>
+<p>​    Let $PJ(G, V)$ be the projection of DAG $G$ over $V\cup U\Rightarrow V$ that follows</p>
+<ol>
+<li>Add each variable in $V$</li>
+<li>${}^\forall \text{pair }X,Y \in V$, if there is a edge btw $X$ and $Y$, then add the edge</li>
+<li>${}^\forall \text{pair }X,Y \in V$, if there is a directed path $X\rightarrow Y$ in $G$ s.t. every internal node is in $U$, then add the edge</li>
+<li>${}^\forall \text{pair }X,Y \in V$, if there is a divergent path btw $X$ and $Y$ s.t. every internal node is in $U$ then add bidirected edge btw $X$ and $Y$</li>
+</ol>
+<blockquote>
+<p>divergent path는 $\left(X \leftarrow - U_{i}- \rightarrow Y\right)$ 이런 모양이다.</p>
+</blockquote>
+<p>4.2에서 소개한 알고리즘이 $G$와 $PJ(G,V)$에서 찾는 set of constraints on $P(v)$이 서로 같다는 것을 보이기 위해선</p>
+<script type="math/tex; mode=display">
+{}^{\forall}H \subseteq V, \text{$G$ and $PJ(G,V)$ have }\left\{\begin{array}{l}
+ \text{the same arguments for $Q[H]$} \\
+\text{the same topological relations over $H$}\\
+\text{the same sets of c-components}
+\end{array}\right.</script><p><strong>Lemma 3</strong></p>
+<p>​    ${}^\forall H \subseteq V$, $Pa^+(H)$ in $G$ is equal to $Pa(H)$ in $PJ(G, V)$</p>
+<p>(Proof)</p>
+<p>​    이는 명백하다.</p>
+<p><strong>Lemma 4</strong></p>
+<p>​    Let $H \subseteq V$</p>
+<p>​    Let $V_i, V_j \in H$</p>
+<ul>
+<li><p>$V_i \in An(V_j)$ in $G(H)$</p>
+<p>if and only if</p>
+</li>
+<li><p>$V_i \in An(V_j)$ in $P(G, V)_H$</p>
+</li>
+</ul>
+<p>(Proof)</p>
+<p>​    이는 <a href="">Verma, 1993</a>에서 증명됐다.</p>
+<p><strong>Lemma 5</strong></p>
+<p>​    ${}^\forall H \subseteq V$, $G(H)$ is partitioned into the same set of c-components as $PJ(G, V)_H$</p>
+<p>(Proof)</p>
+<p>​    이는 appendix에 있는데 생략하겠다.</p>
+<hr>
+<p>결국, SMM으로 projection을 하고나서 $P(v)$에 걸리는 constraint를 찾아도 된다.</p>
+<h1 id="6-Conclusion"><a href="#6-Conclusion" class="headerlink" title="6. Conclusion"></a>6. Conclusion</h1><p>Constraint를 찾아서 structure의 유효성을 검증하는 데 사용할 수 있다.</p>
+<p>아쉽게도, 우리의 알고리즘이 모든 functional constraint를 찾는다는 보장은 없다.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/identifiability/" rel="tag"># identifiability</a>
+              <a href="/tags/paper-review/" rel="tag"># paper review</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/24/A-Recurrent-Latent-Variable-Model/" rel="prev" title="A Recurrent Latent Variable Model">
+      <i class="fa fa-chevron-left"></i> A Recurrent Latent Variable Model
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-Abstract"><span class="nav-text">0. Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1. Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Bayesian-Networks-with-Hidden-Variables"><span class="nav-text">2. Bayesian Networks with Hidden Variables</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-C-components"><span class="nav-text">3. C-components</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Finding-Constraints"><span class="nav-text">4. Finding Constraints</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-1-Examples"><span class="nav-text">4.1 Examples</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-Identifying-constraints-systematically"><span class="nav-text">4.2 Identifying constraints systematically</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#D-V-1-%EC%9D%BC-%EB%95%8C"><span class="nav-text">$D &#x3D; V_1$일 때</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#D-V-3-%EC%9D%BC-%EB%95%8C"><span class="nav-text">$D &#x3D; V_3$일 때</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#D-V-1-V-3-%EC%9D%BC-%EB%95%8C"><span class="nav-text">$D &#x3D; \{V_1, V_3\}$일 때</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Projection-to-Semi-Markovian-Models"><span class="nav-text">5. Projection to Semi-Markovian Models</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-Semi-Markovian-models"><span class="nav-text">5.1 Semi-Markovian models</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-Projection"><span class="nav-text">5.2 Projection</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-Conclusion"><span class="nav-text">6. Conclusion</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">JaeHyun Lee</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JaeHyun Lee</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://leequant761.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://leequant761.github.io/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/";
+    this.page.identifier = "2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/";
+    this.page.title = "On the Testable Implications of Causal Models with Hidden Variables";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://leequant761.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

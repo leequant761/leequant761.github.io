@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leequant761.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="0. AbstractDecision maker는 어떤 action을 취했을 때 일어날 법한 것을 estimate해야한다. 예를 들어, 환자를 치료하지 않기로 결정하면 그들은 어느 정도의 확률로 죽을까? 를 고민하게 된다. 이 경우에 practitioner들은 supervised learning algorithm으로 outcome을 예측하는 predictiv">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Reliable Decision Support using Counterfactual Models">
+<meta property="og:url" content="https://leequant761.github.io/2021/06/05/Reliable-Decision-Support-using-Counterfactual-Models/index.html">
+<meta property="og:site_name" content="Study Repo">
+<meta property="og:description" content="0. AbstractDecision maker는 어떤 action을 취했을 때 일어날 법한 것을 estimate해야한다. 예를 들어, 환자를 치료하지 않기로 결정하면 그들은 어느 정도의 확률로 죽을까? 를 고민하게 된다. 이 경우에 practitioner들은 supervised learning algorithm으로 outcome을 예측하는 predictiv">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leequant761.github.io/2021/06/05/Reliable-Decision-Support-using-Counterfactual-Models/image-20210223171705002.png">
+<meta property="article:published_time" content="2021-06-05T06:40:02.000Z">
+<meta property="article:modified_time" content="2021-06-05T06:51:23.383Z">
+<meta property="article:author" content="JaeHyun Lee">
+<meta property="article:tag" content="identifiability">
+<meta property="article:tag" content="paper review">
+<meta property="article:tag" content="Hawkes process">
+<meta property="article:tag" content="Gaussian process">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leequant761.github.io/2021/06/05/Reliable-Decision-Support-using-Counterfactual-Models/image-20210223171705002.png">
+
+<link rel="canonical" href="https://leequant761.github.io/2021/06/05/Reliable-Decision-Support-using-Counterfactual-Models/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Reliable Decision Support using Counterfactual Models | Study Repo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Study Repo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leequant761.github.io/2021/06/05/Reliable-Decision-Support-using-Counterfactual-Models/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="JaeHyun Lee">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Study Repo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Reliable Decision Support using Counterfactual Models
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-06-05 15:40:02 / Modified: 15:51:23" itemprop="dateCreated datePublished" datetime="2021-06-05T15:40:02+09:00">2021-06-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Causality/" itemprop="url" rel="index"><span itemprop="name">Causality</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/06/05/Reliable-Decision-Support-using-Counterfactual-Models/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/06/05/Reliable-Decision-Support-using-Counterfactual-Models/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="0-Abstract"><a href="#0-Abstract" class="headerlink" title="0. Abstract"></a>0. Abstract</h1><p>Decision maker는 어떤 action을 취했을 때 일어날 법한 것을 estimate해야한다.</p>
+<p>예를 들어, <em>환자를 치료하지 않기로 결정하면 그들은 어느 정도의 확률로 죽을까?</em> 를 고민하게 된다.</p>
+<p>이 경우에 practitioner들은 supervised learning algorithm으로 outcome을 예측하는 predictive model을 보통 학습한다.</p>
+<p>하지만, 이러한 방식은 unreliable하고 가끔은 위험할 수도 있다.</p>
+<p>왜냐면 supervised learning algorithm은 training data에 존재했던 <strong><em>policy</em></strong>에 민감하기 때문이다.</p>
+<span id="more"></span>
+<p>결국, <strong><em>이</em></strong>는 model이 일반화될 수 없는 관계를 잡게 되버린다.</p>
+<p>이 문제를 해결하기 위해 기존의 policy 하에서</p>
+<ul>
+<li>outcome을 예측하는 대신에 </li>
+<li>counterfactual outcome을 예측하는 learning objective를 제안할 것이다.</li>
+</ul>
+<p>Temporal setting에서 decision making을 지원하기 위해서 Counterfactual Gaussian Process를 도입하게 될 것이다. 이는</p>
+<ol>
+<li>action들의 sequence를 받고서, continuous-time 상에서 counterfactual future regression을 예측한다.</li>
+<li>이는 곧 risk 자체에 대한 prediction이고</li>
+<li>각 개인 별 treatment planning을 위한 “what if”에 대한 답을 줄 수 있다.</li>
+</ol>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a>1. Introduction</h1><p>Decision maker는 어떤 action을 취했을 때 일어날 법한 것을 estimate 해야한다.</p>
+<ol>
+<li>Evaluate risk if I do not treatment.</li>
+<li>Perform “what if” reasoning by comparing outcomes under alternative actions.</li>
+</ol>
+<p>1의 예시로는 환자의 죽음에 관해서 risk $P(Y[\emptyset] = 1)$를 재는 것</p>
+<p>2의 예시로는 빨간 글씨로 바꾸면 더 많이 클릭할까와 같은 질문에 대한 추론</p>
+<p>Practitioner들은 이러한 질문에 답하기 위해서  supervised learning algorithm으로 outcome을 예측하는 predictive model을 보통 학습한다.</p>
+<p>하지만, 이러한 방식은 unreliable하고 가끔은 위험할 수도 있다.</p>
+<p>예를 들어, <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/2783258.2788613">R. Caruana</a>의 폐렴이 생긴 환자들의 risk of death에 관한 논의를 보자. 이들의 목표는 </p>
+<ol>
+<li>병원에서 폐렴을 가진 환자들의 risk of death를 예측한 뒤에</li>
+<li>높은 risk를 가진 환자들은 치료를 받게하고</li>
+<li>낮은 risk를 가진 환자들은 집으로 돌려보내는 것이다.</li>
+</ol>
+<p>그들의 모델은 “<em>천식 환자일 경우에 폐렴으로 죽을일이 덜하다</em>“는 머신을 학습했다.</p>
+<p>이에 대해 조사를 해본 결과, <strong><em>existing policy</em></strong>는 천식을 가진 환자들을 바로 중환자실로 보내서 적극적인 치료를 했기 때문인 것을 알게됐다.</p>
+<p>이 모델을 risk evaluation에 쓰면 천식환자들은 덜 치료를 받게 될 것이고 위험에 처하게 된다.</p>
+<p><a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/2783258.2788613">R. Caruana</a>는 이런 counterintuitive relationship은 문제가 되기 떄문에 repairing model을 해야한다고 했지만, 우린 이런 issue가</p>
+<ul>
+<li>Training data가 existing policy에 의한 action들로 영향을 받았을 때,</li>
+<li>SL algorithm은 action policy에 의해 생긴 relationship을 잡게되고,</li>
+<li>이러한 relationship은 policy가 변할 때, 일반화되지 못하기 때문인 </li>
+</ul>
+<p>것에 주목했다.</p>
+<p>그래서 reliable model for decision support를 위해서 counterfactuals을 예측하는 learning objective를 제안한다.</p>
+<p>즉, 우리가 예측하는 대상은 특정 action을 취했을 때에 대한 outcome이 된다.</p>
+<hr>
+<p>Counterfactual prediction은 다양한 decision-support task에 널리 적용될 수 있다.</p>
+<p>의학 쪽에서는, 집중적인 치료를 할 지 말 지 결정하기 위해서 환자의 risk of death를 evaluate할 때, 그들이 치료를 받지 않으면 어느 정도로 위험할 지를 $P(Y[\emptyset] = 1)$ estimate하고 싶어한다.</p>
+<p>온라인 마케팅에선, $a_1$을 보여줄 지 $a_2$를 보여줄 지 결정하기 위해서 click-through $Y\left[a_{1}\right]$과 $Y\left[a_{2}\right]$를 estimate하고 싶다.</p>
+<hr>
+<p>우리의 경우엔 temporal setting에서 decision-support task를 수행하기 위해서, CGP를 개발했다. It</p>
+<ul>
+<li>predicts counterfactual future progression on continuous time under sequence of future actions</li>
+<li>can be learned from and applied to general time series data where actions are taken and outcomes are measured at irregular time points</li>
+</ul>
+<img src="/2021/06/05/Reliable-Decision-Support-using-Counterfactual-Models/image-20210223171705002.png" class="">
+<p><strong>(a) : Evaluate risk if I do not intervene</strong></p>
+<p>검은색 점들은 이전의 lung capacity measurements이고 초록색과 파랑색 막대기는 treatment를 나타낸다.</p>
+<p>파랑색 선은 no action일 때 일어나게 될 outcome에 대한 mean prediction이다.</p>
+<p><strong>(b), (c) : what if reasoning</strong></p>
+<p>Counterfactual trajectory under a single future green treatment</p>
+<p>Counterfactual trajectory under two different action sequences</p>
+<h2 id="1-1-Contributions"><a href="#1-1-Contributions" class="headerlink" title="1.1 Contributions"></a>1.1 Contributions</h2><p>우리의 핵심적인 method적인 기여는 CGP이다.</p>
+<p>도출한 adjusted likelihood objective는 개인들의 observational trace $\mathcal{D}=\left\{\left\{\left(y_{i j}, a_{i j}, t_{i j}\right)\right\}_{j=1}^{n_{i}}\right\}_{i=1}^{m}$ 로부터 CGP를 학습하게 된다.</p>
+<ul>
+<li>CGP는 action을 선택하는데 사용한 policy의 outcome에 관한 effect를 제거한 predictor를 준다.</li>
+<li>CGP는 observed action과 outcome을 marked point process로 동시에 모델링하여 도출됐다.</li>
+<li>CGP는 counterfactual을 학습하는 데에 필요한 assumption들을 우리의 셋팅에 맞춰져서 도출됐다.</li>
+</ul>
+<p>그리고 CGP를 활용하여 decision-support task를 수행하는 것을 보이도록 하겠다.</p>
+<h2 id="1-2-Related-Work"><a href="#1-2-Related-Work" class="headerlink" title="1.2 Related Work"></a>1.2 Related Work</h2><p>Decision-support에 관한 이야기는 너무 넓고, 우리의 method적인 기여는 counterfactual model for time series이므로 method적인 부분만 이야기를 해보겠다.</p>
+<h3 id="Causal-Inference"><a href="#Causal-Inference" class="headerlink" title="Causal Inference"></a>Causal Inference</h3><p>Counterfactual model은 action이 일어날 때와 안 일어날 때의 counterfactual outcome의 차이로 causal effect of action을 잰다. </p>
+<p>보통, counterfactual을 formalize하고 causal effect를 estimate하는 데에선 potential outcome framework를 사용한다.</p>
+<h3 id="Potential-outcomes-in-continuous-time"><a href="#Potential-outcomes-in-continuous-time" class="headerlink" title="Potential outcomes in continuous time"></a>Potential outcomes in continuous time</h3><p><a target="_blank" rel="noopener" href="https://www.sciencedirect.com/science/article/pii/0270025586900886">Robins</a>는 causal effect of a sequence of actions in discrete time on a final single outcome을 학습하기 위해서 potential outcomes framework을 확장하였다.</p>
+<p><a href="">Arjas</a>는 continuous time에서의 action들에 대해서 bayesian posterior predictive distribution으로 해결했다.</p>
+<p><a href="">Lok</a>와 <a href="">Arjas and Parner</a>는 continuous time observational data에서 CE of actions를 학습하기 위해서 marked point process를 사용하여 가정들을 formalize하였다.</p>
+<p>우리는 MPP를 사용하여 continuous-time trajectories에 대한 causal effects of actions를 학습할 수 있다.</p>
+<hr>
+<p>Treatment effects의 expressiveness를 고려한 최근의 논문들도 있다.</p>
+<p><a target="_blank" rel="noopener" href="http://proceedings.mlr.press/v56/Xu16.pdf">Xu</a>는 모델의 flexibility를 위해서 BNP(DP, GP, …)를 제안하였고 그 외의 것들은 생략하도록 하겠다.</p>
+<h3 id="Reinforcement-Learning"><a href="#Reinforcement-Learning" class="headerlink" title="Reinforcement Learning"></a>Reinforcement Learning</h3><p>RL은 action과 observation이 discrete time에 배치된 데이터로부터 학습한다.</p>
+<p>하지만 RL에선 model을 학습하기 보다는 expected reward를 최적화하는 policy를 학습하는 데에 집중한다.</p>
+<p>Model-based RL에서 action effect의 모델은</p>
+<ol>
+<li>policy를 최적화하기 전에 offline으로 생성되거나</li>
+<li>agent가 그의 environment와 상호작용 하면서 점진적으로 생성된다.</li>
+</ol>
+<p>대부분의 RL에서는 학습 알고리즘은 sample을 수집하기 위해 active experiment(시뮬레이션)에 의존하게 된다.</p>
+<p>하지만 헬스케어에선 환자들을 actively experiment할 수 없기 때문에 obervational data에 의존해야만 한다.</p>
+<blockquote>
+<p>RL에선 이를 off-policy evaluation으로 부른다.</p>
+</blockquote>
+<p>Off-policy RL에선, </p>
+<ul>
+<li>unknown policy 하에서 agent에 의해 생성된 state-action-reward sequence를 사용하여</li>
+<li>target policy의 expected reward를 estimate 한다.</li>
+</ul>
+<p>Off-policy algorithm은 일반적으로 expected reward를 학습하기 위해</p>
+<ol>
+<li>action-value function의 approximation</li>
+<li>importance-reweighting</li>
+<li>1+2</li>
+</ol>
+<p>를 사용한다.</p>
+<blockquote>
+<p>기대와 달리, 이 논문에선 optimal policy를 찾진 않았다…</p>
+</blockquote>
+<h1 id="2-Counterfactual-Models-from-Observational-Traces"><a href="#2-Counterfactual-Models-from-Observational-Traces" class="headerlink" title="2. Counterfactual Models from Observational Traces"></a>2. Counterfactual Models from Observational Traces</h1><p>CGP는 potential outcomes와 Gaussian Process와 marked point processes로 부터 아이디어들을 가져왔다.</p>
+<h2 id="2-1-Background-Potential-Outcomes"><a href="#2-1-Background-Potential-Outcomes" class="headerlink" title="2.1 Background: Potential Outcomes"></a>2.1 Background: Potential Outcomes</h2><p>우리는 $\{Y[a]:a \in \mathcal{C}\}$를 모델링하려고 한다. 그래서 features $X$가 주어졌을 때 $P(Y[a] \mid X)$를 학습해야만 한다.</p>
+<p>만약 자유롭게 action $a$을 input으로 넣고 $Y$를 기록할 수 있다면, 이는 단순한 모델 피팅 문제이다.</p>
+<p>하지만, 이는 불가능하고 그저 $(A, Y, X)$에 관한 observational data만 사용할 수 있다.</p>
+<p>일반적인 머신러닝에선, $P(Y \mid A, X)$를 모델링하고  observational data을 Supervised Learning algorithm으로 학습하게 된다.</p>
+<p>여기서 만약 2개의 가정이 추가된다면, 제안한 conditional distribution을 counterfactual model으로 사용할 수 있다.</p>
+<hr>
+<p><strong>Assumption 1 (Consistency)</strong></p>
+<p>​    Let $Y$ be the observed outcome.</p>
+<p>​    Let $A \in \mathcal C$ be the observed action.</p>
+<p>​    Let $Y[a]$ be the potential outcome for action $a\in \mathcal C$.</p>
+<p>​    Then,</p>
+<script type="math/tex; mode=display">
+(Y \triangleq Y[a]) \mid A=a</script><hr>
+<p>It implies that $P(Y \mid A=a)=P(Y[a] \mid A=a)$</p>
+<blockquote>
+<p>Miguel Herman의 what if에선, treatment 버전의 다양성이 있으면 안된다고 언급하였다.</p>
+</blockquote>
+<p>아래가 좀 더 완화된 가정으로 feature $X$가 $Y[a]$와 $A$를 d-separate하는 데에 필요한 confounder들을 포함한다는 것이다.</p>
+<hr>
+<p><strong>Assumption 2 (No Unmeasured Confounders (NUC))</strong></p>
+<p>​    Let $Y$ be the observed outcome</p>
+<p>​    Let $A \in \mathcal C$ be the observed action</p>
+<p>​    Let $X$ be a vector containing all potential confounders.</p>
+<p>​    Let $Y[a]$ be the potential outcome for action $a\in \mathcal C$.</p>
+<p>​    Then, $(Y[a] \perp A) \mid X$</p>
+<hr>
+<p>Assumption 1 and 2 implies $P(Y \mid A, X)=P(Y[a] \mid X)$</p>
+<p>이의 sequence of actions 버전으로의 확장은 sequential NUC로 알려져있으나,<br>continuous time 셋팅에선 action의 타이밍이 potential outcomes에 statistically dependent하기 때문에 적용될 수 없다.</p>
+<h2 id="2-2-Background-Marked-Point-Processes"><a href="#2-2-Background-Marked-Point-Processes" class="headerlink" title="2.2 Background: Marked Point Processes"></a>2.2 Background: Marked Point Processes</h2><p>Point processes는 timestamps $\left\{T_{i}\right\}_{i=1}^{N}$ point들의 발생 위치에 대한 distribution이다.</p>
+<p>Marked point processes는 point processes에 additional random variable $X_i$이 붙어있다.</p>
+<p>예를 들어, 고객의 도착시간($T$)을 나타내는 process가 있다면 추가로 붙는 $X$는 그 고객이 상점에서 소비한 금액을 나타낼 수 있다.</p>
+<p>Marked point processes는 다음의 random variables에 대한 분포를 나타낸다.</p>
+<ul>
+<li>the number of points $N$</li>
+<li>$(T_i, X_i)$</li>
+</ul>
+<p>Point Process는 counting process $\left\{N_{t}: t \geq 0\right\}$로 완벽하게 characterized된다.</p>
+<p>Counting process는 다음의 분포를 나타낸다.</p>
+<ul>
+<li>the number of points $N$</li>
+<li>$N_{t}=\sum_{i=1}^{N} \mathbb{I}_{\left(T_{i} \leq t\right)}$</li>
+</ul>
+<p><strong>Counting Process에 대한 일반적인 가정</strong></p>
+<ol>
+<li>$N_{t} \geq N_{s} \text { if } t \geq s$</li>
+<li>$N_{0}=0$</li>
+<li>$\Delta N_{t}=\lim _{\delta \rightarrow 0^{+}} N_{t}-N_{t-\delta} \in\{0,1\}$</li>
+</ol>
+<p>Point process에 대한 parameterization은 history $\mathcal H_{t^-}$가 주어졌을 때 $\Delta N_{t}$에 대한 probabilistic model로 이루어질 수 있다.</p>
+<p>Doob-Meyer decomposition을 사용하여, $\Delta N_{t}=\Delta M_{t}+\Delta \Lambda_{t}$으로 분해할 수 있다.</p>
+<blockquote>
+<p>where $M_t$ is a martingale and $\Lambda_{t}$ is a cumulative intensity function.</p>
+</blockquote>
+<script type="math/tex; mode=display">
+P\left(\Delta N_{t}=1 \mid \mathcal{H}_{t^{-}}\right)=\mathbb{E}\left[\Delta N_{t} \mid \mathcal{H}_{t^{-}}\right]=\mathbb{E}\left[\Delta M_{t} \mid \mathcal{H}_{t^{-}}\right]+\Delta \Lambda_{t}\left(\mathcal{H}_{t^{-}}\right)=0+\Delta \Lambda_{t}\left(\mathcal{H}_{t^{-}}\right)</script><p>where $\lambda^{*}(t) \mathrm{d} t \triangleq \Delta \Lambda_{t}\left(\mathcal{H}_{t^{-}}\right)$</p>
+<p>만약 $N_t$를 non-homogeneous Poisson-process를 사용한다면, intensity function은 history $H_{t^-}$에 의존하지 않는다.</p>
+<p>반대로 Hawkes process를 사용하면 $\lambda^{*}(t)$는 history에 의존한다.</p>
+<hr>
+<p>이러한 Point Process로부터 정의된 MPP의 intensity function은 $\lambda^{*}(t, x)=\lambda^{*}(t) p^{*}(x \mid t)$ 으로 정의된다.</p>
+<h2 id="2-3-Counterfactual-Gaussian-Processes"><a href="#2-3-Counterfactual-Gaussian-Processes" class="headerlink" title="2.3 Counterfactual Gaussian Processes"></a>2.3 Counterfactual Gaussian Processes</h2><p>Let $\left\{Y_{t}: t \in[0, \tau]\right\}$ denote a continuous-time stochastic process where</p>
+<ol>
+<li>$Y_{t} \in \mathbb{R}$</li>
+<li>$[0, \tau]$ defines the interval over which process is defined.</li>
+</ol>
+<p>Let</p>
+<ol>
+<li>the process is observed at a discrete set of irregular and random times $\left\{\left(y_{j}, t_{j}\right)\right\}_{j=1}^{n}$</li>
+<li>$\mathcal C$ denote the set of possible action types</li>
+<li>an action be a tuple $(a, t)$ where $a \in \mathcal C $ and $t \in [0, \tau]$</li>
+<li>$\mathbf{a}=\left[\left(a_{1}, t_{1}\right), \ldots,\left(a_{n}, t_{n}\right)\right]$</li>
+<li>$\mathcal{H}_{t}$ be a list of all previous observations of the process and all previous actions</li>
+</ol>
+<p>Then, our goal is to model the counterfactual</p>
+<script type="math/tex; mode=display">
+P\left(\left\{Y_{s}[\mathbf{a}]: s>t\right\} \mid \mathcal{H}_{t}\right), \text { where } \mathbf{a}=\left\{\left(a_{j}, t_{j}\right): t_{j}>t\right\}_{j=1}^{n}</script><hr>
+<p>우리는 individual history $\mathbf h_i$들을 가지고서 학습을 할 것이다.</p>
+<script type="math/tex; mode=display">
+\mathbf{h}_{i}=\left\{\left(t_{i j}, y_{i j}, a_{i j}\right)\right\}_{j=1}^{n_{i}}</script><p>이들의 집합을 <em>traces</em> $\mathcal{D} \triangleq\left\{\mathbf{h}_{i}=\left\{\left(t_{i j}, y_{i j}, a_{i j}\right)\right\}_{j=1}^{n_{i}}\right\}_{i=1}^{m}$라고 하겠다.</p>
+<p>where</p>
+<ol>
+<li>$y_{i j} \in \mathbb{R} \cup\{\varnothing\}$</li>
+<li>$a_{i j} \in \mathcal{C} \cup\{\varnothing\}$</li>
+<li>$t_{i j} \in[0, \tau]$</li>
+</ol>
+<p>우리의 방식은 <em>traces</em> $\mathcal{D}$를 MPP를 가지고서 모델링하는 것이다.</p>
+<p>MPP의 state space는 $\mathbb{R} \times \mathcal{C}$처럼 보이지만 빈 값을 명시하는 indicator $z_{y} \in\{0,1\} \text { and } z_{a} \in\{0,1\}$를 추가하여</p>
+<script type="math/tex; mode=display">
+\mathcal{X}=(\mathbb{R} \cup\{\varnothing\}) \times(\mathcal{C} \cup\{\varnothing\}) \times\{0,1\} \times\{0,1\}</script><p>이 된다. 이 경우에 MPP의 intensity function은</p>
+<script type="math/tex; mode=display">
+\lambda^{*}\left(t, y, a, z_{y}, z_{a}\right)=\underbrace{\lambda^{*}(t) p^{*}\left(z_{y}, z_{a} \mid t\right)}_{\text {[A] Event model }} \underbrace{p^{*}\left(y \mid t, z_{y}\right)}_{\text {[B] Outcome model (GP) }} \underbrace{p^{*}\left(a \mid y, t, z_{a}\right)}_{\text {[C] Action model }}</script><blockquote>
+<p>$*$표시는 분포(또는 함수)가 history $\mathcal H_{t^-}$에 의존한다는 것을 강조하기 위함이다.</p>
+</blockquote>
+<ul>
+<li>Event model은 action의 빈도와 observation의 빈도를 의미한다.</li>
+<li>Action model은 과거에 기반한 action의 선택을 의미한다.</li>
+<li>이 둘은 domain knowledge로 결정된다.</li>
+<li>Outcome model은 이전의 actions와 outcomes observation이 있을 때, 미래의 outcome을 GP로 예측하는 영역이다.</li>
+</ul>
+<h3 id="2-3-1-Learning"><a href="#2-3-1-Learning" class="headerlink" title="2.3.1 Learning"></a>2.3.1 Learning</h3><p>CGP를 학습하기 위해선, trace들이 서로 독립이라 가정할 경우에 sum of individual-trace log likelihood를 최대화 해야한다.</p>
+<p>Let $\theta$ denote the model parameters, then the log likelihood for a single trace is</p>
+<script type="math/tex; mode=display">
+\ell(\boldsymbol{\theta})=\sum_{j=1}^{n} \log p_{\theta}^{*}\left(y_{j} \mid t_{j}, z_{y j}\right)+\sum_{j=1}^{n} \log \lambda_{\theta}^{*}\left(t_{j}\right) p_{\theta}^{*}\left(a_{j}, z_{y j}, z_{a j} \mid t_{j}, y_{j}\right)-\int_{0}^{\tau} \lambda_{\theta}^{*}(s) \mathrm{d} s</script><p>해석하자면, 첫번째 항은 GP를 outcome data에 피팅하는 역할이고 두번째 항은 $t, y, a$ 간의 dependency를 설명하는 역할이다.</p>
+<h3 id="2-3-2-Connection-to-target-counterfactual"><a href="#2-3-2-Connection-to-target-counterfactual" class="headerlink" title="2.3.2 Connection to target counterfactual"></a>2.3.2 Connection to target counterfactual</h3><p>Learning objective를 maximize하면, observational traces $\mathcal D$의 statistical model을 얻게 된다.</p>
+<p>일반적으로, statistical model은 target counterfactual을 모델링하는 것이 아니다.</p>
+<script type="math/tex; mode=display">
+p^{*}\left(y \mid t, z_{y}=1\right) = P\left(\left\{Y_{s}[\mathbf{a}]: s>t\right\} \mid \mathcal{H}_{t}\right)</script><p>를 위해선, assumption 2를 대신할 2가지의 추가 assumption이 필요하다.</p>
+<p><strong>Assumption 3 (Continuous-Time NUC)</strong></p>
+<p>​    For all times $t$ and all histories $\mathcal H_{t^{-}}$,</p>
+<script type="math/tex; mode=display">
+\text{densities $\lambda ^*(t), p^* (z_y, z_a \mid t), \text{ and } p^*(a \mid y, t, z_a)$ do not depend on $Y_{s}[\mathbf{a}]$}</script><blockquote>
+<p>직감적으로 해석하면, observational data에서 action을 선택하는데 사용한 policy와 future potential outcome가 독립이다. </p>
+</blockquote>
+<p><strong>Assumption 4 (Non-Informative Measurement Times)</strong></p>
+<p>​    For all times $t$ and any history $\mathcal{H}_{t^{-}}$, the following holds</p>
+<script type="math/tex; mode=display">
+p^{*}\left(y \mid t, z_{y}=1\right) \mathrm{d} y=P\left(Y_{t} \in \mathrm{d} y \mid \mathcal{H}_{t^{-}}\right)</script><blockquote>
+<p>펄의 causality에서 말하길 가정들은 통계적으로 검증이 불가능하다고 한다.</p>
+</blockquote>
+<h1 id="3-Experiments"><a href="#3-Experiments" class="headerlink" title="3. Experiments"></a>3. Experiments</h1><p>(추후 보강 예정)</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/identifiability/" rel="tag"># identifiability</a>
+              <a href="/tags/paper-review/" rel="tag"># paper review</a>
+              <a href="/tags/Hawkes-process/" rel="tag"># Hawkes process</a>
+              <a href="/tags/Gaussian-process/" rel="tag"># Gaussian process</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/06/02/On-the-Testable-Implications-of-Causal-Models-with-Hidden-Variables/" rel="prev" title="On the Testable Implications of Causal Models with Hidden Variables">
+      <i class="fa fa-chevron-left"></i> On the Testable Implications of Causal Models with Hidden Variables
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-Abstract"><span class="nav-text">0. Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1. Introduction</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-Contributions"><span class="nav-text">1.1 Contributions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-Related-Work"><span class="nav-text">1.2 Related Work</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Causal-Inference"><span class="nav-text">Causal Inference</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Potential-outcomes-in-continuous-time"><span class="nav-text">Potential outcomes in continuous time</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Reinforcement-Learning"><span class="nav-text">Reinforcement Learning</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Counterfactual-Models-from-Observational-Traces"><span class="nav-text">2. Counterfactual Models from Observational Traces</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Background-Potential-Outcomes"><span class="nav-text">2.1 Background: Potential Outcomes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Background-Marked-Point-Processes"><span class="nav-text">2.2 Background: Marked Point Processes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-Counterfactual-Gaussian-Processes"><span class="nav-text">2.3 Counterfactual Gaussian Processes</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-1-Learning"><span class="nav-text">2.3.1 Learning</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-2-Connection-to-target-counterfactual"><span class="nav-text">2.3.2 Connection to target counterfactual</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Experiments"><span class="nav-text">3. Experiments</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">JaeHyun Lee</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JaeHyun Lee</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://leequant761.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://leequant761.github.io/2021/06/05/Reliable-Decision-Support-using-Counterfactual-Models/";
+    this.page.identifier = "2021/06/05/Reliable-Decision-Support-using-Counterfactual-Models/";
+    this.page.title = "Reliable Decision Support using Counterfactual Models";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://leequant761.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

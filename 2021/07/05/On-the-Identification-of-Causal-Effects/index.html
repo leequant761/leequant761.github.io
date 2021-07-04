@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leequant761.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="0. Abstract이 논문은 non experimental data로 부터, action과 policy의 effct를 estimate한다. 이 논문은 다음을 제공한다.  causal effect(CE) identifiability(I)의 sufficient criterion I일 때, 이에 대한 compuation procedure   General Id">
+<meta property="og:type" content="article">
+<meta property="og:title" content="On the Identification of Causal Effects">
+<meta property="og:url" content="https://leequant761.github.io/2021/07/05/On-the-Identification-of-Causal-Effects/index.html">
+<meta property="og:site_name" content="Study Repo">
+<meta property="og:description" content="0. Abstract이 논문은 non experimental data로 부터, action과 policy의 effct를 estimate한다. 이 논문은 다음을 제공한다.  causal effect(CE) identifiability(I)의 sufficient criterion I일 때, 이에 대한 compuation procedure   General Id">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-07-04T15:41:47.000Z">
+<meta property="article:modified_time" content="2021-07-04T15:44:53.539Z">
+<meta property="article:author" content="JaeHyun Lee">
+<meta property="article:tag" content="identifiability">
+<meta property="article:tag" content="paper review">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://leequant761.github.io/2021/07/05/On-the-Identification-of-Causal-Effects/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>On the Identification of Causal Effects | Study Repo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Study Repo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leequant761.github.io/2021/07/05/On-the-Identification-of-Causal-Effects/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="JaeHyun Lee">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Study Repo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          On the Identification of Causal Effects
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-07-05 00:41:47 / Modified: 00:44:53" itemprop="dateCreated datePublished" datetime="2021-07-05T00:41:47+09:00">2021-07-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Causality/" itemprop="url" rel="index"><span itemprop="name">Causality</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/07/05/On-the-Identification-of-Causal-Effects/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/07/05/On-the-Identification-of-Causal-Effects/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="0-Abstract"><a href="#0-Abstract" class="headerlink" title="0. Abstract"></a>0. Abstract</h1><p>이 논문은 non experimental data로 부터, action과 policy의 effct를 estimate한다.</p>
+<p>이 논문은 다음을 제공한다.</p>
+<ul>
+<li>causal effect(CE) identifiability(I)의 sufficient criterion</li>
+<li>I일 때, 이에 대한 compuation procedure</li>
+</ul>
+<blockquote>
+<p>General Identification Condition for Causal Effects</p>
+<p>On the Testable Implications of Causal Models with Hidden Variables</p>
+<p>이 둘을 읽고 보면 좋다.</p>
+</blockquote>
+<span id="more"></span>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a>1. Introduction</h1><p>CEI는 $P_t(y)$가 nonexperimental data로 consistently estimate이 가능한 지에 대한 답이다.</p>
+<p>만약, some confounder가 not measured일 때, identifability에 대한 질문이 발생한다.</p>
+<p>I 여부는 $T$와 $Y$에 대한 confounder의 위치에 의존한다.</p>
+<p>Sufficient criterion으로는 backdoor, frontdoor criterion 등이 있다.</p>
+<p>더 일반적으로 위의 criterion들은 do-calculus의 반복에 불과하다.</p>
+<p>추가로 펄책의 114-118에서 (backdoor, frontdoor)를 포함하는 sufficient graphical criteria을 보였다.</p>
+<p>그 criteria은 longitudinal data에서 unmeasured confounder가 존재해도 time-varying treatment의 effect를 estimate하게 해줬다.</p>
+<p>이 논문은 현존하는 criterion을 더 간단하고 더 일반화하는 criteria를 제공한다.</p>
+<hr>
+<p>Section 3~5에서 unobserved variable이 root 노드이면서 오직 2개의 observed child를 가지는 <strong><em>semi-Markovian model</em></strong> 에서의 I를 다룬다.</p>
+<p><strong>Section 3</strong></p>
+<ul>
+<li>CEI of $P_x(v)$ where a sigleton $X \in V$ and $V = V \setminus \{ X\}$</li>
+<li>$X$와 $Ch(X)$가 같은 c-component에 속하지 않음 $&lt;==&gt;$ $P_x(v)$ is identifiable</li>
+</ul>
+<p><strong>Section 4</strong></p>
+<ul>
+<li>CEI of $P_x(s)$ where a sigleton $X \in V$ and $S \subseteq V \setminus \{ X\}$</li>
+<li>…</li>
+</ul>
+<p><strong>Section 5</strong></p>
+<ul>
+<li>CEI of $P_x(s)$ where a sigleton $T \subseteq V$ and $S \subseteq V \setminus T$</li>
+</ul>
+<p><strong>Section 6</strong></p>
+<ul>
+<li>SMM에 걸린 unobserved node의 조건을 없앤 일반적인 모델을 다룬다.</li>
+<li>그 모델에서의 CE가 똑같은 I property를 갖는 SMM으로 projection한 뒤에 identify될 수 있ㅇ므을 보인다.</li>
+</ul>
+<h1 id="2-Notation-Definitions-and-Problem-Formulation"><a href="#2-Notation-Definitions-and-Problem-Formulation" class="headerlink" title="2.Notation, Definitions, and Problem Formulation"></a>2.Notation, Definitions, and Problem Formulation</h1><p>(Skip)</p>
+<h1 id="3-Identification-of-P-x-v"><a href="#3-Identification-of-P-x-v" class="headerlink" title="3. Identification of $P_{x}(v)$"></a>3. Identification of $P_{x}(v)$</h1><p>(Skip)</p>
+<blockquote>
+<p>General Identification Condition for Causal Effects의 내용과 거의 겹친다.</p>
+<p>Identifiability의 필요충분조건에 대한 증명이 더 엄밀해졌다.</p>
+</blockquote>
+<h1 id="4-Identification-of-P-x-s"><a href="#4-Identification-of-P-x-s" class="headerlink" title="4.  Identification of $P_x(s)$"></a>4.  Identification of $P_x(s)$</h1><ul>
+<li>$X \in V$ and $S \subseteq V \setminus \{ X\}$</li>
+</ul>
+<p>당연히 $P_x(v)$가 I면 $P_x(s)$도 I다.</p>
+<p>하지만, $P_x(v)$가 identifiable하지 않더라도 $P_x(s)$가 identifiable일 수 있다.</p>
+
+<p>$P_x(y) = P(y \mid x)$로 identifiable하지만, $P_x(y, z)$는 identifiable하지 않다.</p>
+<p>$G$에서 의미없는 node들을 쳐낸 뒤에 $P_x(v)$의 identification criterion으로 identify 할 수 있다.</p>
+<h2 id="4-1-A-criterion-for-identifying-P-x-s"><a href="#4-1-A-criterion-for-identifying-P-x-s" class="headerlink" title="4.1 A criterion for identifying $P_x(s)$"></a>4.1 A criterion for identifying $P_x(s)$</h2><p>Let $An(C) = C \cup An(C)$</p>
+<p>$S$의 ancestrer가 아닌 node들은 $P_x(s)$ identification에 필요하지 않다.</p>
+<hr>
+<p><strong>Lemma 2</strong></p>
+<p>​    $P_x(s)$ is identifiable in $G$ $&lt;==&gt;$ $P_x(s)$ is identifiable in $G_{An(S)}$</p>
+<p>(Proof)</p>
+<p><strong>&lt;==</strong></p>
+<p>​    $\sum_{V \setminus An(S)}P(v) = P(an(S))$</p>
+<p>​    즉, $P_x(s)$가 $P(an(S))$로 구할 수 있음은 $P(v)$로도 구할 수 있음을 의미한다.</p>
+<p><strong>==&gt;</strong></p>
+<p>​    Lemma 13에서, $G$에서 identifiable했으면, edge들을 좀 빼더라도 identifiable함을 보였다.</p>
+<hr>
+<p><strong>Lemma 13</strong></p>
+<p>​    Let  $S,T \subseteq V$ be two disjoint sets of variables.</p>
+<p>​    If $P_t(s)$ is not identifiable in $G$, then $P_t(s)$ is not identifiable in $G^+$ where $G^+ = G + \left\{\begin{array}{l} \text{a directed edge}  \\  or\\\text{a bidirected edge}  \end{array}\right.$</p>
+<p>​    Equivalently,</p>
+<p>​    If $P_t(s)$ is identifiable in $G$, then $P_t(s)$ is identifiable in $G^-$ where $G^- = G - \left\{\begin{array}{l} \text{a directed edge}  \\  or\\\text{a bidirected edge}  \end{array}\right.$</p>
+<p>(증명 sketch)</p>
+<ul>
+<li>identifiable하지 않을 때 distribution은 같지만</li>
+<li>interventional distribition이 다른 2개의 SCM을 준비한다.</li>
+<li>2개의 SCM에 대응하여 edge는 넣는 대신에 이를 반영하지 않는 방식으로 결국 같은 SCM을 만든다.</li>
+</ul>
+<hr>
+<p><strong>Theorem 4</strong> (By Lemma 2)</p>
+<p>​    $P_x(s)$ is identifiable if $^{\not \exists}$bidirected path connecting $X$ to $Ch(X)$ in $G_{An(S)}$</p>
+<p>(Proof)</p>
+<p>​    $G_{An(S)}$에 BP가 없다면, Theorem 3에 의해 $P_x(an(s))$를 구할 수 있다.</p>
+<p>​    추가로 marginalization을 하면 $P_x(s)$를 구할 수 있다.</p>
+<hr>
+<p>Theorem 4의 조건은 만족하지 못했지만, $P_x(s)$는 identifiable인 예시를 보자.</p>
+<p>그리고 이를 통해서 Theorem4의 criterion을 향상시키는 방법에 대한 힌트를 얻어보자.</p>
+<h2 id="4-2-An-example"><a href="#4-2-An-example" class="headerlink" title="4.2 An example"></a>4.2 An example</h2><p>$P(v)$를 c-factor로 factorize하는 것을 활용하는 걸 설명하겠다.</p>
+<script type="math/tex; mode=display">
+Q[C](v)=P_{v \backslash c}(c)=\sum_{u} \prod_{\left\{i \mid V_{i} \in C\right\}} P\left(v_{i} \mid p a_{i}, u^{i}\right) P(u)</script><p>편의를 위해, $Q\left[C\right]$로 표기하겠다. 몇가지 property를 나열하자면,</p>
+<ul>
+<li>$Q\left[V \right] = P(v)$</li>
+<li>$Q\left[ \emptyset \right] = 1$</li>
+<li>$Q\left[ V \right] = \prod _i Q\left[ S_i \right]$ where $S_i$ are the c-component of $G$</li>
+</ul>
+<hr>
+
+<p>$G_{An(Y)} = G$이고, $X$와 $Z$ 사이에 bidirected path가 있으므로 Theorem 4는 적용 불가능하다.</p>
+<p>Let $V = \{ X, Z, Y, W_1, W_2\}$</p>
+<p>Let $V’ = \{ Z, Y, W_1, W_2\} = V \setminus \{ X\}$</p>
+<p>Then,</p>
+<ul>
+<li>$V$ is partitioned into $\{ W_2\}$,  $\{ Y\}$, $S^X = \{ X, Z, W_1\}$</li>
+<li>$P(v) = P(w_2 \mid w_1) P(y \mid z) Q\left[S^X\right]$ where</li>
+</ul>
+<script type="math/tex; mode=display">
+\begin{aligned}
+Q \left [ S^X\right ] &= \sum_{u_{1}, u_{2}} P\left(x \mid w_{2}, u_{1}\right) P\left(w_{1} \mid u_{1}, u_{2}\right) P\left(z \mid x, u_{2}\right) P\left(u_{1}\right) P\left(u_{2}\right)
+\\
+
+&= P(w_1) P(x\mid w_2) P(z \mid x, w_1) \quad \because \text{Lemma 1}
+\end{aligned}</script><p>Marginalize as</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P_x(y) &= \sum_{z, w_{1}, w_{2}} P_{x}\left(v^{\prime}\right)
+\\
+&=  \sum_{z, w_{1}, w_{2}} Q\left[V' \right]
+\\
+&= \sum_{z, w_{1}, w_{2}} P(w_2 \mid w_1) P(y\mid z) \sum_{u_{1}, u_{2}} P\left(w_{1} \mid u_{1}, u_{2}\right) P\left(z \mid x, u_{2}\right) P\left(u_{1}\right) P\left(u_{2}\right)
+\\
+&= \sum_{z, w_{1}} P(y\mid z) \sum_{u_{1}, u_{2}} P\left(w_{1} \mid u_{1}, u_{2}\right) P\left(z \mid x, u_{2}\right) P\left(u_{1}\right) P\left(u_{2}\right) \quad \text{; $W_2$ out}
+\\
+&= \sum_{z} P(y\mid z) \sum_{u_{1}, u_{2}} P\left(z \mid x, u_{2}\right) P\left(u_{1}\right) P\left(u_{2}\right) \quad \text{; $W_1$ sum-out}
+\\
+&= \sum_{z} P(y\mid z) \sum_{u_{2}} P\left(z \mid x, u_{2}\right) P\left(u_{2}\right)
+\\
+&=\sum_{z} P(y \mid z) Q[\{Z\}]
+\end{aligned}</script><blockquote>
+<p>$W_1$과 $W_2$가 sum-out된 이유는</p>
+<ul>
+<li>$Q[V’]$이 $G_{V’}$의 (interventioned) joint distribution에 대응되고</li>
+<li>$G_{V’}$에서, $W_1$과 $W_2$는 $Y$의 ancestor가 아니였다.</li>
+</ul>
+</blockquote>
+<p>$P_x(y)$는 $Q\left[ \{ Z\}\right]$를 계산하는 문제가 되었고, 이는 $Q[S^X]$로 계산될 수 있다.</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\sum_{w_{1}} Q\left[S^{X}\right] &=Q[\{X, Z\}]
+\\
+&= \sum_{u_{1}, u_{2}} P\left(x \mid w_{2}, u_{1}\right) P\left(z \mid x, u_{2}\right) P\left(u_{1}\right) P\left(u_{2}\right)
+\\
+&= \left(\sum_{u_{1}} P\left(x \mid w_{2}, u_{1}\right) P\left(u_{1}\right)\right)\left(\sum_{u_{2}} P\left(z \mid x, u_{2}\right) P\left(u_{2}\right)\right)
+\\
+&= Q[\{X\}] Q[\{Z\}]
+
+\\
+\\
+\text{Therefore, }\quad  
+\\
+Q[\{ X\}] &= \sum_x \sum_{w_{1}} Q\left[S^{X}\right] 
+\\&=\sum_x \sum_{w_{1}}   P(w_1) P(x\mid w_2) P(z \mid x, w_1)
+\\
+
+Q[\{Z\}]&=\frac{\sum_{w_{1}} Q\left[S^{X}\right]}{Q[\{X\}]}=\frac{\sum_{w_{1}} P\left(z, x \mid w_{2}, w_{1}\right) P\left(w_{1}\right)}{\sum_{w_{1}} P\left(x \mid w_{2}, w_{1}\right) P\left(w_{1}\right)}
+
+\end{aligned}</script><script type="math/tex; mode=display">
+P_{x}(y)=\sum_{z} P(y \mid z) \frac{\sum_{w_{1}} P\left(z, x \mid w_{2}, w_{1}\right) P\left(w_{1}\right)}{\sum_{w_{1}} P\left(x \mid w_{2}, w_{1}\right) P\left(w_{1}\right)}</script><hr>
+<p>$P_x(y)$ identification에 $Q$가 중요한 역할을 한다는 것을 확인했다.</p>
+<p>짚고 넘어가야 할 부분</p>
+<ol>
+<li>$Q \left[ V’\right]$에서 $W_1$과 $W_2$는 $An(Y)_{G(V’)}$에 속하지 않았기에 sum-out 되었다.</li>
+<li>$Q\left[\{X, Z\}\right] $가 $Q\left[\{X\}\right]$와 $Q\left[\{Z\}\right]$의 product로 표현된 이유는 둘은 $G_{\{ X,Z\}}$에서 c-component이기 떄문이다.</li>
+</ol>
+<p>이 아이디어에 착안해서 2개의 Lemma를 도입하겠다.</p>
+<h2 id="4-3-Lemmas"><a href="#4-3-Lemmas" class="headerlink" title="4.3 Lemmas"></a>4.3 Lemmas</h2><p>특정 조건에서 $Q\left[C\right]$에 summation을 하는 것은 몇몇 factor들을 지우는 행위이다.</p>
+<p>이는 $Q\left[C\right]$로부터 $Q\left[W\right]$를 구할 수 있는 지 여부를 제공한다.</p>
+<blockquote>
+<p>여기의 렘마의 증명은 On the Testable Implications of Causal Models with Hidden Variables와 거의 똑같기 때문에 생략함</p>
+</blockquote>
+<hr>
+<p><strong>Lemma 3</strong></p>
+<p>​    Let $W \subseteq C \subseteq V$ and $W’  = C \setminus W$</p>
+<p>​    If $W$ is an ancestral set in $G_C$, then $\sum_{W’} Q\left[ C \right] = Q \left[ W \right]$</p>
+<hr>
+<p><strong>Lemma 4 </strong>(Generalized Q-decomposition)</p>
+<p>​    Let $H \subseteq V$</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/identifiability/" rel="tag"># identifiability</a>
+              <a href="/tags/paper-review/" rel="tag"># paper review</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/06/05/Reliable-Decision-Support-using-Counterfactual-Models/" rel="prev" title="Reliable Decision Support using Counterfactual Models">
+      <i class="fa fa-chevron-left"></i> Reliable Decision Support using Counterfactual Models
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/07/05/Identifying-Dynamic-Sequential-Plans/" rel="next" title="Identifying Dynamic Sequential Plans">
+      Identifying Dynamic Sequential Plans <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-Abstract"><span class="nav-text">0. Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1. Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Notation-Definitions-and-Problem-Formulation"><span class="nav-text">2.Notation, Definitions, and Problem Formulation</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Identification-of-P-x-v"><span class="nav-text">3. Identification of $P_{x}(v)$</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Identification-of-P-x-s"><span class="nav-text">4.  Identification of $P_x(s)$</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-A-criterion-for-identifying-P-x-s"><span class="nav-text">4.1 A criterion for identifying $P_x(s)$</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-An-example"><span class="nav-text">4.2 An example</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-Lemmas"><span class="nav-text">4.3 Lemmas</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">JaeHyun Lee</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JaeHyun Lee</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://leequant761.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://leequant761.github.io/2021/07/05/On-the-Identification-of-Causal-Effects/";
+    this.page.identifier = "2021/07/05/On-the-Identification-of-Causal-Effects/";
+    this.page.title = "On the Identification of Causal Effects";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://leequant761.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

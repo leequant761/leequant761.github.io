@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leequant761.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="0. AbstractIdentification of dynamic sequential plan 문제는  Identification of sequential plans 문제임을 보일 것이다.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Identifying Dynamic Sequential Plans">
+<meta property="og:url" content="https://leequant761.github.io/2021/07/05/Identifying-Dynamic-Sequential-Plans/index.html">
+<meta property="og:site_name" content="Study Repo">
+<meta property="og:description" content="0. AbstractIdentification of dynamic sequential plan 문제는  Identification of sequential plans 문제임을 보일 것이다.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/Identifying-Dynamic-Sequential-Plans/image-20210612012024234.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/Identifying-Dynamic-Sequential-Plans/image-20210612173000735.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/Identifying-Dynamic-Sequential-Plans/image-20210612185520312.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/Identifying-Dynamic-Sequential-Plans/image-20210612225722131.png">
+<meta property="article:published_time" content="2021-07-04T15:47:08.000Z">
+<meta property="article:modified_time" content="2021-07-04T16:01:08.026Z">
+<meta property="article:author" content="JaeHyun Lee">
+<meta property="article:tag" content="identifiability">
+<meta property="article:tag" content="paper review">
+<meta property="article:tag" content="dynamic treatment regime">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leequant761.github.io/2021/07/05/Identifying-Dynamic-Sequential-Plans/image-20210612012024234.png">
+
+<link rel="canonical" href="https://leequant761.github.io/2021/07/05/Identifying-Dynamic-Sequential-Plans/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Identifying Dynamic Sequential Plans | Study Repo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Study Repo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leequant761.github.io/2021/07/05/Identifying-Dynamic-Sequential-Plans/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="JaeHyun Lee">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Study Repo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Identifying Dynamic Sequential Plans
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-07-05 00:47:08 / Modified: 01:01:08" itemprop="dateCreated datePublished" datetime="2021-07-05T00:47:08+09:00">2021-07-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Causality/" itemprop="url" rel="index"><span itemprop="name">Causality</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/07/05/Identifying-Dynamic-Sequential-Plans/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/07/05/Identifying-Dynamic-Sequential-Plans/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="0-Abstract"><a href="#0-Abstract" class="headerlink" title="0. Abstract"></a>0. Abstract</h1><p><strong><em>Identification of dynamic sequential plan</em></strong> 문제는  <strong><em>Identification of sequential plans</em></strong> 문제임을 보일 것이다.</p>
+<span id="more"></span>
+<blockquote>
+<p>거기서 거기 처럼 보이는데…</p>
+</blockquote>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a>1. Introduction</h1><p>연구의 동기는 <a href="">Pearl &amp; Robins, 1995</a>, <a href="">Dawid &amp; Didelez, 2005</a>에서</p>
+<ul>
+<li>medical treatment $X_1, \cdots X_k$</li>
+<li>observation $Z_1, \cdots , Z_k$</li>
+<li>outcome variable $Y$</li>
+</ul>
+<p>상황에서 effect of sequential treatment $X_1, \cdots X_k$ on $Y$를 estimate하는 데에 관심이 있었다.</p>
+<hr>
+<p>이 논문에서는 <em>DSPI</em> 문제가 이미 잘 연구된 <em>CEI</em> 문제임을 보이겠다.</p>
+<p>Pearl의 4.2에서, <em>D(S)PI</em>의 필요충분조건이 $P_{x}(y \mid z)$의 identifiability라고 했었지만, <a href="">Tian, 2004</a>, <a href=""> Shpitser and Pearl, 2006a</a>의 complete identification 알고리즘이 개발되면서 이는 충분조건임을 보이겠다.</p>
+<h1 id="2-Previous-Work-and-Notation"><a href="#2-Previous-Work-and-Notation" class="headerlink" title="2.  Previous Work and Notation"></a>2.  Previous Work and Notation</h1><p>Causal DAG는 joint distribution $P(v)=P\left(v_{1}, \ldots, v_{n}\right)$을 factorize한다.</p>
+<script type="math/tex; mode=display">
+P(v)=\prod_{i} P\left(v_{i} \mid p a_{i}\right)</script><p>Regime indicator $\sigma_{V_{i}}$는 intervention의 종류를 나타내는 데 사용된다.</p>
+<ol>
+<li><p>Idle regime : $P\left(v_{i} \mid p a_{i} ; \sigma_{V_{i}}=\emptyset\right)=P\left(v_{i} \mid p a_{i}\right)$</p>
+</li>
+<li><p>Atomic intervention : $P\left(v_{i} \mid p a_{i} ; \sigma_{V_{i}}=d o\left(v_{i}^{<em>}\right)\right)=\delta\left(v_{i}, v_{i}^{</em>}\right)$</p>
+</li>
+<li><p>Conditional intervention : $P\left(v_{i} \mid p a_{i} ; \sigma_{V_{i}}=\operatorname{do}(g(c))\right)=\delta\left(v_{i}, g(c)\right)$</p>
+</li>
+<li><p>Random intervention : $P\left(v_{i} \mid p a_{i} ; \sigma_{V_{i}}=d_{C}\right)=P^{*}\left(v_{i} \mid c\right)$</p>
+<p>where $C$ is the set of previous variables</p>
+</li>
+</ol>
+<hr>
+<p>Sequential decision problem에서 (potential outcome framework)</p>
+<ul>
+<li><p>control(action) variables $X =  \{ X_i\}  \subset V$는 intervention의 대상이다.</p>
+</li>
+<li><p>response(outcome) variable $Y \in V$는 관심의 대상이다.</p>
+</li>
+<li><p>covariates $Z = V \setminus  [X \cup \{ Y\} ]$은 나머지 변수들이다.</p>
+</li>
+<li><p>변수의 관측 순서는 $\left(L_{1}, X_{1}, \ldots, L_{K}, X_{K}, Y\right)$이다. where $L_{i} \subset Z$</p>
+</li>
+<li><p>Let $\bar{X}_{i}=\left(X_{1}, \ldots, X_{i}\right)$ and $\bar{L}_{i}=\left(L_{1}, \ldots, L_{i}\right)$</p>
+</li>
+<li><p>Given an intervention strategy $\sigma_{X}=\left\{\sigma_{X_{i}}\right\}$, simple stability says</p>
+<script type="math/tex; mode=display">
+L_i \perp \sigma_{X_i} \mid \bar{L}_{i-1}, \bar{X}_{i-1}
+\\
+Y \perp \sigma_{X} \mid \bar{L}_{K}, \bar{X}_{K}</script></li>
+<li><p>Simple stability는 직감적으로 intervention은 독립적인 메커니즘이다를 의미한다.</p>
+</li>
+<li><p>이게 유지될 때, <em>G-formula</em>로 intervention distribution을 구할 수 있다.</p>
+<script type="math/tex; mode=display">
+P\left(y ; \sigma_{X}\right)=\sum_{x, z} P(y \mid x, z) \prod_{i} P\left(l_{i} \mid \bar{l}_{i-1}, \bar{x}_{i-1}\right) \prod_{i} P\left(x_{i} \mid \bar{x}_{i-1}, \bar{l}_{i} ; \sigma_{X_{i}}\right)</script></li>
+</ul>
+<hr>
+<p>Unobserved confounder가 있을 때, simple stability는 유지되지 않고 G-formula는 문제가 생긴다.</p>
+<h1 id="3-Problem-Formulation"><a href="#3-Problem-Formulation" class="headerlink" title="3. Problem Formulation"></a>3. Problem Formulation</h1><p>Sequential decision problem에서</p>
+<ul>
+<li><p>모든 변수가 observable이라 가정하고, $Z := V \setminus \{X \cup Y \}$ 라고 하자.</p>
+</li>
+<li><p>Given an intervention strategy $\sigma_{X}=\left\{\sigma_{X_{i}}\right\}$,</p>
+<script type="math/tex; mode=display">
+P\left(v ; \sigma_{X}\right) =\prod_{i} P\left(y_{i} \mid p a_{y_{i}}\right) \prod_{i} P\left(z_{i} \mid p a_{z_{i}}\right) \prod_{i} P\left(x_{i} \mid p a_{x_{i}} ; \sigma_{X_{i}}\right)</script></li>
+<li><p>이는 CBN의 modularity assumption으로 나오는 equation이다.</p>
+</li>
+<li><p>결국, intervention distribution on $Y$는</p>
+<script type="math/tex; mode=display">
+P\left(y ; \sigma_{X}\right)=\sum_{x, z} \prod_{i} P\left(y_{i} \mid p a_{y_{i}}\right) \prod_{i} P\left(z_{i} \mid p a_{z_{i}}\right)\prod_{i} P\left(x_{i} \mid p a_{x_{i}} ; \sigma_{X_{i}}\right)</script></li>
+<li><p>CBN이 암시하는 conditional independence에 의해 G-formula가 유도될 수 있다.</p>
+</li>
+</ul>
+<hr>
+<ul>
+<li><p>일반적으로, unobserved variable 때문에 confounding effect에 대해 신경써야한다.</p>
+</li>
+<li><p>Let $V = Y \cup Z \cup X$ and $U=\left\{U_{1}, \ldots, U_{n^{\prime}}\right\}$</p>
+</li>
+<li><p>Given an intervention strategy $\sigma_{X}=\left\{\sigma_{X_{i}}\right\}$,</p>
+<script type="math/tex; mode=display">
+P(v)=\sum_{u} \prod_{\left\{i \mid V_{i} \in V\right\}} P\left(v_{i} \mid p a_{v_{i}}\right) \prod_{\left\{i \mid U_{i} \in U\right\}} P\left(u_{i} \mid p a_{u_{i}}\right)</script></li>
+<li><p>결국, intervention distribution on $Y$는</p>
+<script type="math/tex; mode=display">
+P\left(y ; \sigma_{X}\right)=\sum_{x, z, u} \prod_{i} P\left(y_{i} \mid p a_{y_{i}}\right) \prod_{i} P\left(z_{i} \mid p a_{z_{i}}\right) \prod_{i} P\left(x_{i} \mid p a_{x_{i}} ; \sigma_{X_{i}}\right) \prod_{i} P\left(u_{i} \mid p a_{u_{i}}\right)</script></li>
+<li><p>CBN이 암시하는 conditional independence에 의해 <a href="">Dawid &amp; Didelez, 2005</a>이 확장했던 G-formula에 대응한다.</p>
+</li>
+<li><p>이 경우엔, intervention distribution에 unobserved variable $U$가 껴있어서 identifiability에 대한 질문이 생긴다.</p>
+</li>
+</ul>
+<p><strong>Definition 1</strong> [Plan Identifiability]</p>
+<p>​    A sequential plan is said to be identifiable if $P(y; \sigma_X)$ is uniquely computable from $P(v)$</p>
+<h1 id="4-Identification-of-Sequential-Plans"><a href="#4-Identification-of-Sequential-Plans" class="headerlink" title="4. Identification of Sequential Plans"></a>4. Identification of Sequential Plans</h1><p><strong>Assumption 1</strong></p>
+<p>​    $P\left(x_{i} \mid p a_{x_{i}} ; \sigma_{X_{i}}\right)$ does not depend on unobserved variables.</p>
+<hr>
+<p>Under Assumption 1, intervention distribution on $Y$ becomes</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P\left(y ; \sigma_{X}\right)& =\sum_{x, z, u} \prod_{i} P\left(y_{i} \mid p a_{y_{i}}\right) \prod_{i} P\left(z_{i} \mid p a_{z_{i}}\right) \prod_{i} P\left(x_{i} \mid p a_{x_{i}} ; \sigma_{X_{i}}\right) \prod_{i} P\left(u_{i} \mid p a_{u_{i}}\right)
+\\
+&= \sum_{x, z} \prod_{i} P\left(x_{i} \mid p a_{x_{i}} ; \sigma_{X_{i}}\right) \sum_{u} \left( \prod_{i} P\left(y_{i} \mid p a_{y_{i}}\right) \prod_{i} P\left(z_{i} \mid p a_{z_{i}}\right) \prod_{i} P\left(u_{i} \mid p a_{u_{i}}\right) \right)
+\\
+&= \sum_{x, z} \prod_{i} P\left(x_{i} \mid p a_{x_{i}} ; \sigma_{X_{i}}\right) P_{x}(y, z)
+\end{aligned}</script><p>즉, $P\left(y ; \sigma_{X}\right)$의 identifiability의 충분조건은 $P_{x}(y, z)$이 identifiable한 것이다.</p>
+<p>일반적으로, $P_{x}(y, z)$가 identifiable하지 않더라도 $P\left(y ; \sigma_{X}\right)$가 identifiable할 수 있다.</p>
+<p>위의 derivation의 두번째 등식에서 특정 $Z_i$가 $P\left(z_{i} \mid p a_{z_{i}}\right)$ factor에서만 등장했다면 sumout이 될 것이고 이는 더 강한 identification criterion을 준다.</p>
+<hr>
+<p><strong>Proposition 1</strong> [Simple sufficient criterion ; <a href="">Dawid &amp; Didelez, 2005</a>]</p>
+<p>​    If all the parents of action $X$ are observable, then $P(y; \sigma_X)$ is identifiable.</p>
+<p>(Proof)</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P(v)&=\sum_{u} \prod_{\left\{i \mid V_{i} \in V\right\}} P\left(v_{i} \mid p a_{v_{i}}\right) \prod_{\left\{i \mid U_{i} \in U\right\}} P\left(u_{i} \mid p a_{u_{i}}\right)
+\\
+&= \prod_{i} P\left(x_{i} \mid p a_{x_{i}}\right) \sum_{u}\left( \prod_{i} P\left(z_{i} \mid p a_{z_{i}}\right) \prod_{i} P\left(y_{i} \mid p a_{y_{i}}\right) \prod_{\left\{i \mid U_{i} \in U\right\}} P\left(u_{i} \mid p a_{u_{i}}\right)\right)
+\\
+&= \prod_{i} P\left(x_{i} \mid p a_{x_{i}}\right) P_{x}(y, z)
+
+\\
+\\
+P_{x}(y, z)&=\frac{p(x, y, z)}{\prod_{i} P\left(x_{i} \mid p a_{x_{i}}\right)}
+\\
+&= \frac{\prod_{\{i \mid V_i \in X \cup Y \cup Z\}}p(v_i \mid \bar v_{i-1})}{\prod_{i} P\left(x_{i} \mid p a_{x_{i}}\right)} \quad \text{where $V_i$ denote ordered observed variable}
+\\
+&= \prod_{\left\{i \mid V_{i} \in Y \cup Z\right\}} P\left(v_{i} \mid \bar{v}_{i}\right) \quad \because pa_{x_i} \subseteq V
+\end{aligned}</script><p>​    Hence, $P\left(y ; \sigma_{X}\right)=\sum_{x, z} \prod_{i} P\left(x_{i} \mid p a_{x_{i}} ; \sigma_{X_{i}}\right) \prod_{\left\{i \mid V_{i} \in Y \cup Z\right\}} P\left(v_{i} \mid \bar{v}_{i}\right)$</p>
+<hr>
+<p>Theorem 1에 사용될 notation을 짚고 넘어가자.</p>
+<p>${}^\forall S \subseteq V$, let $Q\left[S\right]$ denote intervention distribution of $S$ under atomic intervention $v \setminus s$</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+Q[S](v)&=P_{v \backslash s}(s)
+\\
+&= \sum_{u} \prod_{\left\{i \mid V_{i} \in S\right\}} P\left(v_{i} \mid p a_{v_{i}}\right) \prod_{\left\{i \mid U_{i} \in U\right\}} P\left(u_{i} \mid p a_{u_{i}}\right)
+\\
+& =: Q[S] \quad \text{for convenience}
+\end{aligned}</script><p>Then, $P\left(y ; \sigma_{X}\right)=\sum_{x, z} \prod_{i} P\left(x_{i} \mid p a_{x_{i}} ; \sigma_{X_{i}}\right) Q\left[Y \cup Z\right]$</p>
+<p>Let $G_{\sigma_{X}}$ denote the manipulated graph under the intervention strategy $\sigma_X$</p>
+<p>If $\sigma_{X_{i}}=d o\left(x_{i}\right)$, then cut off all the arrows entering $X_i$</p>
+<p>If $\sigma_{X_{i}}=d o\left(g_i(c_{i})\right)$ or $\sigma_{X_{i}}=d_{C_{i}}$, then cut off all the arrows entering $X_i$ and add $C_i \rightarrow X_i$</p>
+<hr>
+<p><strong>Theorem 1</strong></p>
+<p>​    Let $Z_D$ be the set of variables in $Z$ that are ancestors of $Y$ in $G_{\sigma _X}$</p>
+<p>​    Then, $P\left(y ; \sigma_{X}\right)$ is identifiable if the causal effects $Q\left[Y \cup Z_{D}\right]=P_{x, z \backslash z_{D}}\left(y, z_{D}\right)$ is identifiable.</p>
+<p>(Proof)</p>
+<p>​    Let $X_D$ be the set of variables in $X$ that are ancestors of $Y$ in $G_{\sigma _X}$</p>
+<p>​    Then, all the non ancestors of $Y$ can be summed out as</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P\left(y ; \sigma_{X}\right)&=\sum_{x\in X, z\in Z} \prod_{i} P\left(x_{i} \mid p a_{x_{i}} ; \sigma_{X_{i}}\right) Q\left[Y \cup Z\right]
+\\
+&= \sum_{x_d , z_d} \prod_{i} P\left(x_{i} \mid p a_{x_{i}} ; \sigma_{X_{i}}\right) Q\left[Y \cup Z_D\right]
+\\
+&=\sum_{x_d , z_d} \prod_{\left\{i \mid X_{i} \in X_{D}\right\}} P\left(x_{i} \mid p a_{x_{i}} ; \sigma_{X_{i}}\right) P_{x, z \setminus z_{D}}\left(y, z_{D}\right)
+\end{aligned}</script><blockquote>
+<p>Factor가 sum out되는 걸 생각하면 이 증명은 굉장히 clear하나 찜찜했던 부분이 있었다.</p>
+<p>Summation에서 $z\setminus z_d$에 대한 명시가 없기 때문에 $P_{x, z \setminus z_{D}}\left(y, z_{D}\right)$이 well-defined일려면, $z\setminus z_d$의 값과 상관없는 distribution이여야 한다.</p>
+<p>그래프적으로 생각하면 $Z_D$의 조상이 $Z\setminus Z_D$에 속할 일이 없다.</p>
+<p>그랬다면, $Y$의 ancestor로서 $Z_D$에 속했을 테니 말이다.</p>
+<p>추가로 $Q\left<a href="v">S \right</a>$는 $Pa^+(S)$의 함수라는 성질 때문에 $z\setminus z_d$의 값과 상관없는 distribution이다.</p>
+</blockquote>
+<hr>
+<p>Theorem 1의 condition이 충분조건일 뿐만 아니라 필요조건이라고 생각된다.</p>
+<p>Let $Z_{\sigma_{X_{D}}}$ be the set of $Z$ variables that appear in $ \prod_{\left\{i \mid X_{i} \in X_{D}\right\}} P\left(x_{i} \mid p a_{x_{i}} ; \sigma_{X_{i}}\right)$</p>
+<p>Then, $ \prod_{\left\{i \mid X_{i} \in X_{D}\right\}} P\left(x_{i} \mid p a_{x_{i}} ; \sigma_{X_{i}}\right)$ is a function of $X_D , Z_{\sigma_{X_D}}$</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P\left(y ; \sigma_{X}\right) &= \sum_{x_d , z_d} \prod_{\left\{i \mid X_{i} \in X_{D}\right\}} P\left(x_{i} \mid p a_{x_{i}} ; \sigma_{X_{i}}\right) Q\left[Y \cup Z_D\right]
+\\
+&= \sum_{x_{D}, z_{\sigma_{X_D}}} \prod_{\left\{i \mid X_{i} \in X_{D}\right\}} P\left(x_{i} \mid p a_{x_{i}} ; \sigma_{X_{i}}\right) \sum_{z_{D} \setminus z_{\sigma_{X}}} Q\left[Y \cup Z_{D}\right]
+
+\\
+&=:\sum_{x_{D}, z_{\sigma_{X_D}}} \prod_{\left\{i \mid X_{i} \in X_{D}\right\}} g(x_D, z_{\sigma_{X_D}}) \sum_{z_{D} \setminus z_{\sigma_{X}}} Q\left[Y \cup Z_{D}\right]
+\end{aligned}</script><p>즉, $\sum_{z_{D} \setminus z_{\sigma_{X}}} Q\left[Y \cup Z_{D}\right]$이 identifiable하면 $P\left(y ; \sigma_{X}\right)$이 identifiable하다.</p>
+<blockquote>
+<p>필요조건인 plan에 종속된 변수는 애초에 sum out의 기회가 없기 떄문이다.</p>
+</blockquote>
+<p>추가로 $Z_D$는 애초에 $Y$의 조상으로 이뤄지기 때문에 sum-out이 일어날 일이 없다.</p>
+<blockquote>
+<p>이에 대한 일반적인 이야기는 <a href="">Huang and Valtorta, 2006; Lemma 11</a></p>
+</blockquote>
+<p>그 결과, $\sum_{z_{D} \setminus z_{\sigma_{X}}} Q\left[Y \cup Z_{D}\right]$의 identifiability와 $Q\left[Y \cup Z_{D}\right]$의 identifiability는 동치이다.</p>
+<ol>
+<li><strong>Theorem 1</strong>이 필요충분조건이다.</li>
+<li>결국 <em>DSPI</em>는 $Q\left[Y \cup Z_{D}\right]$ identification 문제이다.</li>
+</ol>
+<img src="/2021/07/05/Identifying-Dynamic-Sequential-Plans/image-20210612012024234.png" class="">
+<ul>
+<li><p>이 문제는 $Q\left[Y \cup Z\right]$를 identify하는 문제이다.</p>
+</li>
+<li><p>Observational distribution $P(v)=P\left(y \mid x_{1}, x_{2}, z\right) P\left(x_{2}\right) Q\left[\left\{Z, X_{1}\right\}\right]$</p>
+<ul>
+<li>where $Q\left[\left\{Z, X_{1}\right\}\right]=\sum_{u} P\left(z \mid x_{2}, u\right) P\left(x_{1} \mid u\right) P(u)$</li>
+</ul>
+</li>
+<li><p>We want to compute</p>
+<script type="math/tex; mode=display">
+P\left(y ; \sigma_{X_{1}}, \sigma_{X_{2}}\right) =\sum_{x_{1}, x_{2}, z} P\left(x_{1} ; \sigma_{X_{1}}\right) P\left(x_{2} ; \sigma_{X_{2}}\right) P\left(y \mid x_{1}, x_{2}, z\right) Q\left[\{Z\}\right]</script></li>
+<li><p>Since</p>
+<ul>
+<li>$Q[\{Z\}]=\sum_{x_{1}} Q\left[\left\{Z, X_{1}\right\}\right]$ </li>
+<li>$Q\left[\left\{Z, X_{1}\right\}\right]=P\left(z, x_{1} \mid x_{2}\right)$</li>
+</ul>
+</li>
+<li><p>we finally obtain</p>
+</li>
+</ul>
+<script type="math/tex; mode=display">
+P\left(y ; \sigma_{X_{1}}, \sigma_{X_{2}}\right) =\sum_{x_{1}, x_{2}, z} P\left(x_{1} ; \sigma_{X_{1}}\right) P\left(x_{2} ; \sigma_{X_{2}}\right) P\left(y \mid x_{1}, x_{2}, z\right) P\left(z \mid x_{2}\right)</script><h1 id="5-Discussion"><a href="#5-Discussion" class="headerlink" title="5. Discussion"></a>5. Discussion</h1><h2 id="5-1-Unconditional-plans-are-easier"><a href="#5-1-Unconditional-plans-are-easier" class="headerlink" title="5.1 Unconditional plans are easier"></a>5.1 Unconditional plans are easier</h2><p>Dynamic plan을 identify하는 건 unconditional plan을 identify하는 것 보다 어렵다.</p>
+<p>$\sigma_{X}^{\prime}$는 atomic intervention으로만 이루어진 경우, $G_{\sigma_{X}^{\prime}}  \subset G_{\sigma_{X}}$ 이다.</p>
+<p>그리고, $G_{\sigma_{X}^{\prime}}$에 대응하는 $Z_D’$는 $Z_D$의 subset이 된다. 이 경우, theorem 1을 적용시</p>
+<script type="math/tex; mode=display">
+P\left(y ; \sigma_{X}^{\prime}\right)=P_{x}(y)=\sum_{z_{D}^{\prime}} Q\left[Y \cup Z_{D}^{\prime}\right]</script><p>추가로, $Z_{D} \backslash Z_{D}^{\prime}$는 $X$를 거쳐야만 $Y$로 가는 path가 있기 때문에,</p>
+<script type="math/tex; mode=display">
+Q\left[Y \cup Z_{D}^{\prime}\right]=\sum_{z_{D} \setminus z_{D}^{\prime}} Q\left[Y \cup Z_{D}\right]</script><p>기존의 $Q\left[Y \cup Z_{D}\right]$에서 sum out이 이뤄진 형태이기 때문에 더 쉬운 문제이다.</p>
+<hr>
+<p><strong>예시</strong> $P(v)=P\left(x_{2} \mid x_{1}, z\right) Q\left[\left\{X_{1}, Z, Y\right\}\right]$</p>
+<img src="/2021/07/05/Identifying-Dynamic-Sequential-Plans/image-20210612173000735.png" class="">
+<p>$\sigma_{X_{2}}=d o\left(g\left(x_{1}, z\right)\right)$인 경우, $Q\left [\{ Y, Z\} \right]$를 identify하는 문제인데 이는 identifiable하지 않다.</p>
+<blockquote>
+<p>이에 대한 내용은 <a href="">Huang and Valtorta, 2006</a>에 나와있다.</p>
+</blockquote>
+<p>$\sigma_{X_{2}}=d o\left(g\left(x_{1}\right)\right)$인 경우, $Q[\{Y\}]$를 identify하는 문제인데 이는 identifiable하다.</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P\left(y ; \sigma_{X_{1}}, \sigma_{X_{2}}=d_{X_{1}}\right) &= \sum_{x_{1}, x_{2}} P\left(x_{1} ; \sigma_{X_{1}}\right) P^{*}\left(x_{2} \mid x_{1}\right) Q[\{Y\}]
+
+\\
+\\
+
+Q\left[\left\{X_{1}, Z, Y\right\}\right] &=P(v) / P\left(x_{2} \mid x_{1}, z\right) \\
+&=P\left(y \mid x_{1}, x_{2}, z\right) P\left(x_{1}, z\right)
+
+\\
+\\
+
+
+
+Q[\{Y\}] &=\frac{\sum_{z} Q\left[\left\{X_{1}, Z, Y\right\}\right]}{\sum_{y, z} Q\left[\left\{X_{1}, Z, Y\right\}\right]} \\
+&=\sum_{z} P\left(y \mid x_{1}, x_{2}, z\right) P\left(z \mid x_{1}\right)
+
+\end{aligned}</script><blockquote>
+<p>마지막 등식을 체계적으로 구하는 방법은…?</p>
+</blockquote>
+<p>이 경우, unconditional plan은 바로 구할 수 있다.</p>
+<script type="math/tex; mode=display">
+P_{x_{1}, x_{2}}(y)=Q[\{Y\}]=\sum_{z} P\left(y \mid x_{1}, x_{2}, z\right) P\left(z \mid x_{1}\right)</script><h2 id="5-2-Identification-via-conditional-causal-effects"><a href="#5-2-Identification-via-conditional-causal-effects" class="headerlink" title="5.2 Identification via conditional causal effects?"></a>5.2 Identification via conditional causal effects?</h2><p>Pearl의 4.2에서, <em>D(S)PI</em>의 필요충분조건이 $P_{x}(y \mid z)$의 identifiability라고 했었지만 이는 single variable $X$에 대해서만 맞는 말이다.</p>
+<p>single variable $X$에 대해서 Theorem 1을 적용시,</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P\left(y ; \sigma_{X}=d o(g(z))\right)&=\left.\sum_{z} P_{x}(y \mid z)\right|_{x=g(z)} P(z)
+\\
+
+P\left(y ; \sigma_{X}=d_{Z}\right)&=\sum_{x, z} P_{x}(y \mid z) P^{*}(x \mid z) P(z)
+\end{aligned}</script><p>결국, $P_{x}(y \mid z)$의 identifiability와 $P\left(y ; \sigma_{X}\right)$의 identifiability는 동치이다.</p>
+<hr>
+<p>여러개의 variable $X$를 고려해보자.</p>
+<p>Let $\sigma_{X_{i}}=\operatorname{do}\left(g_{i}\left(C_{i}\right)\right)$</p>
+<p>Let $Z_{\sigma_{X}}=Z \cap\left(\cup_{i} C_{i}\right)$ be the set of conditioning variables in the strategy $\sigma_X$.</p>
+<p><a href="">Pearl 2006</a>은</p>
+<script type="math/tex; mode=display">
+P\left(y ; \sigma_{X}\right)=\sum_{z_{\sigma_{X}}} P_{x_{z}}\left(y \mid z_{\sigma_{X}}\right) P_{x_{z}}\left(z_{\sigma_{X}}\right)</script><p>임을 보이며, sequential conditional plan은 $P_{x}(y \mid z)$와 $P_{x}(z)$를 identify하는 문제라고 제안하였다.</p>
+<p>그러나 이는 필요조건이 아니라는 걸 보이겠다. Theorem 1을 사용하면</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P\left(y ; \sigma_{X}\right)&=\sum_{x, z_{\sigma_{X}}} \delta\left(x_{i}, g_{i}\left(C_{i}\right)\right) P_{x}\left(y, z_{\sigma_{X}}\right)
+\\
+&= \sum_{x, z_{\sigma_X}} \delta \left(x_{i}, g_{i}\left(C_{i}\right)\right) \sum_{z \setminus z_{\sigma_{X}}} Q\left[Y, Z \right]
+\end{aligned}</script><p>로 표현할 수 있고, $Q\left [Y, Z \right]$에서 sum-out이 일어난다면 $P_{x}(y \mid z)$와 $P_{x}(z)$ identification이 불가능하더라도 $Q\left [Y, Z \right]$는 identifiable할 것이다.</p>
+<hr>
+<p><strong>예시</strong> $P(v)=P\left(y \mid x_{1}, x_{3}, z_{3}\right) P\left(x_{3} \mid x_{2}, z_{3}\right) P\left(z_{1}\right) Q\left[\left\{X_{2}, Z_{3}\right\}\right] Q\left[\left\{X_{1}, Z_{2}\right\}\right]$</p>
+<img src="/2021/07/05/Identifying-Dynamic-Sequential-Plans/image-20210612185520312.png" class="">
+<ul>
+<li>$\sigma_{X}=\left\{\sigma_{X_{1}}=\operatorname{do}\left(g_{1}\left(Z_{1}\right)\right), \sigma_{X_{2}}=d o\left(g_{2}\left(Z_{2}\right)\right), \sigma_{X_{3}}=  \operatorname{do}\left(g_{3}\left(Z_{3}\right)\right)\right\}$</li>
+<li><img src="/2021/07/05/Identifying-Dynamic-Sequential-Plans/image-20210612225722131.png" class=""></li>
+<li>$X_D = \{ X_1, X_3\}, $$Z_{D}=\left\{Z_{1}, Z_{3}\right\}$</li>
+<li>Theorem 1이 말하길 $Q\left[\left\{Y, Z_{1}, Z_{3}\right\}\right]$을 identify하면 된다.</li>
+<li>$Q\left[\left\{Y, Z_{1}, Z_{3}\right\}\right] = Q\left[\left\{Y\right\}\right] Q\left[\left\{Z_{1}\right\}\right] Q\left[\left\{ Z_{3}\right\}\right]$</li>
+<li>$Q\left[\left\{Z_{3}\right\}\right]=\sum P\left(z_{3} \mid u_{2}\right) P\left(u_{2}\right)=P\left(z_{3}\right)$</li>
+</ul>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P\left(y ; \sigma_{X}\right) &=\sum_{x_{d}, z_{d}} \prod_{i} \delta\left(x_{i}, g_{i}\left(z_{i}\right)\right) Q\left[\left\{Y\right\}\right] Q\left[\left\{Z_{1}\right\}\right] Q\left[\left\{ Z_{3}\right\}\right]
+\\
+&= \sum_{x_{1}, x_{3}, z_{1}, z_{3}} \delta\left(x_{1}, g_{1}\left(z_{1}\right)\right) \delta\left(x_{3}, g_{3}\left(z_{3}\right)\right) P\left(y \mid x_{1}, x_{3}, z_{3}\right)P\left(z_{1}\right) Q\left[\left\{Z_{3}\right\}\right]
+\\
+&= \sum_{z_{1}, z_{3}} P\left(y \mid g_{1}\left(z_{1}\right), g_{3}\left(z_{3}\right), z_{3}\right) P\left(z_{1}\right) P\left(z_{3}\right)
+\end{aligned}</script><ul>
+<li>반면에 <a href="">Pearl 2006</a>은 $P_{x_{1} x_{2} x_{3}}\left(y, z_{1}, z_{2}, z_{3}\right)=Q\left[\left\{Y, Z_{1}, Z_{2}, Z_{3}\right\}\right]$을 identify해야한다고 했다.</li>
+</ul>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P_{x_{1} x_{2} x_{3}}\left(y, z_{1}, z_{2}, z_{3}\right)&=P\left(y \mid x_{1}, x_{3}, z_{3}\right) P\left(z_{1}\right) Q\left[\left\{Z_{3}\right\}\right] Q\left[\left\{Z_{2}\right\}\right] \\
+&=P\left(y \mid x_{1}, x_{3}, z_{3}\right) P\left(z_{1}\right) P\left(z_{3}\right) Q\left[\left\{Z_{2}\right\}\right]
+\end{aligned}</script><ul>
+<li>$Q\left[\left\{Z_{2}\right\}\right]$는 identifiable하지 않기 떄문에 $P_{x_{1} x_{2} x_{3}}\left(y, z_{1}, z_{2}, z_{3}\right)$는 identifiable하지 않다.</li>
+<li>좀 더 자세하게 말하면,<ul>
+<li>$P_{x_{1} x_{2} x_{3}}\left(y \mid z_{1}, z_{2}, z_{3}\right)=P\left(y \mid x_{1}, x_{3}, z_{3}\right)$ 이건 identifiable했는데</li>
+<li>$P_{x_{1} x_{2} x_{3}}\left(z_{1}, z_{2}, z_{3}\right)=P\left(z_{1}\right) P\left(z_{3}\right) Q\left[\left\{Z_{2}\right\}\right]$ 이게 identifiable하지 않았다.</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/identifiability/" rel="tag"># identifiability</a>
+              <a href="/tags/paper-review/" rel="tag"># paper review</a>
+              <a href="/tags/dynamic-treatment-regime/" rel="tag"># dynamic treatment regime</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/07/05/On-the-Identification-of-Causal-Effects/" rel="prev" title="On the Identification of Causal Effects">
+      <i class="fa fa-chevron-left"></i> On the Identification of Causal Effects
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/" rel="next" title="Near-Optimal Reinforcement Learning in Dynamic Treatment Regimes">
+      Near-Optimal Reinforcement Learning in Dynamic Treatment Regimes <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-Abstract"><span class="nav-text">0. Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1. Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Previous-Work-and-Notation"><span class="nav-text">2.  Previous Work and Notation</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Problem-Formulation"><span class="nav-text">3. Problem Formulation</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Identification-of-Sequential-Plans"><span class="nav-text">4. Identification of Sequential Plans</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Discussion"><span class="nav-text">5. Discussion</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-Unconditional-plans-are-easier"><span class="nav-text">5.1 Unconditional plans are easier</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-Identification-via-conditional-causal-effects"><span class="nav-text">5.2 Identification via conditional causal effects?</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">JaeHyun Lee</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JaeHyun Lee</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://leequant761.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://leequant761.github.io/2021/07/05/Identifying-Dynamic-Sequential-Plans/";
+    this.page.identifier = "2021/07/05/Identifying-Dynamic-Sequential-Plans/";
+    this.page.title = "Identifying Dynamic Sequential Plans";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://leequant761.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

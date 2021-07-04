@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leequant761.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="0. AbstractDTR은 decision rule들의 sequence이고 환자의 이전 치료와 covariate history에 기반해 어떻게 치료할 지를 명시한다. DTR은 만성(chronic) 질환 관리에 효과적이고, 개인화된 의사결정에 핵심적이다. 이 논문에선, observational data도 활용 가능할 때, optimal DTR을 찾는 onl">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Near-Optimal Reinforcement Learning in Dynamic Treatment Regimes">
+<meta property="og:url" content="https://leequant761.github.io/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/index.html">
+<meta property="og:site_name" content="Study Repo">
+<meta property="og:description" content="0. AbstractDTR은 decision rule들의 sequence이고 환자의 이전 치료와 covariate history에 기반해 어떻게 치료할 지를 명시한다. DTR은 만성(chronic) 질환 관리에 효과적이고, 개인화된 의사결정에 핵심적이다. 이 논문에선, observational data도 활용 가능할 때, optimal DTR을 찾는 onl">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-07-04T16:02:15.000Z">
+<meta property="article:modified_time" content="2021-07-04T16:08:20.126Z">
+<meta property="article:author" content="JaeHyun Lee">
+<meta property="article:tag" content="paper review">
+<meta property="article:tag" content="dynamic treatment regime">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://leequant761.github.io/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Near-Optimal Reinforcement Learning in Dynamic Treatment Regimes | Study Repo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Study Repo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leequant761.github.io/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="JaeHyun Lee">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Study Repo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Near-Optimal Reinforcement Learning in Dynamic Treatment Regimes
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-07-05 01:02:15 / Modified: 01:08:20" itemprop="dateCreated datePublished" datetime="2021-07-05T01:02:15+09:00">2021-07-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Causality/" itemprop="url" rel="index"><span itemprop="name">Causality</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Causality/Reinforcement/" itemprop="url" rel="index"><span itemprop="name">Reinforcement</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="0-Abstract"><a href="#0-Abstract" class="headerlink" title="0. Abstract"></a>0. Abstract</h1><p>DTR은 decision rule들의 sequence이고 환자의 이전 치료와 covariate history에 기반해 어떻게 치료할 지를 명시한다.</p>
+<p>DTR은 만성(chronic) 질환 관리에 효과적이고, 개인화된 의사결정에 핵심적이다.</p>
+<p>이 논문에선, observational data도 활용 가능할 때, optimal DTR을 찾는 online RL 문제를 다룬다.</p>
+<ul>
+<li>이전 history를 사용하지 않고서 online setting에서 near-optimal DTR에 도달하는 adaptive algorithm을 개발했다.</li>
+<li>Confounded observational data로부터 유의미한 regret의 upper/lower bound를 도출한다.</li>
+<li>이들을 엮어서 confounded observational data도 활용하여 optimal DTR을 학습하는 RL algorithm을 개발했다.</li>
+</ul>
+<span id="more"></span>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a>1. Introduction</h1><p>의료 실무에서 환자는 일반적으로 여러단계에 걸쳐 치료를 받는다.</p>
+<p>의사는 반복적으로 환자의 state(바이러스 수치, 진단결과)에 맞춰서 treatment를 조정하게 된다.</p>
+<p>DTR은 longitudinal setting에서 personalized treatment의 매력적인 framework를 제공한다.</p>
+<p>DTR은 adaptive treatment strategy, treatment policy로도 알려져있다.</p>
+<p>DTR은 암, 당뇨, 정신병과 같은 만성질환의 개인화된 치료에 효과적이다.</p>
+<hr>
+<p><strong>예시</strong></p>
+
+<p>알코올 의존증 환자들의</p>
+<ul>
+<li>condiition $S_1$에 기반하여</li>
+<li>처방 $X_1$을 하고  </li>
+<li>효과가 있었냐 없었냐 $S_2$로 구분하고 </li>
+<li>초기 치료를 유지할 지 바꿀 지 $X_2$ 결정하여</li>
+<li>환자의 12개월 간의 금주 비율 $Y$이 어떨 지에 대해 관심이 있다.</li>
+<li>$U$는 unobserved confounder를 나타내고 환자에 대해 모르는 모든 요인들에 대한 요약이다.</li>
+</ul>
+<blockquote>
+<p>DTR은 이들 전체의 SCM을 가르키고 treatment policy는 $X$를 결정짓는 SCM의 일부분을 가르킨다.</p>
+</blockquote>
+<hr>
+<p>Policy learning in DTR은 $Y$를 최대화하는 optimal policy를 찾는 것이다.</p>
+<p>Main challenge는 DTR의 parameter를 모르기 때문에 $E_{\boldsymbol{\pi}}\left[Y\right]$를 직접적으로 계산할 수 없다.</p>
+<hr>
+<p>Causal Inference 쪽에서 대부분의 work은 causal assumption과 finite observational data를 갖고서 $E_{\boldsymbol{\pi}}\left[Y\right]$를 identify하는 것에 집중한다.</p>
+<blockquote>
+<p>optimal policy를 찾진 않음!</p>
+</blockquote>
+<p>Unobserved confounder가 없으면($\approx$ conditional ignorability), sequential backdoor criterion으로 estimate할 수 있다.</p>
+<p>Ignorability가 유지될 때, $E_{\boldsymbol{\pi}}\left[Y\right]$를 estimate하는 효율적인 방법들이 있다.</p>
+<ol>
+<li>Propensity Score [26]</li>
+<li>Inverse probability of treatment weighting [21, 25]</li>
+<li>Q-learning [31, 20]</li>
+</ol>
+<blockquote>
+<p>Randomized experiment로 estimate하는 논문도 있으나 비용적인 문제가 있다.</p>
+</blockquote>
+<hr>
+<p>RL은 exploration과 exploitation의 balancing으로 효율적으로 policy learning을 한다.</p>
+<blockquote>
+<p>DTR learning이라고 표현됐는데, Model based RL이라면 맞는 표현일지도…?</p>
+</blockquote>
+<p>RL은 일반적인 MDP 셋팅에서 잘 작동한다.</p>
+<p>이의 variation으로는 multi-armed bandits, partially-observable MDP, factored MDPs가 있다.</p>
+<hr>
+<p>우리의 focus는 observational data도 활용하면서 policy를 학습하는 것이다.</p>
+
+<p>CI 관점에서 어려운 것은 unobserved confounder 때문이다.</p>
+<p>RL 관점에서 어려운 것은 이전의 treatment $X_1$이 최종 outcome $Y$에 영향을 주는 구조이다.</p>
+<p>비록 Thompson Samling과 같은 heuristic approach가 있으나, 모든 observational data를 망각(oblivious)하기 때문에 optimal은 아니다.</p>
+<blockquote>
+<p>이 부분은 잘 모르는 데 다시 보도록 하자. see [35]</p>
+</blockquote>
+<hr>
+<p>이 논문은 이러한 어려움들을 극복해내는 것이다.</p>
+<p>이 문제를 large confounded observational data를 활용하면서 unknown DTR을 최적화할 수 있는 RL strategy를 도입하여 해결하겠다.</p>
+<p><strong>Contribution</strong></p>
+<ol>
+<li>UC-DTR : observational data없이, DTR setting에서 near-optimal regret bound에 도달하는 알고리즘</li>
+<li>Upper/Lower bound : DTR 구조에 기반해서(Thm 5, 6), observational data를 활용한 bound 도출</li>
+<li>$\text { UC }^{c}-\text { DTR }$: 효율적으로 bound를 활용하여 online setting에서 학습을 가속화한다.</li>
+</ol>
+<p>결과에 대한 검증은 randomly generated DTR과 암치료 데이터에서 이루어진다.</p>
+<h2 id="1-1-Preliminaries"><a href="#1-1-Preliminaries" class="headerlink" title="1.1 Preliminaries"></a>1.1 Preliminaries</h2><p>skip</p>
+<h1 id="2-Optimizing-Dynamic-Treatment-Regimes"><a href="#2-Optimizing-Dynamic-Treatment-Regimes" class="headerlink" title="2. Optimizing Dynamic Treatment Regimes"></a>2. Optimizing Dynamic Treatment Regimes</h1><p><strong>Definition 1</strong> (DTR의 SCM 버전)</p>
+<p>​    DTR is a SCM $\langle\boldsymbol{U}, \boldsymbol{V}, \boldsymbol{F}, P(\boldsymbol{u})\rangle$ where $\boldsymbol{V}=\left\{\overline{\boldsymbol{X}}_{K}, \overline{\boldsymbol{S}}_{K}, Y\right\}$</p>
+<blockquote>
+<p>$K$는 total stage를 의미함</p>
+</blockquote>
+<p>​    For $k=1,  \cdots , K$</p>
+<ol>
+<li>$X_k$ is a finite decision decided by a behavior policy $x_{k} \leftarrow f_{k}\left(\overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{x}}_{k-1}, \boldsymbol{u}\right)$</li>
+<li>$S_k$ is a finite state decided by a transition function $s_{k} \leftarrow \tau_{k}\left(\overline{\boldsymbol{x}}_{k-1}, \overline{\boldsymbol{s}}_{k-1}, \boldsymbol{u}\right)$</li>
+<li>$Y$ is the primary outcome at the final stage $K$ decided by a reward function $y \leftarrow r\left(\overline{\boldsymbol{x}}_{K}, \overline{\boldsymbol{s}}_{K}, \boldsymbol{u}\right)$</li>
+</ol>
+<hr>
+<p>DTR $M^*$는 observational distribution $P\left(\overline{\bar{x}}_{K}, \overline{\boldsymbol{s}}_{K}, y\right)$를 유도한다.</p>
+<p>Policy들의 collection은 policy space $\Pi$를 정의한다.</p>
+<p>Policy $\boldsymbol\pi$는 interventional distribution over $\overline{\boldsymbol{X}}_{K}, \overline{\boldsymbol{S}}_{K}, Y$를 유도한다.</p>
+<script type="math/tex; mode=display">
+P_{\pi}\left(\overline{\boldsymbol{x}}_{K}, \overline{\boldsymbol{s}}_{K}, y\right)=P_{\overline{\boldsymbol{x}}_{K}}\left(y \mid \overline{\boldsymbol{s}}_{K}\right) \prod_{k=0}^{K-1} P_{\overline{\boldsymbol{x}}_{k}}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right) \pi_{k+1}\left(x_{k+1} \mid \overline{\boldsymbol{s}}_{k+1}, \overline{\boldsymbol{x}}_{k}\right)</script>
+<p>$M^{<em>} + \pi$에 따라 expected reward $V_{\boldsymbol{\pi}}\left(M^{</em>}\right)=E_{\boldsymbol{\pi}}[Y]$ 이 주어진다.</p>
+<p>우리는 optimal policy $\pi^{<em>} := \arg \max _{\boldsymbol{\pi} \in \boldsymbol{\Pi}} V_{\boldsymbol{\pi}}\left(M^{</em>}\right)$ 를 찾는 게 목표이다.</p>
+<blockquote>
+<p>Decision theory에서 random policy들만으로 구성된 policy space나 deterministic policy로만 구성된 policy space나 optimal value가 같다는 게 알려져있으니 편의를 위해 deterministic policy만으로 구성된 policy space를 사용하겠다.</p>
+</blockquote>
+<hr>
+<p>Unknown DTR $M^{*}$를 최적화하고 싶다.</p>
+<blockquote>
+<p>DTR 최적화라는 표현이 자주 나오는데 무슨 최적화인지 아직 잘 모르겠다.</p>
+</blockquote>
+<p>Agent(의사)는 반복된 experiment들로 학습한다.</p>
+<p>이 때 각 episode $t$는 DTR과 policy의 realization이다.</p>
+<p>$T$번 째 episode까지의 regret을 $R(T)=\sum_{t=1}^{T}\left(V_{\pi^{<em>}}\left(M^{</em>}\right)-Y^{t}\right)$로 표기하자.</p>
+<p>Agent가 optimal policy $\pi^*$에 수렴함에 따라 $\lim _{T \rightarrow \infty} E[R(T)] / T=0$을 기대한다.</p>
+<h2 id="2-1-The-UC-DTR-Algorithm"><a href="#2-1-The-UC-DTR-Algorithm" class="headerlink" title="2.1 The UC-DTR Algorithm"></a>2.1 The UC-DTR Algorithm</h2><p>UC-DTR은 unknown DTR을 최적화하는 RL 알고리즘이다.</p>
+<p>Domain $\boldsymbol{\mathcal{S}}, \boldsymbol{\mathcal{X}}$ 상의 지식만 갖고서 total regret의 near optimal에 도달한다는 것을 증명하겠다.</p>
+<blockquote>
+<p>도메인 상의 지식이 뭘 말하는 건지 아직 모름</p>
+</blockquote>
+
+<p><strong>Step 1~3</strong> : 이전 에피소드들에서 얻어진 experimental samples들로 empirically estimate</p>
+<p><strong>Step 4</strong> : 타당한(emprical에서 크게 벗어나지 않은) DTR 후보들의 집합 $\mathcal{M}_{t}$ 정의</p>
+<p><strong>Step 5</strong> : 가장 optimistic한 DTR $M_t \in \mathcal{M}_{t}$ 에서 optimal policy $\boldsymbol{\pi}_{t}$ 를 찾기</p>
+<hr>
+<h3 id="2-1-1-Finding-Optimistic-DTRs"><a href="#2-1-1-Finding-Optimistic-DTRs" class="headerlink" title="2.1.1 Finding Optimistic DTRs"></a>2.1.1 Finding Optimistic DTRs</h3><p>Bellman equation은 DTR이 고정됐을 때 optimal policy를 찾는 걸 가능하게 해준다.</p>
+<p>결국에 Step 5에서 가장 중요한 건 optimistic DTR을 찾으면 된다.</p>
+<p>이 문제를 풀기위해 standard dynamic programming planner[5]를 확장하는 방법을 도입한다.</p>
+<hr>
+<p>우선 continuous decision space $\overline{\boldsymbol{\mathcal{X}}}^{+}=\overline{\boldsymbol{\mathcal{X}}}_{K}^{+}$를 고려하자.</p>
+<blockquote>
+<p>original $\overline{\boldsymbol{\mathcal{X}}}_{K}$는 가산+이산 set임.</p>
+</blockquote>
+<p>${}^{\forall} \overline{\boldsymbol{x}}_{k} \in \overline{\boldsymbol{\mathcal{X}}}_{k}$, $^{\exists}  \overline{\boldsymbol{x}}^+_{k} \in \overline{\boldsymbol{\mathcal{X}}}^+_{k}$ s.t.</p>
+<script type="math/tex; mode=display">
+P_{\bar{x}_{k}^+}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right) = P_{\overline{\boldsymbol{x}}_{k}}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right)</script><p>$^\forall \boldsymbol\pi_{+} \text { on } M_{+}$, $^\exists\boldsymbol{\pi}_{t} \text{ on } M_t$ s.t.</p>
+<script type="math/tex; mode=display">
+P_{\boldsymbol\pi_{+}}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right) = P_{\boldsymbol\pi_{t}}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right)</script><p>그래서 Step 5는 extended DTR $M_+$에서 optimal policy를 찾는 문제와 동일하다.</p>
+<blockquote>
+<p>아직 제대로 이해가진 않았음…</p>
+</blockquote>
+<p>Let $V^{<em>}\left(\overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{x}}_{k-1}\right)$ denote the optimal value $E_{\pi_{+}^{</em>}}\left[Y \mid \bar{s}_{k}, \overline{\bar{x}}_{k-1}\right]$.</p>
+<blockquote>
+<p>Value function에 action이 들어간 이유는 이전의 action들에도 영향을 받는다는 설정 때문</p>
+</blockquote>
+<p>Then, the Bellman equation on $M_+$ for $k=1, \cdots, K-1$ is defined as follows:</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+V^{*}\left(\overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{x}}_{k-1}\right)&= \max _{x_{k}}\left\{\max _{P_{\overline{\boldsymbol{x}}_{k}}\left(\cdot \mid \overline{\boldsymbol{s}}_{k}\right) \in \mathcal{P}_{k}}\left\{\sum_{s_{k+1}} V^{*}\left(\overline{\boldsymbol{s}}_{k+1}, \overline{\boldsymbol{x}}_{k}\right) P_{\overline{\boldsymbol{x}}_{k}}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right)\right\}\right\}
+
+\\
+V^{*}\left(\overline{\boldsymbol{s}}_{K}, \overline{\boldsymbol{x}}_{K-1}\right)&=  \max _{x_{K}} \max_{E_{\overline{\boldsymbol{w}}_{K}}\left[Y \mid \overline{\boldsymbol{s}}_{K}\right] \in \mathcal{R}}  E_{\overline{\boldsymbol{x}}_{K}}\left[Y \mid \overline{\boldsymbol{s}}_{K}\right]
+\end{aligned}</script><p>where $\mathcal{R}, \mathcal{P}_{k}$ are the convex polytope of parameters $E_{\overline{\boldsymbol{x}}_{K}}\left[Y \mid \overline{\boldsymbol{s}}_{K}\right], P_{\overline{\boldsymbol{x}}_{k}}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right)$</p>
+<p>이는 convex polytope 상에서의 linear programming으로 해결될 수 있다.</p>
+<blockquote>
+<p>의도는 알겠으나 방법적으로 이해가 잘 되지 않는다…</p>
+</blockquote>
+<h2 id="2-2-Theoretical-Analysis"><a href="#2-2-Theoretical-Analysis" class="headerlink" title="2.2 Theoretical Analysis"></a>2.2 Theoretical Analysis</h2><p>UC-DTR의 asymptotic behavior를 알아보자.</p>
+<p>모든 증명들은 appendix에 제공된다.</p>
+<hr>
+<p><strong>Theorem 1</strong> (Upper bound)</p>
+<p>​    The regret of UC-DTR is bounded by w/ probability $\geq 1-\delta$</p>
+<script type="math/tex; mode=display">
+R(T) \leq12 K \sqrt{|\mathcal{S}||\mathcal{X}| T \log (2 K|\boldsymbol{\mathcal{S}} \| \boldsymbol{\mathcal{X}}| T / \delta)}+4 K \sqrt{T \log (2 T / \delta)}</script><hr>
+<p><strong>Theorem 2</strong> (Gap-dependent upper bound)</p>
+<p>​    Let $\mathbf{\Pi}^{-}$ denote the set of sub-optimal policies $\left\{\boldsymbol{\pi} \in \boldsymbol{\Pi}: V_{\boldsymbol{\pi}}\left(M^{<em>}\right)&lt;V_{\boldsymbol{\pi}^{</em>}}\left(M^{*}\right)\right\}$</p>
+<p>​    Let $\Delta_{\boldsymbol{\pi}}=\hat{V}_{\boldsymbol{\pi}^{<em>}}\left(M^{</em>}\right)-V_{\boldsymbol{\pi}}\left(M^{*}\right)$</p>
+<p>​    Then, the expected regret of UC-DTR with parameter $\delta=\frac{1}{T}$ is bounded by</p>
+<script type="math/tex; mode=display">
+E[R(T)] \leq \max _{\boldsymbol{\pi} \in \Pi^{-}}\left\{\frac{33^{2} K^{2}|\boldsymbol{\mathcal{S}}||\boldsymbol{\mathcal{X}}| \log (T)}{\Delta_{\pi}}+\frac{32}{\Delta_{\pi}^{3}}+\frac{4}{\Delta_{\pi}}\right\}+1</script><hr>
+<p><strong>Theorem 3</strong> (Lower bound)</p>
+<p>​    For any algorithm, there is a DTR $M$ with horizon $K$ s.t.</p>
+<script type="math/tex; mode=display">
+E[R(T)] \geq 0.05 \sqrt{|\mathcal{S} \| \mathcal{X}| T} \quad \text{where $T\geq|\boldsymbol{\mathcal{S}} \| \boldsymbol{\mathcal{X}}|$}</script><hr>
+<p>Theorem 1의 upper bound $\tilde{\mathcal{O}}(K \sqrt{|\boldsymbol{\mathcal{S}}||\boldsymbol{\mathcal{X}}| T})$가 이론적으로 도달할 수 있는 lower bound $\Omega(\sqrt{|\boldsymbol{\mathcal{S}}||\boldsymbol{\mathcal{X}}| T})$와 비슷하므로 UC-DTR은 near-optimal이다.</p>
+<h1 id="3-Learning-from-Confounded-Observations"><a href="#3-Learning-from-Confounded-Observations" class="headerlink" title="3. Learning from Confounded Observations"></a>3. Learning from Confounded Observations</h1><p>Theorem 1~3은 DTR에서 online learning의 bound 계산에 $\boldsymbol{\mathcal S}, \boldsymbol{\mathcal X}$의 차원을 사용한다.</p>
+<p>만약 이들이 high dimensional일 경우, cumulative regret $R(T)$는 커질 것이다.</p>
+<p>High dimensional에서의 문제를 다루기 위해선…</p>
+<hr>
+<p>가장 자연스러운 방법은 다른 agent들이 그 환경에서 행동하면서 얻어진 abundant observational data를 활용하는 것이다.</p>
+<p>UC-DTR은 observational distribution $P\left(\overline{\boldsymbol{s}}_{K}, \overline{\boldsymbol{x}}_{K}, y\right)$에서의 지식을 활용하지 못한다.</p>
+<p>Observational sample들을 활용하여 online learner의 performance가 향상될 수 있도록하는 procedure를 보이겠다.</p>
+<hr>
+<p>만약 $\overline{\boldsymbol{S}}_{K}$가 $\overline{\boldsymbol{X}}_{K}, Y$에 대한 sequential backdoor criterion을 만족할 때, ${P}_{\overline{\boldsymbol{x}}_{k}}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right)$와 $E_{\overline{\boldsymbol{x}}_{K}}\left[Y \mid \bar{s}_{k}\right]$는 identifiable하다.</p>
+<p>그러면 optimal policy는 Q-learning같은 standard off-policy learning으로 구할 수 있다.</p>
+
+<p>하지만 위처럼 sbc가 깨지는 경우 non identifiability 문제가 발생한다.</p>
+<hr>
+<p><strong>Theorem 4</strong> (non-identifiable할 경우)</p>
+<p>​    Given $P\left(\overline{\boldsymbol{s}}_{K}, \overline{\boldsymbol{x}}_{K}, y\right)&gt;0$, $^\exists \text{DTR } M_1, M_2$ s.t.</p>
+<ul>
+<li>$P^{M_{1}}\left(\overline{\boldsymbol{s}}_{K}, \overline{\boldsymbol{x}}_{K}, y\right)= P^{M_{2}}\left(\overline{\boldsymbol{s}}_{K}, \overline{\boldsymbol{x}}_{K}, y\right)=P\left(\overline{\boldsymbol{s}}_{K}, \overline{\boldsymbol{x}}_{K}, y\right)$</li>
+<li>but</li>
+<li>$\begin{equation}<br>P_{\overline{\boldsymbol{x}}_{K}}^{M_{1}}\left(\overline{\boldsymbol{s}}_{K}, y\right) \neq P_{\overline{\boldsymbol{x}}_{K}}^{M_{2}}\left(\overline{\boldsymbol{s}}_{K}, y\right)<br>\end{equation}$</li>
+</ul>
+<h2 id="3-1-Bounds-and-Partial-Identification-in-DTRs"><a href="#3-1-Bounds-and-Partial-Identification-in-DTRs" class="headerlink" title="3.1 Bounds and Partial Identification in DTRs"></a>3.1 Bounds and Partial Identification in DTRs</h2><p>${P}_{\overline{\boldsymbol{x}}_{k}}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right)$ 와 $E_{\overline{\boldsymbol{x}}_{K}}\left[Y \mid \bar{s}_{k}\right]$ 에 bound를 주는 방식으로 partially identify한다.</p>
+<hr>
+<p><strong>Lemma 1 </strong>(Causal gap이 Observational gap보다 작다.)</p>
+<p>​    For a DTR with $P\left(\overline{\boldsymbol{s}}_{K}, \overline{\boldsymbol{x}}_{K}, y\right)$,</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+P_{\overline{\boldsymbol{x}}_{k}}\left(\overline{\boldsymbol{s}}_{k+1}\right)-P_{\overline{\boldsymbol{x}}_{k}}\left(\overline{\boldsymbol{s}}_{k}\right) \leq P\left(\overline{\boldsymbol{s}}_{k+1}, \overline{\boldsymbol{x}}_{k}\right)-P\left(\overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{x}}_{k}\right)
+\end{equation}</script><hr>
+<p>Lemma 1은 transition probability의 bound를 유도하는 데 사용된다.</p>
+<hr>
+<p><strong>Theorem 5</strong> (Transition probabilities에 대한 bound)</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+\frac{P\left(\overline{\boldsymbol{s}}_{k+1}, \overline{\boldsymbol{x}}_{k}\right)}{\Gamma\left(\overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{x}}_{k-1}\right)} \leq P_{\overline{\boldsymbol{x}}_{k}}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right) \leq \frac{\Gamma\left(\overline{\boldsymbol{s}}_{k+1}, \overline{\boldsymbol{x}}_{k}\right)}{\Gamma\left(\overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{x}}_{k-1}\right)}
+\end{equation}</script><p>​    where </p>
+<ul>
+<li>$\Gamma\left(\overline{\boldsymbol{s}}_{k+1}, \overline{\boldsymbol{x}}_{k}\right)=P\left(\overline{\boldsymbol{s}}_{k+1}, \overline{\boldsymbol{x}}_{k}\right)-P\left(\overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{x}}_{k}\right)+\Gamma\left(\overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{x}}_{k-1}\right)$</li>
+<li>$\Gamma\left(s_{1}\right)=P\left(s_{1}\right)$</li>
+</ul>
+<hr>
+<p>Theorem 5는 DTR의 functional relationship을 활용하여 bound를 제시하였고, 이는 이전에 알려진 bound [17, 3, 39] 보다 낫다.</p>
+<p>Let $\left[a_{\overline{\boldsymbol{x}}_{k}, \overline{\boldsymbol{s}}_{k}}\left(s_{k+1}\right), b_{\overline{\boldsymbol{x}}_{k}, \overline{\boldsymbol{s}}_{k}}\left(s_{k+1}\right)\right] = \left[ \frac{P\left(\overline{\boldsymbol{s}}_{k+1}, \overline{\boldsymbol{x}}_{k}\right)}{\Gamma\left(\overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{x}}_{k-1}\right)},\frac{\Gamma\left(\overline{\boldsymbol{s}}_{k+1}, \overline{\boldsymbol{x}}_{k}\right)}{\Gamma\left(\overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{x}}_{k-1}\right)} \right]$</p>
+<hr>
+<p><strong>Theorem 6</strong> ($\left[a_{\overline{\boldsymbol{x}}_{k}, \overline{\boldsymbol{s}}_{k}}\left(s_{k+1}\right), b_{\overline{\boldsymbol{x}}_{k}, \overline{\boldsymbol{s}}_{k}}\left(s_{k+1}\right)\right] $는 optimal bound이다.)</p>
+<p>​    There exists DTRs $M_{1}, M_{2}$ s.t.</p>
+<ul>
+<li>$P^{M_{1}}\left(\overline{\boldsymbol{s}}_{K}, \overline{\boldsymbol{x}}_{K}, y\right)=P^{M_{2}}\left(\overline{\boldsymbol{s}}_{K}, \overline{\boldsymbol{x}}_{K}, y\right)=P\left(\overline{\boldsymbol{s}}_{K}, \overline{\boldsymbol{x}}_{K}, y\right)$</li>
+<li>$P_{\overline{\boldsymbol{x}}_{k}}^{M_{1}}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right)=a_{\overline{\boldsymbol{x}}_{k}, \overline{\boldsymbol{s}}_{k}}\left(s_{k+1}\right)$</li>
+<li>$P_{\overline{\boldsymbol{x}}_{k}}^{M_{2}}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right)=b_{\overline{\boldsymbol{x}}_{k}, \overline{\boldsymbol{s}}_{k}}\left(s_{k+1}\right)$</li>
+</ul>
+<hr>
+<p><strong>Corollary 1</strong></p>
+<script type="math/tex; mode=display">
+\frac{E\left[Y \mid \bar{s}_{K}, \overline{\boldsymbol{x}}_{K}\right] P\left(\overline{\boldsymbol{s}}_{K}, \overline{\boldsymbol{x}}_{K}\right)}{\Gamma\left(\overline{\boldsymbol{s}}_{K}, \overline{\boldsymbol{x}}_{K-1}\right)} \leq E_{\overline{\boldsymbol{x}}_{K}}\left[Y \mid \bar{s}_{k}\right] \leq 1-\frac{\left(1-E\left[Y \mid \overline{\boldsymbol{s}}_{K}, \overline{\boldsymbol{x}}_{K}\right]\right) P\left(\overline{\boldsymbol{s}}_{K}, \overline{\boldsymbol{x}}_{K}\right)}{\Gamma\left(\overline{\boldsymbol{s}}_{K}, \overline{\boldsymbol{x}}_{K-1}\right)}</script><h2 id="3-2-The-Causal-UC-DTR-Algorithm"><a href="#3-2-The-Causal-UC-DTR-Algorithm" class="headerlink" title="3.2 The Causal UC-DTR Algorithm"></a>3.2 The Causal UC-DTR Algorithm</h2><p>UC-DTR의 성능을 올리기 위해, Theorem 5와 Corollary 1에서 구한 bound를 활용하는 방법을 도입하겠다.</p>
+<p>For $k=1, …, K-1$,</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+
+\boldsymbol{\mathcal{C}}_{k}&=\left\{P  :P_{\overline{\boldsymbol{x}}_{k}}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right) \in\left[a_{\overline{\boldsymbol{x}}_{k}, \overline{\boldsymbol{s}}_{k}}\left(s_{k+1}\right), b_{\overline{\boldsymbol{x}}_{k}, \overline{\boldsymbol{s}}_{k}}\left(s_{k+1}\right)\right] ;\quad \forall (\bar{s}_{k+1}, \overline{\boldsymbol{x}}_{k})\right\}
+
+\\
+\\
+
+\boldsymbol{\mathcal{C}}_{K}&=\left\{ \mathbb E  :\mathbb E_{\overline{\boldsymbol{x}}_{K}}\left[Y \mid \overline{\boldsymbol{s}}_{K}\right] \in\left[a_{\overline{\boldsymbol{x}}_{K}, \overline{\boldsymbol{s}}_{K}}, b_{\overline{\boldsymbol{x}}_{K}, \overline{\boldsymbol{s}}_{K}}\right]  ;\quad \forall (\bar{s}_{k+1}, \overline{\boldsymbol{x}}_{k})\right\}
+
+\end{aligned}</script><p>$\boldsymbol{\mathcal C} =  \{ \boldsymbol{\mathcal C}_1, \boldsymbol{\mathcal C}_2, \cdots, \boldsymbol{\mathcal C}_K\}$ 를 <em>causal bounds</em> 라고 하자.</p>
+<p>$\text {UC}^{c} \text { -DTR }$은 UC-DTR의 변형으로 possible DTR set에 causal bound를 만족해야 한다는 조건을 추가한다.</p>
+<p>그래서 Linear programming 부분에 constraint를 추가하는 방식으로 풀 수 있다.</p>
+
+<p>Let $\left|\boldsymbol{\mathcal{C}}_{k}\right|_{1}=\max _{\overline{\boldsymbol{x}}_{k}, \overline{\boldsymbol{s}}_{k}} \sum_{s_{k+1}}\left|a_{\overline{\boldsymbol{x}}_{k}, \overline{\boldsymbol{s}}_{k}}\left(s_{k+1}\right)-b_{\overline{\boldsymbol{x}}_{k}, \overline{\boldsymbol{s}}_{k}}\left(s_{k+1}\right)\right|$</p>
+<p>Let $\left|\boldsymbol{\mathcal{C}}_{K}\right|_{1}=\max _{\overline{\boldsymbol{x}}_{K}, \overline{\boldsymbol{s}}_{K}}\left|a_{\overline{\boldsymbol{x}}_{K}, \overline{\boldsymbol{s}}_{K}}-b_{\overline{\boldsymbol{x}}_{K}, \overline{\boldsymbol{s}}_{K}}\right|$</p>
+<p>Let $|\boldsymbol{\mathcal{C}}|_{1}=\sum_{k=1}^{K}\left|\boldsymbol{\mathcal{C}}_{k}\right|_{1}$</p>
+<hr>
+<p><strong>Theorem 7</strong></p>
+<p>​    The regret of $\text {UC}^{c} \text { -DTR }$ is bounded by w/ probability $\geq 1-\delta$</p>
+<script type="math/tex; mode=display">
+R(T) \leq \min \left\{12 K \sqrt{|\boldsymbol{\mathcal{S}}||\boldsymbol{\mathcal{X}}| T \log (2 K|\boldsymbol{\mathcal{S}} \| \boldsymbol{\mathcal{X}}| T / \delta)},\|\boldsymbol{\mathcal{C}}\|_{1} T\right\}+4 K \sqrt{T \log (2 T / \delta)}</script><hr>
+<ul>
+<li>만약 $T&lt;12^{2}\left|\boldsymbol{\mathcal{S}}|\boldsymbol{\mathcal{X}} | \log (2 K|\boldsymbol{\mathcal{S}} | \boldsymbol{\mathcal{X}}| T / \delta) /| \boldsymbol{\mathcal{C}} |_{1}^{2}\right.$ 이면,  UC-DTR보다 작은 bound이다.</li>
+<li>$|\boldsymbol{\mathcal{C}}|_{1}$이 작을 수록 더 정보가 있다는 것이니, 더 나은 $T$도 더 크다는 걸 확인할 수 있다.</li>
+</ul>
+<hr>
+<p><strong>Theorem 8</strong></p>
+<p>​    The expected regret of $\text {UC}^{c} \text { -DTR }$ with parameter $\delta=\frac{1}{T}$ is bounded by</p>
+<script type="math/tex; mode=display">
+E[R(T)] \leq \max _{\boldsymbol{\pi} \in \Pi_{\boldsymbol{\mathcal{c}}}^{-}}\left\{\frac{33^{2} K^{2}| \boldsymbol{\mathcal{S}} \| \boldsymbol{\mathcal{X}}| \log (T)}{\Delta_{\pi}}+\frac{32}{\Delta_{\pi}^{3}}+\frac{4}{\Delta_{\pi}}\right\}+1</script><hr>
+<ul>
+<li>$\mathbf{\Pi}_{\boldsymbol{C}}^{-} \subseteq \mathbf{\Pi}^{-}$ 이므로, UC-DTR보다 작은 bound이다.</li>
+</ul>
+<h1 id="4-Experiments"><a href="#4-Experiments" class="headerlink" title="4 Experiments"></a>4 Experiments</h1>
+<p>(c)는 Cancer and Leukemia Group B에서 실행된 two-stage clinical trial이다.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/paper-review/" rel="tag"># paper review</a>
+              <a href="/tags/dynamic-treatment-regime/" rel="tag"># dynamic treatment regime</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/07/05/Identifying-Dynamic-Sequential-Plans/" rel="prev" title="Identifying Dynamic Sequential Plans">
+      <i class="fa fa-chevron-left"></i> Identifying Dynamic Sequential Plans
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/" rel="next" title="Stochastic Sequential Neural Networks with Structured Inference">
+      Stochastic Sequential Neural Networks with Structured Inference <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-Abstract"><span class="nav-text">0. Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1. Introduction</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-Preliminaries"><span class="nav-text">1.1 Preliminaries</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Optimizing-Dynamic-Treatment-Regimes"><span class="nav-text">2. Optimizing Dynamic Treatment Regimes</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-The-UC-DTR-Algorithm"><span class="nav-text">2.1 The UC-DTR Algorithm</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-1-Finding-Optimistic-DTRs"><span class="nav-text">2.1.1 Finding Optimistic DTRs</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Theoretical-Analysis"><span class="nav-text">2.2 Theoretical Analysis</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Learning-from-Confounded-Observations"><span class="nav-text">3. Learning from Confounded Observations</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Bounds-and-Partial-Identification-in-DTRs"><span class="nav-text">3.1 Bounds and Partial Identification in DTRs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-The-Causal-UC-DTR-Algorithm"><span class="nav-text">3.2 The Causal UC-DTR Algorithm</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Experiments"><span class="nav-text">4 Experiments</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">JaeHyun Lee</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JaeHyun Lee</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://leequant761.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://leequant761.github.io/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/";
+    this.page.identifier = "2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/";
+    this.page.title = "Near-Optimal Reinforcement Learning in Dynamic Treatment Regimes";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://leequant761.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

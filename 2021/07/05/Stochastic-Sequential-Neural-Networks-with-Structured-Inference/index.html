@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leequant761.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="0. AbstractHigh dimensional time series(HDTS)에서 unsupervised learning은 많은 연구에서 관심을 끌고 있다. 특히 HDTS에서 segmentation을 하는 것은 행동 패턴에 대한 이해에 도움이 될 수 있다.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Stochastic Sequential Neural Networks with Structured Inference">
+<meta property="og:url" content="https://leequant761.github.io/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/index.html">
+<meta property="og:site_name" content="Study Repo">
+<meta property="og:description" content="0. AbstractHigh dimensional time series(HDTS)에서 unsupervised learning은 많은 연구에서 관심을 끌고 있다. 특히 HDTS에서 segmentation을 하는 것은 행동 패턴에 대한 이해에 도움이 될 수 있다.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/image-20210704152526072.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/image-20210704152927360.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/image-20210704155111311.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/image-20210704152526072.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/image-20210704191703011.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/image-20210704194210392.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/image-20210705002040018.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/image-20210705002153640.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/image-20210705002754708.png">
+<meta property="article:published_time" content="2021-07-04T16:10:34.000Z">
+<meta property="article:modified_time" content="2021-07-04T16:16:18.175Z">
+<meta property="article:author" content="JaeHyun Lee">
+<meta property="article:tag" content="paper review">
+<meta property="article:tag" content="sequential latent variable model">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leequant761.github.io/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/image-20210704152526072.png">
+
+<link rel="canonical" href="https://leequant761.github.io/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Stochastic Sequential Neural Networks with Structured Inference | Study Repo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Study Repo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leequant761.github.io/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="JaeHyun Lee">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Study Repo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Stochastic Sequential Neural Networks with Structured Inference
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-07-05 01:10:34 / Modified: 01:16:18" itemprop="dateCreated datePublished" datetime="2021-07-05T01:10:34+09:00">2021-07-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Latent-Variable-Model/" itemprop="url" rel="index"><span itemprop="name">Latent Variable Model</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="0-Abstract"><a href="#0-Abstract" class="headerlink" title="0. Abstract"></a>0. Abstract</h1><p>High dimensional time series(HDTS)에서 unsupervised learning은 많은 연구에서 관심을 끌고 있다.</p>
+<p>특히 HDTS에서 segmentation을 하는 것은 행동 패턴에 대한 이해에 도움이 될 수 있다.</p>
+<span id="more"></span>
+<p>최근 generative sequential modeling에서 RNN과 State Space Model(SSM)의 결합이 제안되고 있다.</p>
+<blockquote>
+<p>SSM은 HMM과 Kalman filter 등을 포함하는 PGM의 class이다.</p>
+</blockquote>
+<p>이를 Stochastic Sequential Neural Network(SSNN) 으로 부르겠다.</p>
+<p>SSNN은 long term dependency와 uncertainty in hidden state도 모델링할 수 있다.</p>
+<blockquote>
+<p>여기서의 uncertainty는 VRNN에서의 variability와 같은 표현 같다.</p>
+</blockquote>
+<p>SSNN에</p>
+<ul>
+<li>discrete latent variable을 활용한 structured inference를 더하여 segmentation을 수행한다.</li>
+<li>정확하고 효율적인 inference를 위해, bi-directional inference network를 제안한다.</li>
+</ul>
+<p>제시하는 모델은</p>
+<ol>
+<li>speech modeling</li>
+<li>automatic segmentation in behavior understanding</li>
+<li>sequential multi-objects recognition</li>
+</ol>
+<p>에서 검증된다.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a>1. Introduction</h1><p>HDTS에서 unsupervised structure learning은 기계번역, 음성인식, 계산생물학 등에서 중요하다.</p>
+<p>예를 들어, medical diagnosis에서 복잡한 물리적 신호의 segmentation은 의사들에게 잠재된 행동을 이해하는 데에 도움을 줄 수 있다.</p>
+<p>Sequential data를 이한 모델링에 RNN과 HMM이 주로 사용된다.</p>
+<p>최근 probabilistic generative model에 RNN을 결합하는 연구들이 있다.</p>
+<p><a href="">Johnson, 2016</a>, <a href="">Dai, 2017b</a>, <a href="">Fraccaro, 2016</a></p>
+<p>Segmentation of natural scene &amp; physiological signal task에서 segmentation은 해석 가능한 이산형 분포이다.</p>
+<p>Neural network로 discrete latent variable를 inference하는 데에 어려움이 있기 때문에, 대부분의 모델은 continuous latent variable만 고려한다.</p>
+<p>비록 <a href="">Dai, 2017b</a>는 discrete variable을 segmentation 예측에 활용하였으나 bi-directional temporal information을 명시적으로 활용하지 않았기에 낮은 performance를 갖는다.</p>
+<p>이러한 문제들을 해결하기 위해 generative network와 inference network로 구성된 SSNN을 제안한다.</p>
+<img src="/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/image-20210704152526072.png" class="">
+<p>Generative network는</p>
+<ul>
+<li>Hidden Semi-Markov Model(HSMM)과 Recurrent HSMM <a href="">Dai, 2017b</a>에 기반한다.</li>
+<li>Continuous RNN hidden state와 SSM의 discrete latent variable로 구성된다.</li>
+</ul>
+<img src="/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/image-20210704152927360.png" class="">
+<p>Inference network는</p>
+<ul>
+<li>bi-directional temporal information을 활용하여 정확하고 효율적으로 inference를 한다.</li>
+</ul>
+<blockquote>
+<p>의도를 이해하려면,  <a href="">Dai, 2017b</a>, <a href="">Krishnan et al., 2016</a> 는 읽어봐야 할 듯 하다.</p>
+</blockquote>
+<p>제안하는 SSNN은</p>
+<ul>
+<li>기존의 sequential data의 complex and long range dependency 모델링은 유지하고</li>
+<li>추가로 효율적인 inference를 통해 SSM의 structure learning 능력을 추가한다.</li>
+</ul>
+<p>제안하는 모델의 performance를 평가하기 위해</p>
+<ol>
+<li>speech modeling 데이터 셋의 segmentation</li>
+<li>Behavior modeling 데이터 셋의 segmentation</li>
+<li>multi-object recognition 데이터 셋의 segmentation</li>
+</ol>
+<p>에서 비교실험을 한다.</p>
+<h1 id="2-Preliminaries"><a href="#2-Preliminaries" class="headerlink" title="2. Preliminaries"></a>2. Preliminaries</h1><p>RNN 관련한 내용은 스킵</p>
+<hr>
+<p>HMM과 HSMM은 sequential learning에서 널리 쓰인다.</p>
+<p>HMM은 각 $\mathbf{x}_{t}$가 hidden state $z_{t} \in\{1,2, \ldots, K\}$에 의해 생성됐다고 가정한다.</p>
+<ul>
+<li>Emission probability $p_{\theta}\left(\mathbf{x}_{t} \mid z_{t}\right)$</li>
+<li>Initial hidden state distribution $p_{\theta}\left(z_{1}\right)$</li>
+<li>Transition probability $p_{\theta}\left(z_{t} \mid z_{t-1}\right)$</li>
+</ul>
+<hr>
+<p>HSMM은 HMM의 유명한 extension이다.</p>
+<p>이는 추가로 time duration variable $d_{t} \in\{1,2, . ., M\}$을 도입하였다.</p>
+<p>이 때, $M$은 segment가 가질 수 있는 최장 길이를 의미한다.</p>
+<p>HSMM은 $\mathbf{x}_{1: T}$를 $L$개의 segment로 분해한다.</p>
+<p>$L$개의 segment의 시작점들을 $\mathbf{s}_{1: L}=\left[s_{1}, s_{2}, . ., s_{L}\right]$로 두겠다.</p>
+<img src="/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/image-20210704155111311.png" class="">
+<p>$i$번 째 segment의 시작점 $s_i$ 부터 $s_{i}+d_{s_{i}}-1$ 까지는 hidden state $z$가 고정된다.</p>
+<p>HSMM의 많은 variant (HDP-HSMM, subHSMM)들이 있다.</p>
+<p>이들은 state duration length에 임의의 분포를 갖는 것을 허용하였다.</p>
+<hr>
+<p>HMM이나 HSMM은 latent space를 명시적으로 모델링할 수 있고 해석가능한 representation을 얻는 것은 가능한데, long-range temporal dependency를 잡는 데엔 한계가 있다.</p>
+<h1 id="3-Model"><a href="#3-Model" class="headerlink" title="3. Model"></a>3. Model</h1><p>설명의 편의를 위해 single sequence에서의 모델을 나타내겠다.</p>
+<p>Multiple sequence로의 확장은 바로 적용가능하다.</p>
+<h2 id="3-1-Generative-Model"><a href="#3-1-Generative-Model" class="headerlink" title="3.1 Generative Model"></a>3.1 Generative Model</h2><p>Long range temporal dependency와 segmentation을 모델링하기 위해, RNN과 HSMM을 결합하고자한다.</p>
+<img src="/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/image-20210704152526072.png" class="">
+<script type="math/tex; mode=display">
+\begin{aligned}
+p_{\theta}\left(\mathbf{x}_{1: T}, z_{1: T}, d_{1: T}\right)=&p_{\theta}\left(\mathbf{x}_{1: T} \mid z_{1: T}, d_{1: T}\right) \cdot p_{\theta}\left(z_{1}\right) p_{\theta}\left(d_{1} \mid z_{1}\right) \\
+&\prod_{t=2}^{T} p_{\theta}\left(z_{t} \mid z_{t-1}, d_{t-1}\right) p_{\theta}\left(d_{t} \mid z_{t}, d_{t-1}\right)
+\end{aligned}</script><p>Segmentation label $z_t$와 duration variable $d_t$는 categorical variable을 갖는다.</p>
+<p>이들의 분포는</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+
+p_{\theta}\left(z_{t} \mid z_{t-1}, d_{t-1}\right)&=\left\{\begin{array}{ll}
+\mathbb{I}\left(z_{t}=z_{t-1}\right) & \text { if } d_{t-1}>1 \\
+p_{\theta}\left(z_{t} \mid z_{t-1}\right) & \text { otherwise }
+\end{array}\right.
+\\
+\\
+p_{\theta}\left(d_{t} \mid z_{t}, d_{t-1}\right)&=\left\{\begin{array}{ll}
+\mathbb{I}\left(d_{t}=d_{t-1}-1\right) & \text { if } d_{t-1}>1 \\
+p_{\theta}\left(d_{t} \mid z_{t}\right) & \text { otherwise }
+\end{array}\right.
+\end{aligned}</script><p>Transition probability에 대한 학습은 transition matrix 학습으로 구현된다.</p>
+<hr>
+<p>Joint emission probability $p_{\theta}\left(\mathbf{x}_{1: T} \mid z_{1: T}, d_{1: T}\right)$는 segment 단위로 factorize 될 수 있다.</p>
+<p>$i$번째 segment $\mathbf{x}_{s_{i}: s_{i}+d_{s_{i}}-1}$에 대한 factor는</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+p_{\theta}\left(\mathbf{x}_{s_{i}: s_{i}+d_{s_{i}}-1} \mid z_{s_{i}}, d_{s_{i}}\right)&=\prod_{t=s_{i}}^{s_{i}+d_{s_{i}}-1} p_{\theta}\left(\mathbf{x}_{t} \mid \mathbf{x}_{s_{i}: t-1}, z_{s_{i}}\right) 
+\\
+&=\prod_{t=s_{i}}^{s_{i}+d_{s_{i}}-1} p_{\theta}\left(\mathbf{x}_{t} \mid \mathbf{h}_{t}, z_{s_{i}}\right)
+\end{aligned}</script><p>$t$번째 observation $\mathbf{x}_{t}$의 분포는</p>
+<script type="math/tex; mode=display">
+p_{\theta}\left(\mathbf{x}_{t} \mid \mathbf{h}_{t}, z_{s_{i}}\right)=\mathcal{N}\left(x ; \boldsymbol{\mu}, \boldsymbol{\sigma}^{2}\right)</script><p>$\mathbf{h}_{t}$는 과거의 정보들을 담은 $\mathbf h_{t-1}$을 담기 때문에</p>
+<ul>
+<li>segment 안에서의 dependency뿐만 아니라</li>
+<li>segment들 간의 complex dependency를 모델링할 수 있다.</li>
+</ul>
+<hr>
+<ul>
+<li>$\mathbf{h}_{t}=\text{tanh}\left(\mathbf{W}_{x}^{\left(z_{s_{i}}\right)} \mathbf{x}_{t-1}+\mathbf{W}_{h}^{\left(z_{s_{i}}\right)} \mathbf{h}_{t-1}+\mathbf{b}_{h}^{\left(z_{s_{i}}\right)}\right)$<ul>
+<li>$\mathbf{W}_{x} \in \mathbb{R}^{K \times h \times m}$</li>
+<li>$\mathbf{W}_{h}^{(z)} \in \mathbb{R}^{h \times h}$ for $z = 1, 2, \ldots ,K$</li>
+<li>$\mathbf{b}_{h}^{(z)} \in \mathbb{R}^{h}$ for $z = 1, 2, \ldots ,K$</li>
+</ul>
+</li>
+<li>$\boldsymbol{\mu}=\mathbf{W}_{\mu}^{\left(z_{s_{i}}\right)} \mathbf{h}_{t}+ \mathbf b_{\mu}^{\left(z_{s_{i}}\right)}$<ul>
+<li>$\mathbf{W}_{\mu}^{(z)} \in \mathbb{R}^{h \times m}$ for $z = 1, 2, \ldots ,K$</li>
+<li>$\mathbf b_{\mu}^{(z)} \in \mathbb R^m $ for $z = 1, 2, \ldots ,K$</li>
+</ul>
+</li>
+<li>$\log \boldsymbol{\sigma}^{2}=\mathbf{W}_{\sigma}^{\left(z_{s_{i}}\right)} \mathbf{h}_{t}+\mathbf{b}_{\sigma}^{\left(z_{s_{i}}\right)}$<ul>
+<li>$\mathbf{W}_{\sigma}^{(z)} \in \mathbb{R}^{h \times m}$ for $z = 1, 2, \ldots ,K$</li>
+<li>$\mathbf b_{\sigma}^{(z)} \in \mathbb R^m $ for $z = 1, 2, \ldots ,K$</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>Generative model의 모든 parameter들은 $\theta$로 표현하겠다.</p>
+</blockquote>
+<h2 id="3-2-Structured-Inference"><a href="#3-2-Structured-Inference" class="headerlink" title="3.2 Structured Inference"></a>3.2 Structured Inference</h2><p>Maximizing $\log p(\mathbf x)$는 posterior distribution이 일반적으로 intractable하기 때문에 EM 알고리즘으로 해결할 수 없다.</p>
+<p>이에 대해서 최근의 Bayesian Learning에서의 method인 score function이나 SGVB는 tractable solution을 제공한다.</p>
+<p>Score function은 높은 분산을 갖기에 상대적으로 분산이 작은 SGVB를 사용한다.</p>
+<p>Marginal likelihood의 maximization은 ELBO의 maximization으로 이뤄진다.</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\log p_{\theta}(\mathbf{x}) &\geq \mathcal{L}\left(\mathbf{x}_{1: T} ; \theta, \phi\right)
+\\
+&=E_{q_{\phi}\left(z_{1: T}, d_{1: T} \mid \mathbf{x}_{1: T}\right)}\left[\log p_{\theta}\left(\mathbf{x}_{1: T}, z_{1: T}, d_{1: T}\right)-\log q_{\phi}\left(z_{1: T}, d_{1: T} \mid \mathbf{x}_{1: T}\right)\right]
+
+\end{aligned}</script><p>$\theta$는 generative network의 parameter를 나타내고</p>
+<p>$\phi$는 inference network의 parameter를 나타낸다.</p>
+<h2 id="3-2-1-Bi-directional-Inference"><a href="#3-2-1-Bi-directional-Inference" class="headerlink" title="3.2.1 Bi-directional Inference"></a>3.2.1 Bi-directional Inference</h2><p>Posterior로의 informative approximation을 찾기 위해 bi-directional information으로 latent variable을 추론하게 된다.</p>
+<blockquote>
+<p>의도를 이해하려면,  <a href="">Dai, 2017b</a>, <a href="">Krishnan et al., 2016</a>, <a href="">Fraccaro, 2016</a> 는 읽어봐야 할 듯 하다.</p>
+<p>아직 자세히 보진 않았지만, 실시간이 아닌 배치 단위로 posterior를 구하고자 하는 의도가 보인다.</p>
+<p>그 경우에 posterior $p(\mathbf z_{t} \mid \mathbf x_{1:T})$에서의 D-separation을 통해 미래의 observation에 dependent하다는 것을 확인할 수 있다.</p>
+<p>정확한 추론을 위해선, 역방향으로 가는 backward recurrent function $I_{t}$가 필요하다.</p>
+</blockquote>
+<p>bi-directional information을 활용하는 논문 중에 대부분은 continuous variable에 집중을 했다.</p>
+<img src="/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/image-20210704191703011.png" class="">
+<script type="math/tex; mode=display">
+\begin{aligned}
+q\left(z_{t} \mid d_{t-1}, I_{t} ; \phi\right) &=\operatorname{Cat}\left(\operatorname{softmax}\left(\mathbf{W}_{z}^{T} I_{t}\right)\right) \\
+q\left(d_{t} \mid d_{t-1}, z_{t}, I_{t} ; \phi\right) &=\operatorname{Cat}\left(\operatorname{softmax}\left(\mathbf{W}_{d}^{T} I_{t}\right)\right)
+\end{aligned}</script><p>SGVB 알고리즘을 적용하기엔 categorical distributed latent variable이 reparameterizable하지 않기에 Gumbel-Softmax reparameterization trick을 사용한다.</p>
+<h2 id="3-2-2-Gumbel-Softmax-Reparameterization"><a href="#3-2-2-Gumbel-Softmax-Reparameterization" class="headerlink" title="3.2.2 Gumbel-Softmax Reparameterization"></a>3.2.2 Gumbel-Softmax Reparameterization</h2><p>Skip</p>
+<h2 id="3-2-3-Algorithm"><a href="#3-2-3-Algorithm" class="headerlink" title="3.2.3 Algorithm"></a>3.2.3 Algorithm</h2><p>Let $F(z, d)=\log p_{\theta}\left(\mathbf{x}_{1: T}, z_{1: T}, d_{1: T}\right)-\log q\left(z_{1: T}, d_{1: T} \mid \mathbf{x}_{1: T}\right)$</p>
+<p>$z$와 $d$가 Gumbel-Softmax로 대체된 것을 $\tilde{F}(y, g)$로 표기하자.</p>
+<script type="math/tex; mode=display">
+\mathcal{L}\left(\mathbf{x}_{1: T} ; \theta, \phi\right) \approx E_{y \sim \operatorname{Concrete}(\boldsymbol{\pi}(t), \tau)}[\tilde{F}(y, g)]=E_{g \sim \Pi_{N} \operatorname{Gumbel}(0,1)}[\tilde{F}(y, g)]</script><p>Approximated ELBO는 SGVB estimator로 근사가 가능하다.</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\frac{\partial}{\partial \phi} E_{g \sim \prod_{N} \operatorname{Gumbel}(0,1)}[\tilde{F}(y, g)] &=E_{g \sim \prod_{N} \operatorname{Gumbel}(0,1)}\left[\frac{\partial}{\partial \phi}(\tilde{F}(y, g))\right]
+\\
+&\approx \frac{1}{B} \sum_{b=1}^{B} \frac{\partial}{\partial \phi}\left(\tilde{F}\left(y^{b}, g^{b}\right)\right), \quad g^{b}:=\left(g_{1}^{b}, \ldots, g_{N}^{b}\right)
+\end{aligned}</script><img src="/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/image-20210704194210392.png" class="">
+<h1 id="4-Related-Work"><a href="#4-Related-Work" class="headerlink" title="4. Related Work"></a>4. Related Work</h1><p>SSM과 RNN을 결합한 generative sequential data modeling 연구들을 리뷰하겠다.</p>
+<ul>
+<li><a href="">Krishnan, 2015</a>은 linear dynamical system에서 VAE와 continuous SSM을 결합했다.</li>
+<li><a href="">Krishnan, 2016</a>은 future &amp; past hidden variable을 동시에 condition을 건 inference network를 제안했다.</li>
+<li><a href="">Johnson, 2016</a>은 structured inference를 위해 일반적인 emission density를 채택했다..?</li>
+<li><a href="">Fraccaro, 2016</a>은 RNN에 stochastic latent variables를 결합하여 SSM을 확장하였다.</li>
+</ul>
+<p>HDTS에서의 segmentation을 위해 우리의 논문은 SSM part를 discrete latent variable로 구현하였다.</p>
+<hr>
+<p>이의 학습을 위해 variational inference with discrete latent variable의 연구들이 있다.</p>
+<ul>
+<li><a href="">Bayer and Osendorfer, 2014</a>는 RNN 구조의 discrete latent variable을 score function으로 학습했다.</li>
+<li><a href="">Mnih and Rezende (2016)</a>도 score function으로 학습을 하였으나 이의 분산을 줄이기 위해 neural baseline을 도입하였다.</li>
+</ul>
+<hr>
+<p>Linearizing intractable term을 활용한 최적화 테크닉도 있다.</p>
+<blockquote>
+<p>이부분은 잘 모름</p>
+</blockquote>
+<p>Amortized inference 방식으로 학습할 수 있는 Gumbel-Softmax distribution이 등장했다.</p>
+<h1 id="5-Experiment"><a href="#5-Experiment" class="headerlink" title="5. Experiment"></a>5. Experiment</h1><p>SSNN을 여러 상황에서 평가한다.</p>
+<h2 id="5-1-Synthetic-Experiment"><a href="#5-1-Synthetic-Experiment" class="headerlink" title="5.1 Synthetic Experiment"></a>5.1 Synthetic Experiment</h2><p>Pendulum dynamics는 각도와 각속도에 의해 설명된다.</p>
+<script type="math/tex; mode=display">
+m l^{2} \frac{d^{2} \phi(t)}{d t^{2}}=-\mu \frac{d \phi(t)}{d t}+m g l \sin \phi(t)+u(t) .</script><p>펜듈럼의 이미지 sequence들을 데이터셋으로 활용하여 학습했다.</p>
+<p>다음 observation은 단순히 이전의 각도에만 의존하는 것이 아닌 각속도에도 의존하는 복잡한 dependency를 갖는다.</p>
+<img src="/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/image-20210705002040018.png" class="">
+<p>각도와 각속도에 대한 예측을 잘하는 것을 보아 제안하는 SSNN은 복잡한 dependency를 이해할 수 있는 능력이 있다.</p>
+<h2 id="5-2-Speech-modeling"><a href="#5-2-Speech-modeling" class="headerlink" title="5.2 Speech modeling"></a>5.2 Speech modeling</h2><p>VRNN에서 이미 설명을 하여서 생략하겠다.</p>
+<img src="/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/image-20210705002153640.png" class="">
+<h2 id="5-3-Segmentation-and-Labeling-of-Time-Series"><a href="#5-3-Segmentation-and-Labeling-of-Time-Series" class="headerlink" title="5.3 Segmentation and Labeling of Time Series"></a>5.3 Segmentation and Labeling of Time Series</h2><p>SSNN over HSMM이 HDTS에서 segmentation할 때 이점이 있다는 것을 보이기 위해</p>
+<ul>
+<li>Human activity</li>
+<li>Drosophila dataset</li>
+<li>PhysioNet</li>
+</ul>
+<p>의 데이터셋을 활용하였다.</p>
+<hr>
+<p>Human activity는 스마트폰에서 수집한 신호로 이루어져있다.</p>
+<p>각 사람들은 12개의 활동을 하게 된다.</p>
+<p>기록된 sequence는 61개이고 최대 3000 time-step을 갖는다.</p>
+<p>$\mathbf x_t$는 6차원 벡터이다.</p>
+<hr>
+<p>Drosophila는 초파리의 다리의 움직임에 대한 시계열 데이터이다.</p>
+<p>$\mathbf x_t$는 45차원이다.</p>
+<p>최대 time-step은 10000이다.</p>
+<blockquote>
+<p>GS distribution의 temperature는 0.0001로 고정하였다.</p>
+</blockquote>
+<hr>
+<p>PhysioNet은 4가지의 상태중 하나이다.</p>
+<blockquote>
+<p>GS distribution의 temperature는 0.15에서 시작해서 0.0001로 줄여나갔다.</p>
+</blockquote>
+<hr>
+<p>Accuracy를 재는 데에는 ground truth와 predicted segments를 비교하였다.</p>
+<img src="/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/image-20210705002754708.png" class="">
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/paper-review/" rel="tag"># paper review</a>
+              <a href="/tags/sequential-latent-variable-model/" rel="tag"># sequential latent variable model</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/" rel="prev" title="Near-Optimal Reinforcement Learning in Dynamic Treatment Regimes">
+      <i class="fa fa-chevron-left"></i> Near-Optimal Reinforcement Learning in Dynamic Treatment Regimes
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-Abstract"><span class="nav-text">0. Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1. Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Preliminaries"><span class="nav-text">2. Preliminaries</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Model"><span class="nav-text">3. Model</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Generative-Model"><span class="nav-text">3.1 Generative Model</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Structured-Inference"><span class="nav-text">3.2 Structured Inference</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-1-Bi-directional-Inference"><span class="nav-text">3.2.1 Bi-directional Inference</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-2-Gumbel-Softmax-Reparameterization"><span class="nav-text">3.2.2 Gumbel-Softmax Reparameterization</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-3-Algorithm"><span class="nav-text">3.2.3 Algorithm</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Related-Work"><span class="nav-text">4. Related Work</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Experiment"><span class="nav-text">5. Experiment</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-Synthetic-Experiment"><span class="nav-text">5.1 Synthetic Experiment</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-Speech-modeling"><span class="nav-text">5.2 Speech modeling</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-Segmentation-and-Labeling-of-Time-Series"><span class="nav-text">5.3 Segmentation and Labeling of Time Series</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">JaeHyun Lee</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JaeHyun Lee</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://leequant761.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://leequant761.github.io/2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/";
+    this.page.identifier = "2021/07/05/Stochastic-Sequential-Neural-Networks-with-Structured-Inference/";
+    this.page.title = "Stochastic Sequential Neural Networks with Structured Inference";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://leequant761.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

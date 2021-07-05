@@ -27,12 +27,19 @@
 <meta property="og:site_name" content="Study Repo">
 <meta property="og:description" content="0. Abstract이 논문은 non experimental data로 부터, action과 policy의 effct를 estimate한다. 이 논문은 다음을 제공한다.  causal effect(CE) identifiability(I)의 sufficient criterion I일 때, 이에 대한 compuation procedure   General Id">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/On-the-Identification-of-Causal-Effects/image-20210624171235433.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/On-the-Identification-of-Causal-Effects/image-20210624181527807.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/On-the-Identification-of-Causal-Effects/image-20210701151641279.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/On-the-Identification-of-Causal-Effects/image-20210701151701598.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/On-the-Identification-of-Causal-Effects/image-20210701160321416.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/On-the-Identification-of-Causal-Effects/image-20210701160259001.png">
 <meta property="article:published_time" content="2021-07-04T15:41:47.000Z">
-<meta property="article:modified_time" content="2021-07-04T15:44:53.539Z">
+<meta property="article:modified_time" content="2021-07-05T00:41:22.778Z">
 <meta property="article:author" content="JaeHyun Lee">
 <meta property="article:tag" content="identifiability">
 <meta property="article:tag" content="paper review">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leequant761.github.io/2021/07/05/On-the-Identification-of-Causal-Effects/image-20210624171235433.png">
 
 <link rel="canonical" href="https://leequant761.github.io/2021/07/05/On-the-Identification-of-Causal-Effects/">
 
@@ -191,7 +198,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-07-05 00:41:47 / Modified: 00:44:53" itemprop="dateCreated datePublished" datetime="2021-07-05T00:41:47+09:00">2021-07-05</time>
+              <time title="Created: 2021-07-05 00:41:47 / Modified: 09:41:22" itemprop="dateCreated datePublished" datetime="2021-07-05T00:41:47+09:00">2021-07-05</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -280,7 +287,7 @@
 </ul>
 <p>당연히 $P_x(v)$가 I면 $P_x(s)$도 I다.</p>
 <p>하지만, $P_x(v)$가 identifiable하지 않더라도 $P_x(s)$가 identifiable일 수 있다.</p>
-
+<img src="/2021/07/05/On-the-Identification-of-Causal-Effects/image-20210624171235433.png" class="">
 <p>$P_x(y) = P(y \mid x)$로 identifiable하지만, $P_x(y, z)$는 identifiable하지 않다.</p>
 <p>$G$에서 의미없는 node들을 쳐낸 뒤에 $P_x(v)$의 identification criterion으로 identify 할 수 있다.</p>
 <h2 id="4-1-A-criterion-for-identifying-P-x-s"><a href="#4-1-A-criterion-for-identifying-P-x-s" class="headerlink" title="4.1 A criterion for identifying $P_x(s)$"></a>4.1 A criterion for identifying $P_x(s)$</h2><p>Let $An(C) = C \cup An(C)$</p>
@@ -324,7 +331,7 @@ Q[C](v)=P_{v \backslash c}(c)=\sum_{u} \prod_{\left\{i \mid V_{i} \in C\right\}}
 <li>$Q\left[ V \right] = \prod _i Q\left[ S_i \right]$ where $S_i$ are the c-component of $G$</li>
 </ul>
 <hr>
-
+<img src="/2021/07/05/On-the-Identification-of-Causal-Effects/image-20210624181527807.png" class="">
 <p>$G_{An(Y)} = G$이고, $X$와 $Z$ 사이에 bidirected path가 있으므로 Theorem 4는 적용 불가능하다.</p>
 <p>Let $V = \{ X, Z, Y, W_1, W_2\}$</p>
 <p>Let $V’ = \{ Z, Y, W_1, W_2\} = V \setminus \{ X\}$</p>
@@ -404,6 +411,316 @@ P_{x}(y)=\sum_{z} P(y \mid z) \frac{\sum_{w_{1}} P\left(z, x \mid w_{2}, w_{1}\r
 <hr>
 <p><strong>Lemma 4 </strong>(Generalized Q-decomposition)</p>
 <p>​    Let $H \subseteq V$</p>
+<p>​    Let $H_{1}, \ldots, H_{l}$ be the c-components in the subgraph $G_H$</p>
+<p>​    <strong>[1] :</strong> Then, $Q[H]=\prod_{i} Q\left[H_{i}\right]$</p>
+<p>​    Let $k$ be the number of variables in $H$</p>
+<p>​    Let a topological order of the variables in $H$ be $V_{h_{1}}&lt;\cdots&lt; V_{h_k}$ in $G_H$</p>
+<p>​    Let $H^{(i)}=\left\{V_{h_{1}}, \ldots, V_{h_{i}}\right\}$ and $H^{(0)} = \emptyset$</p>
+<p>​    <strong>[2] :</strong> Then, $Q\left[H_{j}\right] =\prod_{\left\{i \mid V_{h_{i}} \in H_{j}\right\}} \frac{Q\left[H^{(i)}\right]}{Q\left[H^{(i-1)}\right]}$ where $Q\left[H^{(i)}\right] =\sum_{h \backslash h^{(i)}} Q[H] $</p>
+<blockquote>
+<p>$Q\left[H^{(i)}\right] =\sum_{h \backslash h^{(i)}} Q[H] $이 Lemma 3의 inverse임을 인지하여야 함!</p>
+</blockquote>
+<p>​    <strong>[3] :</strong> Then, $\frac{Q\left[H^{(i)}\right]}{Q\left[H^{(i-1)}\right]}$ is a function only of $P a^{+}\left(T_{i}\right)$ where $T_i$ is a c-component of $G_{H^{(i)}}$ that contains $V_{h_i}$</p>
+<blockquote>
+<p>$T_i$를 점점 커지는 $G(H)$에서 최근에 추가된 노드가 속한 c-component를 생각하면 직감적</p>
+</blockquote>
+<hr>
+<p>4.2 example에 Lemma를 적용하면</p>
+<ul>
+<li><script type="math/tex; mode=display">
+\begin{aligned}
+P_x(y) &= \sum_{z, w_{1}, w_{2}} P_{x}\left(v^{\prime}\right)
+\\
+&=  \sum_{z, w_{1}, w_{2}} Q\left[V' \right]
+\\
+&= \sum_{z, w_{1}, w_{2}} P(w_2 \mid w_1) P(y\mid z) \sum_{u_{1}, u_{2}} P\left(w_{1} \mid u_{1}, u_{2}\right) P\left(z \mid x, u_{2}\right) P\left(u_{1}\right) P\left(u_{2}\right)
+\\
+&= \sum_{z, w_{1}} P(y\mid z) \sum_{u_{1}, u_{2}} P\left(w_{1} \mid u_{1}, u_{2}\right) P\left(z \mid x, u_{2}\right) P\left(u_{1}\right) P\left(u_{2}\right) \quad \text{; $W_2$ out}
+\\
+&= \sum_{z} P(y\mid z) \sum_{u_{1}, u_{2}} P\left(z \mid x, u_{2}\right) P\left(u_{1}\right) P\left(u_{2}\right) \quad \text{; $W_1$ sum-out}
+\\
+&= \sum_{z} P(y\mid z) \sum_{u_{2}} P\left(z \mid x, u_{2}\right) P\left(u_{2}\right)
+\\
+&=\sum_{z} P(y \mid z) Q[\{Z\}]
+\end{aligned}</script></li>
+<li><p>$S^X = \{ X, W_1, Z\}$에서 $H=\{X, Z \}$로 둘 경우, $\{ X\}, \{Z\}$로 분리된다.</p>
+</li>
+<li><p>그 경우, $H^{(1)} = \{ X\}$ , $H^{(2)} = \{ X, Z\}$</p>
+</li>
+<li><script type="math/tex; mode=display">
+\begin{aligned}
+Q\left[Z\right] &= \frac{Q \left[ H^{(2)}\right]} { Q\left[ H^{(1)} \right ]} \\
+&= \frac{Q \left[\{ X, Z\}\right]} { Q\left[ \{ X\} \right ]} \quad \because \text{Lemma 4 [2]}\\
+&= \frac{Q \left[\{ X, Z\}\right]}{\sum_{z} Q \left[\{ X, Z\}\right]}  \quad \because \text{Lemma 4 [2]} \\
+&= \frac{ \sum _{w_1} Q \left[S^X\right]}{\sum_{w_1, z} Q \left[S^X\right]}  \quad \because \text{Lemma 3}\\
+&= \frac{\sum_{w_{1}} P\left(z, x \mid w_{2}, w_{1}\right) P\left(w_{1}\right)}{\sum_{w_{1}} P\left(x \mid w_{2}, w_{1}\right) P\left(w_{1}\right)}
+\end{aligned}</script></li>
+<li><p>Lemma 4 [3]에 의하면, $Q\left [Z\right ]$는 $w_2$에 의존하지 않는다.</p>
+</li>
+<li><p>Functional constraints를 체계적으로 찾는 방법은 On the Testable Implications of Causal Models with Hidden Variables에 나와있다.</p>
+</li>
+</ul>
+<hr>
+<p>Lemma 1, 3, 4에 기반하여 $P_x(s)$를 체계적으로 계산해보자.</p>
+<h2 id="4-4-Computing-P-x-s"><a href="#4-4-Computing-P-x-s" class="headerlink" title="4.4 Computing $P_x(s)$"></a>4.4 Computing $P_x(s)$</h2><p>Let $V$ be partitioned into c-components $S^X, S_1, \ldots, S_k$ where $X \in S^X$.</p>
+<p>Let $V’ = V \setminus \{X\}$. Then,</p>
+<ul>
+<li>$P(v) = Q\left[V \right] = Q[\left[ S^X \right ]] \prod _i Q \left[ S_i \right]$</li>
+<li>$P_x(v’) = Q\left [V’ \right ] = Q\left[ S^X \setminus \{ X\}\right]  \prod _i Q \left[ S_i \right]$</li>
+</ul>
+<p>We want to compute $P_x(s)  = \sum_{v’ \setminus s} P_x(v’) = \sum_{v’ \setminus s}  Q\left [V’ \right ]$</p>
+<ul>
+<li>Let $D = An(S)_{G_{V’}}$</li>
+<li>Since $D$ is ancestral set in $G_{V’}$,<ul>
+<li>$\sum_{v^{\prime} \setminus d} Q\left[V^{\prime}\right] = Q\left[D \right]$</li>
+</ul>
+</li>
+<li>Therefore,<ul>
+<li>$P_x(s) = \sum_{v’ \setminus s}  Q\left [V’ \right ] = \sum_{d \setminus s} \sum_{v^{\prime} \setminus d} Q\left[V^{\prime}\right]  =  \sum_{d \setminus s}   Q\left[D \right]$</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>Let $D^X = D \cap S^X$ and $D_i = D\cap S_i$. Then,</p>
+<ul>
+<li>$\begin{aligned}Q\left[D \right] &amp;=\sum_{v^{\prime} \setminus d} Q\left[V^{\prime}\right] \\&amp; = \sum_{v^{\prime} \setminus d}  Q\left[ S^X \setminus \{ X\}\right]  \prod _i Q \left[ S_i \right] \\&amp; = Q\left[D^{X}\right] \prod_{i} Q\left[D_{i}\right] \end{aligned}$<ul>
+<li>$D_i$가 $G_{S_i}$에서 ancestral set이기에 $\sum_{v^{\prime} \setminus d}$를 가장 말단 노드부터 하다보면 위 처럼 factorize될 것임이 자명하다.</li>
+</ul>
+</li>
+<li>$Q\left[D_{i}\right]=\sum_{s_{i} \setminus d_{i}} Q\left[S_{i}\right], \quad i=1, \ldots, k$<ul>
+<li>$D_i$가 $G_{S_i}$에서 ancestral set이기에 Lemma 3 적용</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>지금까지의 derivation을 풀어쓰면</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P_x(s)  &= \sum_{v' \setminus s} P_x(v') = \sum_{d \setminus s} \sum_{v^{\prime} \setminus d} Q\left[V^{\prime}\right]
+\\
+&= \sum_{d \setminus s}Q\left[D \right]
+\\
+&= \sum_{d \setminus s} Q\left[D^{X}\right] \prod_{i} Q\left[D_{i}\right]
+\\
+&= \sum_{d \setminus s} Q\left[D^{X}\right] \prod_{i} \sum_{s_{i} \setminus d_{i}} Q\left[S_{i}\right]
+\end{aligned}</script><p>추가로 $G_{D^{X}}$에서 $D_{1}^{X}, \ldots, D_{l}^{X}$로 c-component partition이 나눠진다면,</p>
+<script type="math/tex; mode=display">
+P_{x}(s)=\sum_{d \setminus s}  \prod_{j} Q\left[D_{j}^{X}\right] \prod_{i} \sum_{s_{i} \setminus d_{i}}  Q\left[S_{i}\right]</script><p>$D_j^X \subset S^X$ 이기 때문에, $Q \left [ D_j^X\right]$<strong>가</strong> $Q\left [ S^X\right]$<strong>로 계산될 수 있으면 이는 identifiable하다.</strong></p>
+<p>이제 $Q \left [ D_j^X\right]$를 $Q\left [ S^X\right]$로 계산해보도록 하자.</p>
+<hr>
+<p>Let $F = An(D_j^X)_{G_{S^X}}$</p>
+<blockquote>
+<p>$Q\left [F\right]$는 identifiable함</p>
+</blockquote>
+<ul>
+<li>만약 $F = D_j^X$인 경우,<ul>
+<li>Lemma 3에 의해, $Q\left[D_{j}^{X}\right]=\sum_{S^{X} \backslash D_{j}^{X}} Q\left[S^{X}\right]$</li>
+</ul>
+</li>
+<li>만약 $F=S^X$인 경우,<ul>
+<li>실패</li>
+<li>(이 실패가 non-identifiability를 의미하는 지는 의문)</li>
+</ul>
+</li>
+<li>만약 $D_j^X \subset F \subset S^X$인 경우,<ul>
+<li>Lemma 3에 의해, $Q\left[F\right]=\sum_{S^{X} \backslash F} Q\left[S^{X}\right]$</li>
+<li>$F \subset S^X$ 이기 때문에, $Q \left [ D_j^X\right]$가 $Q\left [ F\right]$로 계산될 수 있으면 $Q\left[S^{X}\right]$로도 구해질 수 있다.</li>
+<li>$H :=$ c-component containing $D_j^X$ in $G_F$</li>
+<li>Lemma 4에 의해, $Q\left[H\right]$는 $Q\left[F\right]$로 구해질 수 있다.</li>
+<li>$Q \left [ D_j^X\right]$를 구하는 문제를 $Q\left [ S^X\right] \Rightarrow Q\left[F\right] \Rightarrow Q\left[H\right]$로 구하는 문제로 줄였다.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>위의 결과는 $Q\left [ D_j^X\right]$가 $Q\left[ S^X\right]$로 구해질 수 있는 지를 결정하는 과정을 제공한다.</p>
+<ol>
+<li>$Q\left [ D_j^X\right]$를 구하거나</li>
+<li>실패하거나</li>
+<li>더 간단한 $H \subset S^X$로 문제를 줄이거나</li>
+</ol>
+<img src="/2021/07/05/On-the-Identification-of-Causal-Effects/image-20210701151641279.png" class="">
+<blockquote>
+<p>$C \subset T \subset V$에 대해서, $Q\left[ C \right]$가 $Q\left[T\right]$로 구해질 수 있는 가에 대한 일반적인 함수</p>
+</blockquote>
+<img src="/2021/07/05/On-the-Identification-of-Causal-Effects/image-20210701151701598.png" class="">
+<blockquote>
+<p>$P_x(s)$를 구하는 알고리즘</p>
+</blockquote>
+<h2 id="4-5-Useful-graphical-criteria"><a href="#4-5-Useful-graphical-criteria" class="headerlink" title="4.5 Useful graphical criteria"></a>4.5 Useful graphical criteria</h2><p>위에서 identifiability를 결정하고 그 경우에 이를 계산하는 알고리즘을 제공하였다.</p>
+<p>빠르게 identifiability 결정에 사용할 수 있는 graphical criteria를 설명하겠다.</p>
+<p>주된 아이디어는 중요하지 않은 노드들을 체계적으로 제거하는 것이다.</p>
+<ol>
+<li>$V \setminus An(S)$ 제거 (Lemma 2)</li>
+<li>$V \setminus S^X$ 제거 (Lemma 6)</li>
+</ol>
+<hr>
+<p>Let $A \subseteq B \subseteq V$</p>
+<p>Let $Q\left[A \right]_{G_B}=\sum_{u} \prod_{\left\{i \mid V_{i} \in A\right\}} P\left(v_{i} \mid p a_{i}^{\prime}, u^{i}\right) P(u)$ where $P A_{i}^{\prime}=P A_{i} \cap B$</p>
+<p>Then, $Q\left[A\right] = Q\left[ A\right]_{G_V}$</p>
+<hr>
+<p><strong>Lemma 5</strong></p>
+<p>​    Let $A \subseteq B \subseteq V$</p>
+<ul>
+<li>$Q\left[A\right]$ is computable from $Q\left[B\right]$</li>
+<li>iff</li>
+<li>$Q\left[A\right]_{G_B}$ is computable from $Q\left[B\right]_{G_B}$</li>
+</ul>
+<blockquote>
+<p>==&gt; 증명은 Lemma 13의 적용, &lt;== 증명은 귀류법</p>
+</blockquote>
+<hr>
+<p><strong>Lemma 6</strong> (reduce identification problem)</p>
+<p>​    Let $D^X = A n(S)_{G_{V \backslash\{X\}}} \cap S^X$</p>
+<p>​    Then, $P_x(s)$ is identifiable if $P_x(D^X)$ is identifiable in $G_{S^X}$</p>
+<p>(Proof)</p>
+<p>​    4.4에서 $P_x(s)  = \sum_{d \setminus s} Q\left[D^{X}\right] \prod_{i} \sum_{s_{i} \setminus d_{i}} Q\left[S_{i}\right]$ 임을 보였다.</p>
+<p>​    그래서 $Q\left[D^X\right]$가 identifiable이면 $P_x(s)$도 identifiable임을 보였다.</p>
+<p>​    Lemma 5에 의해, $Q\left[D^X\right]_{S^X}$가 identifiable이면, $Q\left[D^X\right]$도 identifiable이다.</p>
+<p>​    Let $E^X = S^X \setminus \{D^X \cup X \}$. Then,</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P_{x}\left(D^{X}\right)_{S^X} &= \sum_{E^{X}} P_{x}\left(S^{X} \backslash\{X\}\right)
+\\
+&= \sum_{E^{X}} Q\left[S^{X} \backslash\{X\}\right]_{G_{S ^X}}
+\\
+&= Q\left[D^{X}\right]_{G_{S^X}}
+\end{aligned}</script><p>​    즉, $P_x(D^X)$가 $G_{S^X}$에서 identifiable이면, $P_x(s)$는 identifiable이다.</p>
+<h2 id="4-6-An-Example"><a href="#4-6-An-Example" class="headerlink" title="4.6 An Example"></a>4.6 An Example</h2><img src="/2021/07/05/On-the-Identification-of-Causal-Effects/image-20210701160321416.png" class="">
+<p>$P_x(y)$를 고려해보자.</p>
+<img src="/2021/07/05/On-the-Identification-of-Causal-Effects/image-20210701160259001.png" class="">
+<p>Lemma 2와 Lemma 6의 반복으로 identifiable하다는 것까지는 확인할 수 있다.</p>
+<p>이제 이를 구해보도록 하자.</p>
+<p><strong><em>Phase 1</em></strong></p>
+<ol>
+<li>$G$ has one c-component $S^X$</li>
+<li>Compute ; $Q\left [ S^X \right] = P(v)$</li>
+<li>Let $D = A n( \{ Y\})_{G_{V \backslash\{X\}}} = \{ Y\}$ and $D^X = D \cap S^X = \{ Y\}$</li>
+<li>Let the c-compont of $G_{D^X}$ be $D_1^X  = \{ Y \}$</li>
+</ol>
+<p><strong><em>Phase 2</em></strong></p>
+<ol>
+<li><p>Identify$ \left (\{Y \}, V, P(v) \right)$</p>
+<ol>
+<li><p>Let $A_1 = An(\{ Y\}) = \{ X, Y, W_{1:4}\}$</p>
+</li>
+<li><p>$G_{A_1}$ has two c-components $T_{1}=\left\{X, Y, W_{1}, W_{2}, W_{3}\right\}$ and $\left\{W_{4}\right\}$</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+Q\left[A_{1}\right]&=\sum_{w_{5}} P(v) \quad \because \text{Lemma 3}
+\\
+&=P\left(a_{1}\right)
+\\
+&=Q\left[T_{1}\right] Q\left[\left\{W_{4}\right\}\right]
+
+\end{aligned}</script></li>
+<li><p>topological order in <script type="math/tex">G_{A_1}</script> : $W_{3}&lt;W_{4}&lt;W_{1}&lt;W_{2}&lt;X&lt;Y$</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+Q\left[\left\{W_{4}\right\}\right]&=\frac{Q\left[\left\{W_{4}, W_{3}\right\}\right]}{Q\left[\left\{W_{3}\right\}\right]} \quad \because \text{Lemma 4}
+\\
+&=\frac{\sum_{w_{1}, w_{2}, x, y} P\left(a_{1}\right)}{\sum_{w_{4}, w_{1}, w_{2}, x, y} P\left(a_{1}\right)}
+\\
+&= \frac{P(w_3, w_4)}{P(w_3)}
+\\
+&=P\left(w_{4} \mid w_{3}\right)
+\end{aligned}</script></li>
+<li><script type="math/tex; mode=display">
+\begin{aligned}
+Q\left[T_{1}\right]&= \frac{Q[A_1]}{Q [\{ W_4\}]}
+\\
+&= \frac{P(a_1)}{P(w_4 \mid w_3)}
+\\
+&= P(x,y ,w_1, w_2 \mid w_3, w_4) P(w_3)
+\\
+&= P(x, y \mid w_1, w_2, w_3, w_4) P(w_1, w_2 \mid w_3, w_4)P(w_3) 
+\\
+&= P(x, y \mid w_1, w_2, w_3, w_4) P(w_1, w_2, w_3)  \quad \because \{ W_1, W_2\} \perp W_4 \mid W_3
+\end{aligned}</script></li>
+</ol>
+</li>
+<li><p>Identify(Identify$ \left (\{Y \}, T_1, Q\left[T_1 \right] \right)$</p>
+<ol>
+<li><p>Let $A_2 = An(\{ Y\})_{G_{T_1}} = \{ X, Y, W_1, W_2 \}$</p>
+</li>
+<li><p>$G_{A_2}$ has two c-components $T_{2}=\left\{X, Y, W_{1}\right\}$ and $\left\{W_{2}\right\}$</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+Q\left[A_{2}\right]&=\sum_{w_3} Q[T_1] \quad \because \text{Lemma 3}
+\\
+&=Q\left[T_{2}\right] Q\left[\left\{W_{2}\right\}\right]
+
+\end{aligned}</script></li>
+<li><p>topological order in $G_{A_2}$ : $W_{1}&lt;W_{2}&lt;X&lt;Y$</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+Q\left[\left\{W_{2}\right\}\right]&=\frac{Q\left[\left\{W_{2}, W_{1}\right\}\right]}{Q\left[\left\{W_{1}\right\}\right]} \quad \because \text{Lemma 4}
+\\
+&=\frac{\sum_{x, y} Q\left[A_{2}\right]}{\sum_{w_{2}, x, y} Q\left[A_{2}\right]}
+\\
+&=\frac{\sum_{w_3, x, y} Q[T_1]}{\sum_{w_{2},w_3 x, y} Q[T_1]}
+\\
+&= \frac{\sum_{w_3, x, y} P(x, y \mid w_1, w_2, w_3, w_4) P(w_1, w_2, w_3) }{\sum_{w_2, w_3, x, y} P(x, y \mid w_1, w_2, w_3, w_4) P(w_1, w_2, w_3) }
+\\
+&=\frac{\sum_{w_3, x, y} P(x, y \mid w_1, w_2, w_3, w_4) P(w_1) P(w_2\mid w_1) P( w_3 \mid w_1, w_2) }{\sum_{w_2, w_3, x, y} P(x, y \mid w_1, w_2, w_3, w_4) P(w_1) P(w_2\mid w_1) P( w_3 \mid w_1, w_2)}
+\\
+&= \frac{P(w_2\mid w_1)  \times\sum_{w_3, x, y} P(x, y \mid w_1, w_2, w_3, w_4) P( w_3 \mid w_1, w_2) }{\sum_{w_2, w_3, x, y} P(x, y \mid w_1, w_2, w_3, w_4) P(w_2\mid w_1) P( w_3 \mid w_1, w_2)}
+\\
+&= P(w_2\mid w_1) 
+\end{aligned}</script></li>
+<li><script type="math/tex; mode=display">
+\begin{aligned}
+Q\left[T_{2}\right]&= \frac{Q[A_2]}{Q [\{ W_2\}]}
+\\
+&= \frac{\sum_{w_3} Q[T_1] }{P(w_2 \mid w_1)}
+\\
+&=\frac{\sum_{w_3}P(x, y \mid w_1, w_2, w_3, w_4) P(w_1, w_2, w_3)  }{P(w_2 \mid w_1)}
+\\
+&=\sum_{w_{3}} P\left(x, y \mid w_{1}, w_{2}, w_{3}, w_{4}\right) P\left(w_{3} \mid w_{1}, w_{2}\right) P\left(w_{1}\right)
+\end{aligned}</script></li>
+</ol>
+</li>
+<li><p>Identify(Identify$ \left (\{Y \}, T_2, Q\left[T_2 \right] \right)$</p>
+<ol>
+<li><p>Let $A_3 = An(\{ Y\})_{G_{T_2}} = \{X, Y \}$</p>
+</li>
+<li><p>$G_{A_3}$ has two c-components $\{ X\}$ and $\{ Y\}$</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+Q\left[A_{3}\right]&=\sum_{y} Q[T_2] \quad \because \text{Lemma 3}
+\\
+&=Q\left[ \{X \}\right] Q\left[\left\{Y\right\}\right]
+
+\end{aligned}</script></li>
+<li><p>topological order in $G_{A_3}$ : $X &lt; Y$</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+Q\left[\left\{X\right\}\right]&= \sum_{y} Q[A_3]
+\\
+&= \sum_y \sum_{w_1}Q[T_2]
+\\
+&= \sum_y \sum_{w_1}Q[T_2]
+\\
+&= \sum_y \sum_{w_1}\sum_{w_{3}} P\left(x, y \mid w_{1}, w_{2}, w_{3}, w_{4}\right) P\left(w_{3} \mid w_{1}, w_{2}\right) P\left(w_{1}\right)
+\\
+&= \sum_{w_1}\sum_{w_{3}} P\left(x \mid w_{1}, w_{2}, w_{3}, w_{4}\right) P\left(w_{3} \mid w_{1}, w_{2}\right) P\left(w_{1}\right)
+\end{aligned}</script></li>
+<li><script type="math/tex; mode=display">
+\begin{aligned}
+Q\left[ \{ Y\}\right]&= \frac{\sum_{y} Q[T_2]}{Q [\{ X\}]}
+\\
+&= \frac{\sum_{y} \sum_{w_{3}} P\left(x, y \mid w_{1}, w_{2}, w_{3}, w_{4}\right) P\left(w_{3} \mid w_{1}, w_{2}\right) P\left(w_{1}\right) }{\sum_{w_1}\sum_{w_{3}} P\left(x \mid w_{1}, w_{2}, w_{3}, w_{4}\right) P\left(w_{3} \mid w_{1}, w_{2}\right) P\left(w_{1}\right)}
+\\
+&=\frac{\sum_{w_3}P(x, y \mid w_1, w_2, w_3, w_4) P(w_1, w_2, w_3)  }{P(w_2 \mid w_1)}
+\end{aligned}</script></li>
+</ol>
+</li>
+</ol>
+<p><strong><em>Phase 3</em></strong></p>
+<script type="math/tex; mode=display">
+P_{x}(y)=Q[\{Y\}]=\frac{\sum_{w_{1}, w_{3}} P\left(x, y \mid w_{1}, w_{2}, w_{3}, w_{4}\right) P\left(w_{3} \mid w_{1}, w_{2}\right) P\left(w_{1}\right)}{\sum_{w_{1}, w_{3}} P\left(x \mid w_{1}, w_{2}, w_{3}, w_{4}\right) P\left(w_{3} \mid w_{1}, w_{2}\right) P\left(w_{1}\right)}</script><h2 id="4-7-Galles-amp-Pearl’s-graphical-criterion-vs-do-calculus"><a href="#4-7-Galles-amp-Pearl’s-graphical-criterion-vs-do-calculus" class="headerlink" title="4.7 Galles&amp;Pearl’s graphical criterion vs. do-calculus"></a>4.7 Galles&amp;Pearl’s graphical criterion vs. do-calculus</h2><p><a href="">Galles and Pearl, 1995</a>은 그들의 G-criteria가 do-calculus로 증명될 수 있는 identifiability를 모두 포함한다고 주장했으나, 그렇지 않았다.</p>
+<p>skip</p>
+<h1 id="5-Identification-of-P-t-s"><a href="#5-Identification-of-P-t-s" class="headerlink" title="5. Identification of $P_t(s)$"></a>5. Identification of $P_t(s)$</h1><p>이제까지 intervention은 single variable $X$에만 적용됐다.</p>
+<p>이번 섹션에서, 임의의 $T \subset V$에 대해서 intervention을 하겠다.</p>
 
     </div>
 
@@ -495,7 +812,7 @@ P_{x}(y)=\sum_{z} P(y \mid z) \frac{\sum_{w_{1}} P\left(z, x \mid w_{2}, w_{1}\r
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-Abstract"><span class="nav-text">0. Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1. Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Notation-Definitions-and-Problem-Formulation"><span class="nav-text">2.Notation, Definitions, and Problem Formulation</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Identification-of-P-x-v"><span class="nav-text">3. Identification of $P_{x}(v)$</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Identification-of-P-x-s"><span class="nav-text">4.  Identification of $P_x(s)$</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-A-criterion-for-identifying-P-x-s"><span class="nav-text">4.1 A criterion for identifying $P_x(s)$</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-An-example"><span class="nav-text">4.2 An example</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-Lemmas"><span class="nav-text">4.3 Lemmas</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-Abstract"><span class="nav-text">0. Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1. Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Notation-Definitions-and-Problem-Formulation"><span class="nav-text">2.Notation, Definitions, and Problem Formulation</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Identification-of-P-x-v"><span class="nav-text">3. Identification of $P_{x}(v)$</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Identification-of-P-x-s"><span class="nav-text">4.  Identification of $P_x(s)$</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-A-criterion-for-identifying-P-x-s"><span class="nav-text">4.1 A criterion for identifying $P_x(s)$</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-An-example"><span class="nav-text">4.2 An example</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-Lemmas"><span class="nav-text">4.3 Lemmas</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-4-Computing-P-x-s"><span class="nav-text">4.4 Computing $P_x(s)$</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-5-Useful-graphical-criteria"><span class="nav-text">4.5 Useful graphical criteria</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-6-An-Example"><span class="nav-text">4.6 An Example</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-7-Galles-amp-Pearl%E2%80%99s-graphical-criterion-vs-do-calculus"><span class="nav-text">4.7 Galles&amp;Pearl’s graphical criterion vs. do-calculus</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Identification-of-P-t-s"><span class="nav-text">5. Identification of $P_t(s)$</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

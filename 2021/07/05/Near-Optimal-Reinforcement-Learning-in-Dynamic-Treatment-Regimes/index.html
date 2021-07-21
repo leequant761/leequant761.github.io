@@ -27,12 +27,20 @@
 <meta property="og:site_name" content="Study Repo">
 <meta property="og:description" content="0. AbstractDTR은 decision rule들의 sequence이고 환자의 이전 치료와 covariate history에 기반해 어떻게 치료할 지를 명시한다. DTR은 만성(chronic) 질환 관리에 효과적이고, 개인화된 의사결정에 핵심적이다. 이 논문에선, observational data도 활용 가능할 때, optimal DTR을 찾는 onl">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/image-20210614085211721.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/image-20210614085211721.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/image-20210614125233956.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/image-20210614134419582.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/image-20210614085211721.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/image-20210616181417109.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/image-20210616184352480.png">
 <meta property="article:published_time" content="2021-07-04T16:02:15.000Z">
-<meta property="article:modified_time" content="2021-07-04T16:08:20.126Z">
+<meta property="article:modified_time" content="2021-07-21T06:20:04.451Z">
 <meta property="article:author" content="JaeHyun Lee">
 <meta property="article:tag" content="paper review">
 <meta property="article:tag" content="dynamic treatment regime">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leequant761.github.io/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/image-20210614085211721.png">
 
 <link rel="canonical" href="https://leequant761.github.io/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/">
 
@@ -189,10 +197,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2021-07-05 01:02:15 / Modified: 01:08:20" itemprop="dateCreated datePublished" datetime="2021-07-05T01:02:15+09:00">2021-07-05</time>
+              <time title="Created: 2021-07-05 01:02:15" itemprop="dateCreated datePublished" datetime="2021-07-05T01:02:15+09:00">2021-07-05</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-07-21 15:20:04" itemprop="dateModified" datetime="2021-07-21T15:20:04+09:00">2021-07-21</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -248,7 +262,7 @@
 <p>DTR은 암, 당뇨, 정신병과 같은 만성질환의 개인화된 치료에 효과적이다.</p>
 <hr>
 <p><strong>예시</strong></p>
-
+<img src="/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/image-20210614085211721.png" class="">
 <p>알코올 의존증 환자들의</p>
 <ul>
 <li>condiition $S_1$에 기반하여</li>
@@ -288,7 +302,7 @@
 <p>이의 variation으로는 multi-armed bandits, partially-observable MDP, factored MDPs가 있다.</p>
 <hr>
 <p>우리의 focus는 observational data도 활용하면서 policy를 학습하는 것이다.</p>
-
+<img src="/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/image-20210614085211721.png" class="">
 <p>CI 관점에서 어려운 것은 unobserved confounder 때문이다.</p>
 <p>RL 관점에서 어려운 것은 이전의 treatment $X_1$이 최종 outcome $Y$에 영향을 주는 구조이다.</p>
 <p>비록 Thompson Samling과 같은 heuristic approach가 있으나, 모든 observational data를 망각(oblivious)하기 때문에 optimal은 아니다.</p>
@@ -322,7 +336,7 @@
 <p>Policy들의 collection은 policy space $\Pi$를 정의한다.</p>
 <p>Policy $\boldsymbol\pi$는 interventional distribution over $\overline{\boldsymbol{X}}_{K}, \overline{\boldsymbol{S}}_{K}, Y$를 유도한다.</p>
 <script type="math/tex; mode=display">
-P_{\pi}\left(\overline{\boldsymbol{x}}_{K}, \overline{\boldsymbol{s}}_{K}, y\right)=P_{\overline{\boldsymbol{x}}_{K}}\left(y \mid \overline{\boldsymbol{s}}_{K}\right) \prod_{k=0}^{K-1} P_{\overline{\boldsymbol{x}}_{k}}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right) \pi_{k+1}\left(x_{k+1} \mid \overline{\boldsymbol{s}}_{k+1}, \overline{\boldsymbol{x}}_{k}\right)</script>
+P_{\pi}\left(\overline{\boldsymbol{x}}_{K}, \overline{\boldsymbol{s}}_{K}, y\right)=P_{\overline{\boldsymbol{x}}_{K}}\left(y \mid \overline{\boldsymbol{s}}_{K}\right) \prod_{k=0}^{K-1} P_{\overline{\boldsymbol{x}}_{k}}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right) \pi_{k+1}\left(x_{k+1} \mid \overline{\boldsymbol{s}}_{k+1}, \overline{\boldsymbol{x}}_{k}\right)</script><img src="/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/image-20210614125233956.png" class="">
 <p>$M^{<em>} + \pi$에 따라 expected reward $V_{\boldsymbol{\pi}}\left(M^{</em>}\right)=E_{\boldsymbol{\pi}}[Y]$ 이 주어진다.</p>
 <p>우리는 optimal policy $\pi^{<em>} := \arg \max _{\boldsymbol{\pi} \in \boldsymbol{\Pi}} V_{\boldsymbol{\pi}}\left(M^{</em>}\right)$ 를 찾는 게 목표이다.</p>
 <blockquote>
@@ -342,7 +356,7 @@ P_{\pi}\left(\overline{\boldsymbol{x}}_{K}, \overline{\boldsymbol{s}}_{K}, y\rig
 <blockquote>
 <p>도메인 상의 지식이 뭘 말하는 건지 아직 모름</p>
 </blockquote>
-
+<img src="/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/image-20210614134419582.png" class="">
 <p><strong>Step 1~3</strong> : 이전 에피소드들에서 얻어진 experimental samples들로 empirically estimate</p>
 <p><strong>Step 4</strong> : 타당한(emprical에서 크게 벗어나지 않은) DTR 후보들의 집합 $\mathcal{M}_{t}$ 정의</p>
 <p><strong>Step 5</strong> : 가장 optimistic한 DTR $M_t \in \mathcal{M}_{t}$ 에서 optimal policy $\boldsymbol{\pi}_{t}$ 를 찾기</p>
@@ -407,7 +421,7 @@ E[R(T)] \geq 0.05 \sqrt{|\mathcal{S} \| \mathcal{X}| T} \quad \text{where $T\geq
 <hr>
 <p>만약 $\overline{\boldsymbol{S}}_{K}$가 $\overline{\boldsymbol{X}}_{K}, Y$에 대한 sequential backdoor criterion을 만족할 때, ${P}_{\overline{\boldsymbol{x}}_{k}}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right)$와 $E_{\overline{\boldsymbol{x}}_{K}}\left[Y \mid \bar{s}_{k}\right]$는 identifiable하다.</p>
 <p>그러면 optimal policy는 Q-learning같은 standard off-policy learning으로 구할 수 있다.</p>
-
+<img src="/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/image-20210614085211721.png" class="">
 <p>하지만 위처럼 sbc가 깨지는 경우 non identifiability 문제가 발생한다.</p>
 <hr>
 <p><strong>Theorem 4</strong> (non-identifiable할 경우)</p>
@@ -465,7 +479,7 @@ P_{\overline{\boldsymbol{x}}_{k}}\left(\overline{\boldsymbol{s}}_{k+1}\right)-P_
 \end{aligned}</script><p>$\boldsymbol{\mathcal C} =  \{ \boldsymbol{\mathcal C}_1, \boldsymbol{\mathcal C}_2, \cdots, \boldsymbol{\mathcal C}_K\}$ 를 <em>causal bounds</em> 라고 하자.</p>
 <p>$\text {UC}^{c} \text { -DTR }$은 UC-DTR의 변형으로 possible DTR set에 causal bound를 만족해야 한다는 조건을 추가한다.</p>
 <p>그래서 Linear programming 부분에 constraint를 추가하는 방식으로 풀 수 있다.</p>
-
+<img src="/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/image-20210616181417109.png" class="">
 <p>Let $\left|\boldsymbol{\mathcal{C}}_{k}\right|_{1}=\max _{\overline{\boldsymbol{x}}_{k}, \overline{\boldsymbol{s}}_{k}} \sum_{s_{k+1}}\left|a_{\overline{\boldsymbol{x}}_{k}, \overline{\boldsymbol{s}}_{k}}\left(s_{k+1}\right)-b_{\overline{\boldsymbol{x}}_{k}, \overline{\boldsymbol{s}}_{k}}\left(s_{k+1}\right)\right|$</p>
 <p>Let $\left|\boldsymbol{\mathcal{C}}_{K}\right|_{1}=\max _{\overline{\boldsymbol{x}}_{K}, \overline{\boldsymbol{s}}_{K}}\left|a_{\overline{\boldsymbol{x}}_{K}, \overline{\boldsymbol{s}}_{K}}-b_{\overline{\boldsymbol{x}}_{K}, \overline{\boldsymbol{s}}_{K}}\right|$</p>
 <p>Let $|\boldsymbol{\mathcal{C}}|_{1}=\sum_{k=1}^{K}\left|\boldsymbol{\mathcal{C}}_{k}\right|_{1}$</p>
@@ -486,7 +500,7 @@ E[R(T)] \leq \max _{\boldsymbol{\pi} \in \Pi_{\boldsymbol{\mathcal{c}}}^{-}}\lef
 <ul>
 <li>$\mathbf{\Pi}_{\boldsymbol{C}}^{-} \subseteq \mathbf{\Pi}^{-}$ 이므로, UC-DTR보다 작은 bound이다.</li>
 </ul>
-<h1 id="4-Experiments"><a href="#4-Experiments" class="headerlink" title="4 Experiments"></a>4 Experiments</h1>
+<h1 id="4-Experiments"><a href="#4-Experiments" class="headerlink" title="4 Experiments"></a>4 Experiments</h1><img src="/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/image-20210616184352480.png" class="">
 <p>(c)는 Cancer and Leukemia Group B에서 실행된 two-stage clinical trial이다.</p>
 
     </div>
@@ -593,7 +607,7 @@ E[R(T)] \leq \max _{\boldsymbol{\pi} \in \Pi_{\boldsymbol{\mathcal{c}}}^{-}}\lef
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-count">22</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"leequant761.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="0. Abstract이 논문은 non experimental data로 부터, action과 policy의 effct를 estimate한다. 이 논문은 다음을 제공한다.  causal effect(CE) identifiability(I)의 sufficient criterion I일 때, 이에 대한 compuation procedure   General Id">
+  <meta name="description" content="0. Abstract이 논문은 non experimental data로 부터, action과 policy의 effect를 estimate한다. 이 논문은 다음을 제공한다.  causal effect(CE) identifiability(I)의 sufficient criterion I일 때, 이에 대한 compuation procedure   General I">
 <meta property="og:type" content="article">
 <meta property="og:title" content="On the Identification of Causal Effects">
 <meta property="og:url" content="https://leequant761.github.io/2021/07/05/On-the-Identification-of-Causal-Effects/index.html">
 <meta property="og:site_name" content="Study Repo">
-<meta property="og:description" content="0. Abstract이 논문은 non experimental data로 부터, action과 policy의 effct를 estimate한다. 이 논문은 다음을 제공한다.  causal effect(CE) identifiability(I)의 sufficient criterion I일 때, 이에 대한 compuation procedure   General Id">
+<meta property="og:description" content="0. Abstract이 논문은 non experimental data로 부터, action과 policy의 effect를 estimate한다. 이 논문은 다음을 제공한다.  causal effect(CE) identifiability(I)의 sufficient criterion I일 때, 이에 대한 compuation procedure   General I">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://leequant761.github.io/2021/07/05/On-the-Identification-of-Causal-Effects/image-20210624171235433.png">
 <meta property="og:image" content="https://leequant761.github.io/2021/07/05/On-the-Identification-of-Causal-Effects/image-20210624181527807.png">
@@ -34,7 +34,7 @@
 <meta property="og:image" content="https://leequant761.github.io/2021/07/05/On-the-Identification-of-Causal-Effects/image-20210701160321416.png">
 <meta property="og:image" content="https://leequant761.github.io/2021/07/05/On-the-Identification-of-Causal-Effects/image-20210701160259001.png">
 <meta property="article:published_time" content="2021-07-04T15:41:47.000Z">
-<meta property="article:modified_time" content="2021-07-05T00:41:22.778Z">
+<meta property="article:modified_time" content="2021-08-15T15:03:41.933Z">
 <meta property="article:author" content="JaeHyun Lee">
 <meta property="article:tag" content="identifiability">
 <meta property="article:tag" content="paper review">
@@ -196,10 +196,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2021-07-05 00:41:47 / Modified: 09:41:22" itemprop="dateCreated datePublished" datetime="2021-07-05T00:41:47+09:00">2021-07-05</time>
+              <time title="Created: 2021-07-05 00:41:47" itemprop="dateCreated datePublished" datetime="2021-07-05T00:41:47+09:00">2021-07-05</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-08-16 00:03:41" itemprop="dateModified" datetime="2021-08-16T00:03:41+09:00">2021-08-16</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -235,7 +241,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="0-Abstract"><a href="#0-Abstract" class="headerlink" title="0. Abstract"></a>0. Abstract</h1><p>이 논문은 non experimental data로 부터, action과 policy의 effct를 estimate한다.</p>
+        <h1 id="0-Abstract"><a href="#0-Abstract" class="headerlink" title="0. Abstract"></a>0. Abstract</h1><p>이 논문은 non experimental data로 부터, action과 policy의 effect를 estimate한다.</p>
 <p>이 논문은 다음을 제공한다.</p>
 <ul>
 <li>causal effect(CE) identifiability(I)의 sufficient criterion</li>
@@ -269,12 +275,12 @@
 </ul>
 <p><strong>Section 5</strong></p>
 <ul>
-<li>CEI of $P_x(s)$ where a sigleton $T \subseteq V$ and $S \subseteq V \setminus T$</li>
+<li>CEI of $P_t(s)$ where a subset $T \subseteq V$ and $S \subseteq V \setminus T$</li>
 </ul>
 <p><strong>Section 6</strong></p>
 <ul>
 <li>SMM에 걸린 unobserved node의 조건을 없앤 일반적인 모델을 다룬다.</li>
-<li>그 모델에서의 CE가 똑같은 I property를 갖는 SMM으로 projection한 뒤에 identify될 수 있ㅇ므을 보인다.</li>
+<li>그 모델에서의 CE가 똑같은 I property를 갖는 SMM으로 projection한 뒤에 identify될 수 있음을 보인다.</li>
 </ul>
 <h1 id="2-Notation-Definitions-and-Problem-Formulation"><a href="#2-Notation-Definitions-and-Problem-Formulation" class="headerlink" title="2.Notation, Definitions, and Problem Formulation"></a>2.Notation, Definitions, and Problem Formulation</h1><p>(Skip)</p>
 <h1 id="3-Identification-of-P-x-v"><a href="#3-Identification-of-P-x-v" class="headerlink" title="3. Identification of $P_{x}(v)$"></a>3. Identification of $P_{x}(v)$</h1><p>(Skip)</p>
@@ -345,7 +351,7 @@ Q[C](v)=P_{v \backslash c}(c)=\sum_{u} \prod_{\left\{i \mid V_{i} \in C\right\}}
 Q \left [ S^X\right ] &= \sum_{u_{1}, u_{2}} P\left(x \mid w_{2}, u_{1}\right) P\left(w_{1} \mid u_{1}, u_{2}\right) P\left(z \mid x, u_{2}\right) P\left(u_{1}\right) P\left(u_{2}\right)
 \\
 
-&= P(w_1) P(x\mid w_2) P(z \mid x, w_1) \quad \because \text{Lemma 1}
+&= P(w_1) P(x\mid w_2, w_1) P(z \mid x, w_1) \quad \because \text{Lemma 1}
 \end{aligned}</script><p>Marginalize as</p>
 <script type="math/tex; mode=display">
 \begin{aligned}
@@ -365,7 +371,7 @@ P_x(y) &= \sum_{z, w_{1}, w_{2}} P_{x}\left(v^{\prime}\right)
 \end{aligned}</script><blockquote>
 <p>$W_1$과 $W_2$가 sum-out된 이유는</p>
 <ul>
-<li>$Q[V’]$이 $G_{V’}$의 (interventioned) joint distribution에 대응되고</li>
+<li>$Q[V’]$이 $G_{V’}$의 joint distribution에 대응되고</li>
 <li>$G_{V’}$에서, $W_1$과 $W_2$는 $Y$의 ancestor가 아니였다.</li>
 </ul>
 </blockquote>
@@ -556,7 +562,7 @@ P_{x}(s)=\sum_{d \setminus s}  \prod_{j} Q\left[D_{j}^{X}\right] \prod_{i} \sum_
 <hr>
 <p>Let $A \subseteq B \subseteq V$</p>
 <p>Let $Q\left[A \right]_{G_B}=\sum_{u} \prod_{\left\{i \mid V_{i} \in A\right\}} P\left(v_{i} \mid p a_{i}^{\prime}, u^{i}\right) P(u)$ where $P A_{i}^{\prime}=P A_{i} \cap B$</p>
-<p>Then, $Q\left[A\right] = Q\left[ A\right]_{G_V}$</p>
+<p>Let $Q\left[A\right] = Q\left[ A\right]_{G_V}$</p>
 <hr>
 <p><strong>Lemma 5</strong></p>
 <p>​    Let $A \subseteq B \subseteq V$</p>
@@ -721,6 +727,199 @@ P_{x}(y)=Q[\{Y\}]=\frac{\sum_{w_{1}, w_{3}} P\left(x, y \mid w_{1}, w_{2}, w_{3}
 <p>skip</p>
 <h1 id="5-Identification-of-P-t-s"><a href="#5-Identification-of-P-t-s" class="headerlink" title="5. Identification of $P_t(s)$"></a>5. Identification of $P_t(s)$</h1><p>이제까지 intervention은 single variable $X$에만 적용됐다.</p>
 <p>이번 섹션에서, 임의의 $T \subset V$에 대해서 intervention을 하겠다.</p>
+<p>$P_t(s)$ identification도 identifying $Q\left[C\right]$ from $Q\left[C’\right]$ 으로 줄어듦을 보이겠다.</p>
+<h2 id="5-1-Computing-P-t-s"><a href="#5-1-Computing-P-t-s" class="headerlink" title="5.1 Computing $P_t(s)$"></a>5.1 Computing $P_t(s)$</h2><p>Let $T’=V \setminus T$</p>
+<p>We want to compute $P_{t}(s)=\sum_{T^{\prime} \setminus S} P_{t}\left(t^{\prime}\right)=\sum_{T^{\prime} \setminus S} Q\left[T^{\prime}\right]$</p>
+<p>Let $D = An(S)_{G_{T’}}$</p>
+<p>Then,</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P_{t}(s)&=\sum_{D \setminus S} \sum_{T^{\prime} \setminus D} Q\left[T^{\prime}\right]
+\\
+&=\sum_{D \setminus S} Q[D] \quad \because \text{Lemma 3}
+\\
+&=\sum_{D \setminus S} \prod_{i} Q\left[D_{i}\right] \quad\text{where  $D$ is partitioned into $D_1, \cdots, D_l$}
+
+\end{aligned}</script><p>Hence if all $Q\left[D_i\right]$ are identifiable, $P_t(s)$ is identifiable.</p>
+<p>Let $V$ be partitioned into c-components $S_1, \cdots, S_k$</p>
+<p>Then, any $D_i$ is a subset of certain $S_j$</p>
+<blockquote>
+<p>$D_i$안의 변수들은 서로 $G$상의 BP로 연결됐다. 결국 $D_i$는 특정 c-component에 속한다.</p>
+</blockquote>
+<p>$D_i \subseteq S_j$라면, $Q\left[D_i\right]$의 identifiability는 <em>identify</em>($D_i, S_j, Q\left[ S_j\right]$)로 결정될 수 있다.</p>
+
+<h2 id="5-2-Useful-graphical-criteria"><a href="#5-2-Useful-graphical-criteria" class="headerlink" title="5.2 Useful graphical criteria"></a>5.2 Useful graphical criteria</h2><p>다음으로, 그래프만으로 빠르게 identifiability를 결정한 graphical criteria를 보이겠다.</p>
+<p>Let $T’ = V \setminus T$</p>
+<p>우선 $P_t(t’)$에서 보이겠다.</p>
+<hr>
+<p><strong>Theorem 5</strong></p>
+<p>​    If ${}^{\not\exists}$BE btw $T \sim T’$, then $P_t(t’)$ is identifiable.</p>
+<p>​    Let a topological order over $V$ be $V_{1}&lt;\ldots&lt;V_{n}$</p>
+<p>​    Let $V^{(i)} = \{V_1, \cdots, V_i \}$ for $i=1, \cdots, n$ and $V^{(0)} = \emptyset$</p>
+<p>​    Then by Lemma 1,</p>
+<script type="math/tex; mode=display">
+P_{t}(t')=\prod_{\left\{i \mid V_{i} \in T'\right\}} P\left(v_{i} \mid p a\left(C_{i}\right) \setminus \left\{v_{i}\right\}\right) \quad \text{where $C_i$ is the c-component of $G_{V^{(i)}}$ that contains $V_i$}</script><hr>
+<p>Let $V$ be partitioned into $S_1, \cdots, S_k$</p>
+<p>Let $T_i = T \cap S_i$ and $T_i’ = T’ \cap S_i$ for $i=1, \cdots, k$</p>
+<ul>
+<li><p>Since $P_{t}\left(t^{\prime}\right) =Q\left[T ^\prime \right]  =\prod_{i} Q\left[T_{i}^{\prime}\right]$</p>
+<ul>
+<li>$P_t(t’)$ is identifiable iff each $Q\left[ T_i’ \right]$ is computable from $Q\left [ S_i\right]$</li>
+</ul>
+</li>
+<li><p>Since $P_{t_{j}}\left(v \backslash t_{j}\right)=Q\left[T_{j}^{\prime}\right] \prod_{i \neq j} Q\left[S_{i}\right]$</p>
+<ul>
+<li>$P_{t_j}(v \setminus t_j)$ is identifiable iff each $Q\left[ T_j’\right]$ is computable from $Q\left [ S_j\right]$</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p><strong>Lemma 7</strong></p>
+<p>​    Let $V$ be partitioned into c-components $S_1, \cdots , S_k$</p>
+<p>​    Let $T_i = T \cap S_i$ for $i=1 , \cdots , k$</p>
+<p>​    Then, $P_{t}(t’)$ is identifiable iff $P_{t_i} (v \setminus t_i)$ is identifiable for every $i=1, \cdots, k$</p>
+<hr>
+<p>In the subgraph $G_{S_i}$,</p>
+<ol>
+<li>$P(s_i) = Q\left[S_i\right]_{G_{S_i}}$</li>
+<li>$P_{t_i} (s_i \setminus t_i) = Q \left[ T_i’\right]_{G_{S_i}}$</li>
+</ol>
+<p><strong>Lemma 8</strong></p>
+<ul>
+<li>By Lemma 5,<ul>
+<li>$ Q\left[ T_i ‘ \right]$ is computable from $Q\left[ S_i\right]$ iff $P_{t_i}(s_i \setminus t_i)$ is identifiable in $G_{S_i}$</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>$Q \left[ T_i ‘ \right]$ is computable from $Q\left[ S_i\right]$ 의 가장 간단한 조건은 $T_i’$이 ancestral set일 때다.</p>
+<p><strong>Theorem 6</strong></p>
+<p>​    Let $S_i$ be a c-component of $G$</p>
+<p>​    Let $T_i \subseteq S_i$</p>
+<p>​    If the children of variables in $T_i$ are either</p>
+<ul>
+<li><p>in $T_i$ or</p>
+</li>
+<li><p>outside of $S_i$</p>
+<p>then identifiable and can be computed from $Q\left[ S_i\right]$</p>
+</li>
+</ul>
+<script type="math/tex; mode=display">
+P_{t_{i}}\left(v \setminus t_{i}\right)=\frac{P(v)}{Q\left[S_{i}\right]} \sum_{T_{i}} Q\left[S_{i}\right]</script><hr>
+<p>이제 graphical criteria for identifiability of $P_t(s)$ 를 알아보자.</p>
+<p><strong>Lemma 9</strong></p>
+<p>​    Let $D = An(S)_{G_{V\setminus T}}$</p>
+<p>​    Let $V$ be partitioned into c-components $S_1, \cdots, S_k$.</p>
+<p>​    Let $T_i = T \cap S_i$ and $D_i = D \cap S_i$ for $i=1, \cdots, k$</p>
+<p>​    Then, $P_t(s)$ is identifiable if $P_{t_i}(d_i)$ is identifiable in $G_{S_i}$ for every $i=1, \cdots, k$</p>
+<p>(Proof)</p>
+<p>​    Since $P_{t}(s) = \sum_{D \setminus S} \prod_{i} Q\left[D_{i}\right]$, $P_t(s)$ is identifiable if each $Q\left[ D_i\right]$ is identifiable.</p>
+<p>​    By Lemma 5, $Q\left[ D_i\right]$ is computable from $Q\left[ S_i\right]$ iff $Q\left[D_i\right]_{G_{S_i}}$ is computable from $Q[S_i]_{G_{S_i}}$</p>
+<p>​    Let $T_i’ = S_i \setminus T_i$</p>
+<p>​    Since $P_{t_{i}}\left(d_{i}\right)=\sum_{T_{i}^{\prime} \backslash D_{i}} P_{t_{i}}\left(t_{i}^{\prime}\right)=\sum_{T_{i}^{\prime} \backslash D_{i}} Q\left[T_{i}^{\prime}\right]_{G_{S_{i}}}=Q\left[D_{i}\right]_{G_{S_{i}}}$, it’s all done.</p>
+<hr>
+<p><strong>Lemma 10</strong> </p>
+<p>​    Let $T_1 = T \cap An(S)$</p>
+<p>​    $P_t(s)$ is identifiable iff $P_{t_1}(s)$ is identifiable in $G_{An(S)}$</p>
+<hr>
+<p>Lemma 9와 10은 $P_t(s)$ identification을 subgraph에서의 문제로 줄여준다.</p>
+<p>줄여진 문제는 Theorem 4와 6으로 적용가능해진다.</p>
+<h2 id="5-3-Examples"><a href="#5-3-Examples" class="headerlink" title="5.3 Examples"></a>5.3 Examples</h2>
+<p>Let $T= \{ X_1, X_2\}$ and $S = \{Y\}$</p>
+<p><strong>Phase-1</strong></p>
+<ol>
+<li><p>c-components $S_1 := \{ X_1, Z, Y\}, S_2:= \{ X_2\}$</p>
+</li>
+<li><p>$Q\left[ S_1\right] = P\left(y \mid x_{1}, x_{2}, z\right) P(x_{1}) P( z \mid x_1)$</p>
+<p>$Q\left[ S_2\right] = P\left(x_2 \mid x_{1}, z\right)$</p>
+</li>
+<li><p>$D:= An(\{ Y \})_{G_{V \setminus \{ X_1, X_2\}}} = \{ Y\}$</p>
+</li>
+<li><p>$D_1 := D \cap S_1 =\{ Y\}$, $D_2 := D \cap S_2 = \emptyset$</p>
+</li>
+</ol>
+<p><strong>graphical criteria</strong></p>
+<ul>
+<li>Lemma 9 : $P_{x_1, x_2}(y)$ is identifiable if $P_{x_1}(y)$ is identifiable in $G_{S_1}$</li>
+</ul>
+
+<ul>
+<li>Theorem 4 : $P_{x_1}(y)$ is identifiable in $G_{S_1}$</li>
+</ul>
+<p><strong>Phase-2</strong></p>
+<ul>
+<li>$Identify(D_1, S_1, Q \left[ S_1\right])$<ul>
+<li>Let $A = An(D_1)_{G_{S_1}} = \{ X_1, Y\}$</li>
+<li>Since $D_1 \subset A \subset S$,<ul>
+<li>$G_A$ has two c-components $T^\prime :=\{Y \}$, $\{ X_1\}$</li>
+<li>$\begin{aligned} Q\left[ A\right] &amp;= \sum_{S_1 \setminus A}Q\left[ S_1\right] \\&amp;= Q \left[ \{X_1, Y \}\right] \quad \because \text{Lemma 3}\\&amp;=  Q\left[\left\{X_{1}\right\}\right] Q[\{Y\}] \quad \because \text{Lemma 4}\end{aligned}$</li>
+<li>$\begin{aligned} Q\left[ X_1\right] &amp;= P(x_1)\end{aligned}$</li>
+<li>$\begin{aligned} Q\left[ Y_1 \right] &amp;= Q\left[ A\right] / Q\left[\{ X_1\} \right] \\&amp;=  \sum_{z} Q[S] / Q\left[\left\{X_{1}\right\}\right] \\ &amp;= \sum_{z} P\left(y \mid x_{1}, x_{2}, z\right) P\left(z \mid x_{1}\right)\end{aligned}$</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>Phase-3</strong></p>
+<ul>
+<li>$\begin{aligned}P_{t}(s)&amp;=\sum_{D \backslash S} \prod_{i} Q\left[D_{i}\right] \\ &amp;= Q\left[ D_1\right] \\ &amp;= Q\left[ \{ Y\}\right] \\ &amp;= \sum_{z} P\left(y \mid x_{1}, x_{2}, z\right) P\left(z \mid x_{1}\right)\end{aligned}$</li>
+</ul>
+<hr>
+
+<p>Let $T = \{ X_1, X_2\}$ and $S = \{ Y\}$</p>
+<p><strong>Phase-1</strong></p>
+<ol>
+<li><p>c-components $S_1 := \{ X_2, W, Y\}, S_2:= \{ X_1\}$</p>
+</li>
+<li><p>$Q\left[ S_1\right] = P\left(y \mid x_{2}, w\right) P(x_{2} \mid x_1) P( w \mid x_2)$</p>
+<p>$Q\left[ S_2\right] = P\left(x_1 \right)$</p>
+</li>
+<li><p>$D:= An(\{ Y \})_{G_{V \setminus \{ X_1, X_2\}}} = \{ Y\}$</p>
+</li>
+<li><p>$D_1 := D \cap S_1 =\{ Y\}$, $D_2 := D \cap S_2 = \emptyset$</p>
+</li>
+</ol>
+<p><strong>graphical criteria</strong></p>
+<ul>
+<li>Lemma 9 : $P_{x_1, x_2}(y)$ is identifiable if $P_{x_2}(y)$ is identifiable in $G_{S_1}$</li>
+<li>Theorem 4 : $P_{x_2}(y)$ is identifiable in $G_{S_1}$</li>
+</ul>
+<p>…</p>
+<hr>
+
+<p>Let $T = \{ X_1, X_2\}$ and $S = \{ Y\}$</p>
+<p><strong>Phase-1</strong></p>
+<ol>
+<li>c-components $S_1 := \{ X_1 \} , S_2:= \{Y \}, S_3 := \{ X_2, Z_1, Z_1^\prime \}$</li>
+<li>…</li>
+</ol>
+<p><strong>graphical criteria</strong></p>
+<ul>
+<li>Lemma 7 : $P_{x_{1} x_{2}}(y)$ is identifiable if $P_{x_{1}}(v)$ and $P_{x_{2}}(v)$ are identifiable</li>
+<li>Theorem 3 : $P_{x_{1}}(v)$ and $P_{x_{2}}(v)$ are identifiable</li>
+</ul>
+<p><strong>Compute $P_t(t^\prime)$</strong></p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P_t(t^\prime) & =Q\left[T^\prime\right]
+\\&=\prod_i Q\left[ T_i^\prime\right]
+\\&=Q\left[ \{ Y\}\right] Q\left[ \{ Z_1, Z_1^\prime\}\right]
+\\&=P\left(y \mid x_{2}, z_{1}^{\prime}\right) \sum_{x_{2}} Q\left[S\right]
+\\&=P\left(y \mid x_{2}, z_{1}^{\prime}\right) P\left(z_{1}^{\prime}, z_{1}\right)
+\end{aligned}</script><hr>
+
+<p>Let $T = \{ X_1, X_2\}$ and $S = \{ Y\}$</p>
+<p><strong>Phase-1</strong></p>
+<ol>
+<li>c-components $S_1 := \{ X_1, X_2, Y \} , S_2:= \{Z_1 \}, S_3 := \{ Z_2 \}$</li>
+<li>$T_1 := S_1 \cap T = \{ X_1, X_2  \}$</li>
+</ol>
+<p><strong>graphical criteria + compute $P_{t_i}( v \setminus t_i)$</strong></p>
+<ul>
+<li>Theorem 6 : $P_{T_1}(v \setminus t_i)$ is identifiable</li>
+<li>$P_{t_{1}}\left(v \setminus t_{1}\right)=\frac{P(v)}{Q\left[S_{1}\right]} \sum_{T_{1}} Q\left[S_{1}\right] =P\left(z_{1} \mid x_{1}\right) P\left(z_{2} \mid x_{1}, x_{2}\right) \sum_{x_{1}^{\prime}, x_{2}^{\prime}} P\left(y \mid x_{1}^{\prime}, x_{2}^{\prime}, z_{1}, z_{2}\right) P\left(x_{2}^{\prime} \mid x_{1}^{\prime}, z_{1}\right) P\left(x_{1}^{\prime}\right) .$</li>
+<li>$P_{x_{1} x_{2}}(y)=\sum_{z_{1}, z_{2}} P\left(z_{1} \mid x_{1}\right) P\left(z_{2} \mid x_{1}, x_{2}\right) \sum_{x_{1}^{\prime}, x_{2}^{\prime}} P\left(y \mid x_{1}^{\prime}, x_{2}^{\prime}, z_{1}, z_{2}\right) P\left(x_{2}^{\prime} \mid x_{1}^{\prime}, z_{1}\right) P\left(x_{1}^{\prime}\right)$</li>
+</ul>
 
     </div>
 
@@ -812,7 +1011,7 @@ P_{x}(y)=Q[\{Y\}]=\frac{\sum_{w_{1}, w_{3}} P\left(x, y \mid w_{1}, w_{2}, w_{3}
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-Abstract"><span class="nav-text">0. Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1. Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Notation-Definitions-and-Problem-Formulation"><span class="nav-text">2.Notation, Definitions, and Problem Formulation</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Identification-of-P-x-v"><span class="nav-text">3. Identification of $P_{x}(v)$</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Identification-of-P-x-s"><span class="nav-text">4.  Identification of $P_x(s)$</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-A-criterion-for-identifying-P-x-s"><span class="nav-text">4.1 A criterion for identifying $P_x(s)$</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-An-example"><span class="nav-text">4.2 An example</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-Lemmas"><span class="nav-text">4.3 Lemmas</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-4-Computing-P-x-s"><span class="nav-text">4.4 Computing $P_x(s)$</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-5-Useful-graphical-criteria"><span class="nav-text">4.5 Useful graphical criteria</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-6-An-Example"><span class="nav-text">4.6 An Example</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-7-Galles-amp-Pearl%E2%80%99s-graphical-criterion-vs-do-calculus"><span class="nav-text">4.7 Galles&amp;Pearl’s graphical criterion vs. do-calculus</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Identification-of-P-t-s"><span class="nav-text">5. Identification of $P_t(s)$</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-Abstract"><span class="nav-text">0. Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1. Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Notation-Definitions-and-Problem-Formulation"><span class="nav-text">2.Notation, Definitions, and Problem Formulation</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Identification-of-P-x-v"><span class="nav-text">3. Identification of $P_{x}(v)$</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Identification-of-P-x-s"><span class="nav-text">4.  Identification of $P_x(s)$</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-A-criterion-for-identifying-P-x-s"><span class="nav-text">4.1 A criterion for identifying $P_x(s)$</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-An-example"><span class="nav-text">4.2 An example</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-Lemmas"><span class="nav-text">4.3 Lemmas</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-4-Computing-P-x-s"><span class="nav-text">4.4 Computing $P_x(s)$</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-5-Useful-graphical-criteria"><span class="nav-text">4.5 Useful graphical criteria</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-6-An-Example"><span class="nav-text">4.6 An Example</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-7-Galles-amp-Pearl%E2%80%99s-graphical-criterion-vs-do-calculus"><span class="nav-text">4.7 Galles&amp;Pearl’s graphical criterion vs. do-calculus</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Identification-of-P-t-s"><span class="nav-text">5. Identification of $P_t(s)$</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-Computing-P-t-s"><span class="nav-text">5.1 Computing $P_t(s)$</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-Useful-graphical-criteria"><span class="nav-text">5.2 Useful graphical criteria</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-Examples"><span class="nav-text">5.3 Examples</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

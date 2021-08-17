@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leequant761.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="0. Abstract특정 환경에서의 experiment로 학습된 결과를 다른 환경으로 transfer하는 문제를 다룬다. Target domain에서의 effect가 source domain에서의 실험들로 추론될 수 있는 지를 결정하는 procedure를 유도한다. Observational transportability에 대해서도 다룬다.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Transportability of Causal and Statistical Relations: A Formal Approach">
+<meta property="og:url" content="https://leequant761.github.io/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/index.html">
+<meta property="og:site_name" content="Study Repo">
+<meta property="og:description" content="0. Abstract특정 환경에서의 experiment로 학습된 결과를 다른 환경으로 transfer하는 문제를 다룬다. Target domain에서의 effect가 source domain에서의 실험들로 추론될 수 있는 지를 결정하는 procedure를 유도한다. Observational transportability에 대해서도 다룬다.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leequant761.github.io/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817173413318.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817174108260.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817175206412.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817184448108.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817184710063.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817192418783.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817184448108.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817192418783.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817194245238.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817194231906.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817194816923.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817225537349.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817184448108.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817230037845.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210818002615281.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210818005006259.png">
+<meta property="article:published_time" content="2021-08-17T15:53:18.000Z">
+<meta property="article:modified_time" content="2021-08-17T16:01:07.283Z">
+<meta property="article:author" content="JaeHyun Lee">
+<meta property="article:tag" content="paper review">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leequant761.github.io/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817173413318.png">
+
+<link rel="canonical" href="https://leequant761.github.io/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Transportability of Causal and Statistical Relations: A Formal Approach | Study Repo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Study Repo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leequant761.github.io/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="JaeHyun Lee">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Study Repo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Transportability of Causal and Statistical Relations: A Formal Approach
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-08-18 00:53:18 / Modified: 01:01:07" itemprop="dateCreated datePublished" datetime="2021-08-18T00:53:18+09:00">2021-08-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Causality/" itemprop="url" rel="index"><span itemprop="name">Causality</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Causality/Transportability/" itemprop="url" rel="index"><span itemprop="name">Transportability</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="0-Abstract"><a href="#0-Abstract" class="headerlink" title="0. Abstract"></a>0. Abstract</h1><p>특정 환경에서의 experiment로 학습된 결과를 다른 환경으로 transfer하는 문제를 다룬다.</p>
+<p>Target domain에서의 effect가 source domain에서의 실험들로 추론될 수 있는 지를 결정하는 procedure를 유도한다.</p>
+<p>Observational transportability에 대해서도 다룬다.</p>
+<span id="more"></span>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a>1. Introduction</h1><p>과학은 실험실에서 얻어진 결론들을 다른 환경으로 generalize한다.</p>
+<p>만약 target environment가 너무 다르다면, 아무 것도 일반화되지 않는다.</p>
+<p>그러나 대부분의 실험은 apply에 목적을 두고 실행됐기에, 이러한 generalization이 정당화할만큼 유사한 environment를 채택한다.</p>
+<p>놀랍게도 transport를 허용하는 condition은 체계적으로 다뤄진 적이 없다.</p>
+<p>이 주제에 괜해서, meta analysis 등 구두로 서술하는 것들이 있다.</p>
+<p>반면에 이 논문은 formal condition을 세운다.</p>
+<hr>
+<p>ML literature에서 training과 test의 환경의 차이에 대해 걱정하면서도, prediction 성능에만 집중하고 있다.</p>
+<p>사전의 causal knowledge를 learning process에 담고있지 않기 때문에 차이에 대한 이론적 보장들은 없다.</p>
+<p>이 논문은 연구자들에게 domain-specific knowledge가 사용 가능할 때, 아래의 것들을 알려준다.</p>
+<ul>
+<li>무엇이 얻어질 수 있는 지</li>
+<li>왜 transfer learning이 실패하는 지</li>
+</ul>
+<h1 id="2-Motivating-Examples"><a href="#2-Motivating-Examples" class="headerlink" title="2. Motivating Examples"></a>2. Motivating Examples</h1><p>우리의 discussion을 motivate하기 위해 3가지의 간단한 예시를 보이겠다.</p>
+<p>이들은 임상실험을 떠올리게 하나 data-generating model으로 characterize되는 모든 learning environment와 관련있다.</p>
+<p>예를 들어, simulator로 학습된 로봇은 학습에서 얻어진 causal knowledge를 비싼 실제 환경으로 transport할 수 있어야 한다.</p>
+<hr>
+<p><strong>Example 1</strong></p>
+<img src="/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817173413318.png" class="">
+<p>LA에서 randomized experiment를 하여서 age($Z$) 그룹별로 CE of $X$ on $Y$를 쟀다.</p>
+<p>그 결과를 NYC로 일반화하고자 한다.</p>
+<p>그러나 우리는 $P(x, y, z)$와 $P^*(x, y, z)$가 다름을 알고있다.</p>
+<p>어떻게 $P^{*}(y \mid d o(x))$를 estimate 할 수 있을까?</p>
+<p>만약 $Z$-specific effect $P(y \mid do(x) , z)$ 가 invariant하다면,</p>
+<script type="math/tex; mode=display">
+P^{*}(y \mid d o(x))=\sum P(y \mid d o(x), z) P^{*}(z)</script><p>로 구해질 수 있다.</p>
+<hr>
+<p><strong>Example 2</strong> (proxy variable)</p>
+<img src="/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817174108260.png" class="">
+<p>Example 1 상황에서, $Z$를 age와 상관관계가 있는 언어구사수준이라고 해보자.</p>
+<p>LA에서의 $Z$-specific effect $P(y \mid do(x) , z)$로 부터 $P^{*}(y \mid d o(x))$를 estimate 할 수 있을까?</p>
+<p>만약 두 도시의 age의 marginal distribution이 같다면, $Z$의 분포랑 상관 없이 $P^{*}(y \mid d o(x))=P(y \mid d o(x))$ 이다.</p>
+<p>반면에, $P(z \mid a g e)$의 invariance를 가정한 상황에서 $P(z) \neq P^{*}(z)$의 다름은 age의 marginal distribution의 다름을 의미한다.</p>
+<p>이 상황에서 transportability는 causal context에 의존하게 된다.</p>
+<hr>
+<p>Note that</p>
+<ul>
+<li>Example 1에선 $Z$-specific effect가 invariant 하다.</li>
+<li>Example 2에선 $Z$-specific effect가 invariant 하지 않다.<ul>
+<li>$P^{<em>}(y \mid d o(x), z)=\sum_{a g e} P(y \mid d o(x), \text { age }) P^{</em>}(\operatorname{age} \mid z)$</li>
+<li>$P(y \mid d o(x), z)=\sum_{a g e} P(y \mid d o(x), \text { age }) P(\operatorname{age} \mid z)$</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p><strong>Example 3</strong> ($X$-dependent variable)</p>
+<img src="/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817175206412.png" class="">
+<p>$Z$를 관측되는 질병의 수치라고 생각해보자.</p>
+<p>추가로 $P(z) \neq P^{*}(z)$를 가정하자.</p>
+<p>$P(y \mid do(x), z)$가 LA에서 estimate이 됐다고 가정하자.</p>
+<p>이 경우에 $P^*(y \mid do(x))$를 잴 수 있을까?</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P^{*}(y \mid d o(x))&=\sum_{z} P^{*}(y \mid d o(x), z) P^{*}(z \mid d o(x))
+\\
+&= \sum_{z} P(y \mid d o(x), z) P^{*}(z \mid x) \quad \because \text{Rule 3}
+\end{aligned}</script><h1 id="3-Formalizing-Transportability"><a href="#3-Formalizing-Transportability" class="headerlink" title="3. Formalizing Transportability"></a>3. Formalizing Transportability</h1><h2 id="3-1-Selection-Diagram-and-Selection-Variables"><a href="#3-1-Selection-Diagram-and-Selection-Variables" class="headerlink" title="3.1 Selection Diagram and Selection Variables"></a>3.1 Selection Diagram and Selection Variables</h2><p>위의 예시들은 transportability가 causal thing이라는 것을 설명한다.</p>
+<blockquote>
+<p>$P$가 같든 말든 structure에 기반해서 다른 transport formula가 나오므로</p>
+</blockquote>
+<p>도메인의 다름을 formal하게 나타내기 위해 causal diagram with selection variables를 사용한다.</p>
+<hr>
+<p>Population $\Pi^*$에서 experimental study를 했었다면 얻어졌을 interventional distribution을 selection variable로 표기한다.</p>
+<script type="math/tex; mode=display">
+P^{*}(v \mid d o(x))=P\left(v \mid d o(x), s^{*}\right)</script><img src="/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817184448108.png" class="">
+<ul>
+<li>$Y$를 가르키는 $S$ 변수의 부재는 age-specific effects가 invariant 함을 암시한다.</li>
+<li>$P(z) \neq P^*(z)$는 $P(z) \neq P(z \mid s)$로 나타낸다.</li>
+</ul>
+<img src="/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817184710063.png" class="">
+<ul>
+<li>Structural difference를 나타내는 데도 쓸 수 있다.</li>
+<li>Mechanism의 invariance에 대한 믿음이 없을 때 모든 변수에 selection variable을 붙일 수 있다.</li>
+</ul>
+<h2 id="3-2-Transportability-Definitions-and-Examples"><a href="#3-2-Transportability-Definitions-and-Examples" class="headerlink" title="3.2 Transportability: Definitions and Examples"></a>3.2 Transportability: Definitions and Examples</h2><p>Selection diagram + do-calculus + identifiability =&gt; transportability의 formal definition 제공</p>
+<hr>
+<p><strong>Definition 1</strong> (Transportability)</p>
+<p>​    Given two domains $\Pi$ and $\Pi^<em>$, characterized by $(P, G)$ and $(P^</em>, G^*)$,</p>
+<p>​    a causal relation $R$ is said to be transportable $\Pi \Rightarrow \Pi^*$ if</p>
+<ul>
+<li>$R(\Pi)$ is estimable from $\Pi+I$</li>
+<li>and</li>
+<li>$R(\Pi^<em>)$ is identified from $(\Pi+I) + \Pi^</em>$</li>
+</ul>
+<hr>
+<p>위의 정의는 $R(\Pi^*)$의 identifiability(랑 비슷한 느낌)을 요구한다.</p>
+<p>이는 모델이 클 수록 확인하기 어렵다.</p>
+<p>그러므로 우리는 transportability에 대한 procedural criteria를 찾게된다.</p>
+<p>이는 단계적으로 쪼개서 transportability를 결정하는 것이다.</p>
+<hr>
+<p><strong>Theorem 1</strong></p>
+<p>​    Let $D$ be the selection diagram characterizing $\Pi$ and $\Pi^*$</p>
+<p>​    Let $S$ be a set of selection variables in $D$</p>
+<p>​    The relation $R=P(y \mid d o(x), z)$ is transportable from $\Pi\Rightarrow \Pi^*$</p>
+<p>​    iff</p>
+<p>​    $P(y \mid d o(x), z, s)$ is reducible to an expression in which $S$ only appears  at $do$-free terms.</p>
+<p>(Proof)</p>
+<p>&lt;==</p>
+<p>​    $do$-free term은 $\Pi^*$로 estimate이 가능하므로</p>
+<p>==&gt;</p>
+<p>​    If $R$ is transportable, $R(\Pi^<em>)$ is identifiable from $(\Pi+I) + \Pi^</em>$</p>
+<p>​    $do-$calculus의 completeness</p>
+<hr>
+<p><strong>Definition 2</strong> (Direct Transportability)</p>
+<p>​    A causal relation $R$ is said to be directly transportable $\Pi ==&gt; \Pi^<em>$ if $R\left(\Pi^{</em>}\right)=R(\Pi)$</p>
+<hr>
+<p>$R = P(y\mid do(x))$의 direct transportability는 $(S \perp Y \mid X)_{G \bar{X}}$ 로 확인될 수 있다.</p>
+<script type="math/tex; mode=display">
+R\left(\Pi^{*}\right)=P(y \mid d o(x), s)=P(y \mid d o(x))=R(\Pi)</script><hr>
+<p><strong>Example 4</strong></p>
+<img src="/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817192418783.png" class="">
+<p>$X=x$ 로 intervention을 할 경우, $S$는 $Y$에 아무런 영향을 미치지 않는다.</p>
+<hr>
+<p><strong>Definition 3</strong> (Trivial Transportability)</p>
+<p>​    A causal relation $R$ is said to be trivially transportable $\Pi \Rightarrow \Pi^<em>$ if $R\left(\Pi^{</em>}\right)$ is identifiable from $\Pi^*$</p>
+<h1 id="4-Transportability-of-Causal-Effects-A-Graphical-Criterion"><a href="#4-Transportability-of-Causal-Effects-A-Graphical-Criterion" class="headerlink" title="4. Transportability of Causal Effects: A Graphical Criterion"></a>4. Transportability of Causal Effects: A Graphical Criterion</h1><p>Selection diagram이 주어졌을 때, $R$의 transportability와 transport formula를 제공하는 정리들을 증명하겠다.</p>
+<hr>
+<p><strong>Theorem 2</strong></p>
+<p>​    Let $D$ be the selection diagram characterizing $\Pi$ and $\Pi^*$.</p>
+<p>​    Let $S$ be the selection variables in $D$</p>
+<p>​    The $Z$-specific causal effect $P(y \mid do(x), z)$ is transportable $\Pi \Rightarrow \Pi^*$ if $(Y \perp S \mid Z)_{D_{\bar{X}}}$</p>
+<hr>
+<p><strong>Definition 4</strong> (S-admissibility)</p>
+<p>​    A set of variables $Z$ is called $S$-admissible if $(Y \perp S \mid Z)_{D_{\bar X}}$</p>
+<hr>
+<p><strong>Corollary 1</strong></p>
+<p>​    The average causal effect $P(y \mid do(x))$ is transportable $\Pi \Rightarrow \Pi^*$ if $^\exists$pre-treatment $Z$ satisfies $S$-admissible.</p>
+<p>​    Moreover, the transport formula is given by </p>
+<script type="math/tex; mode=display">
+P^{*}(y \mid d o(x))=\sum_{z} P(y \mid d o(x), z) P^{*}(z)</script><hr>
+<p><strong>Example 7</strong></p>
+<img src="/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817184448108.png" class="">
+<ul>
+<li>$Z$ is $S$-admissible </li>
+</ul>
+<img src="/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817192418783.png" class="">
+<ul>
+<li>empty set is $S$-admissible</li>
+</ul>
+<img src="/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817194245238.png" class="">
+<ul>
+<li>$W$ is $S$-admissible</li>
+</ul>
+<img src="/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817194231906.png" class="">
+<ul>
+<li>$^{\not \exists} S$-admissible set</li>
+</ul>
+<hr>
+<p><strong>Corollary 2</strong></p>
+<p>​    Any $S$ that can be ignored</p>
+<ul>
+<li>is pointing directly into $X$</li>
+<li>or</li>
+<li>is d-connected only through $X$</li>
+</ul>
+<hr>
+<p>이는 컨셉적으로, treatment를 결정하는 성향의 차이가 randomization으로 해결될 수 있음을 의미한다.</p>
+<hr>
+<p><strong>Theorem 3</strong></p>
+<p>​    The causal effect $P(y \mid do(x))$ is transportable $\Pi \Rightarrow \Pi^*$ if any one of conditions holds</p>
+<ol>
+<li>$P(y \mid do(x))$ is trivially transportable</li>
+<li>$^{\exists} Z$ s.t. $Z$ is $S$-admissible and $P(z \mid do(x))$ is transportable.</li>
+<li>$^{\exists} W$ s.t. $(X \perp Y \mid W, S) _D$ and $P(w \mid do(x))$ is transportable.</li>
+</ol>
+<p>(Proof)</p>
+<ol>
+<li>trivially transportable implies transportable</li>
+<li><script type="math/tex; mode=display">\begin{aligned}
+P^{*}(y \mid d o(x)) &=P(y \mid d o(x), s) \\
+&=\sum_{z} P(y \mid d o(x), z, s) P(z \mid d o(x), s) \\
+&=\sum_{z} P(y \mid d o(x), z) P^{*}(z \mid d o(x))
+\end{aligned}</script></li>
+<li><script type="math/tex; mode=display">\begin{aligned}
+P^{*}(y \mid d o(x)) &=P(y \mid d o(x), s) \\
+&=\sum_{w} P(y \mid d o(x), w, s) P(w \mid d o(x), s)\\
+&=\sum_{w} P(y \mid w, s) P^{*}(w \mid d o(x)) \quad \because\text{Rule 3}\\ 
+&=\sum_{w} P^{*}(y \mid w) P^{*}(w \mid d o(x))\end{aligned}</script></li>
+</ol>
+<hr>
+<p><strong>Remark</strong></p>
+<ul>
+<li>Theorem3에서 2와 3의 condition은 recursive이다.</li>
+<li>피드백이 없는 system에선 유한한 단계를 거쳐서 끝난다.</li>
+<li>하지만 not complete이다…(?)</li>
+</ul>
+<hr>
+<p><strong>Example 8</strong></p>
+<img src="/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817194816923.png" class="">
+<ul>
+<li>front-door criterion : $R = P(y \mid do(x))$는 trivially transportable이다.</li>
+</ul>
+<img src="/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817225537349.png" class="">
+<ul>
+<li>$Z$는 $S$-admissible set이다.</li>
+<li>$P(z \mid do(x))$는 (trivially) transportable이다.</li>
+</ul>
+<img src="/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817184448108.png" class="">
+<ul>
+<li>$S$-admissible set이 없다.</li>
+<li>$(X \perp Y \mid W, S) _D$를 만족하는 $W$도 없다.</li>
+</ul>
+<hr>
+<p><strong>Example 9</strong></p>
+<img src="/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210817230037845.png" class="">
+<script type="math/tex; mode=display">
+\begin{aligned}
+P^{*}(y \mid d o(x))&=P(y \mid d o(x), s) \\
+&=\sum_{z} P(y \mid d o(x), s, z) P(z \mid d o(x), s) \\
+&=\sum_{z} P(y \mid d o(x), z) P(z \mid d o(x), s) \quad \because\text{$Z$'s $S$-admissibility for CE of X on Y}\\
+&=\sum_{z} P(y \mid d o(x), z) \sum_{w} P(z \mid d o(x), w, s) P(w \mid d o(x), s)\\
+&=\sum_{z} P(y \mid d o(x), z) \sum_{w} P(z \mid w, s) P(w \mid d o(x), s) \quad \because (X \perp Z \mid S, W)_{D}\\
+&=\sum_{z} P(y \mid d o(x), z) \sum_{w} P^{*}(z \mid w) P(w \mid d o(x)) \quad \because\text{$\{ \}$'s $S$-admissibility for CE of X on Y}
+\end{aligned}</script><p><strong>Example 10</strong></p>
+<img src="/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210818002615281.png" class="">
+<script type="math/tex; mode=display">
+\begin{aligned}
+P^{*}(y \mid d o(x))&=P\left(y \mid d o(x), s, s^{\prime}\right)\\
+&=\sum_{z} P\left(y \mid d o(x), s, s^{\prime}, z\right) P\left(z \mid d o(x), s, s^{\prime}\right)\\
+&=\sum_{z} P(y \mid d o(x), z) P\left(z \mid d o(x), s, s^{\prime}\right) \quad \because\text{$Z$'s $S$-admissibility for CE of X on Y}\\
+&=\sum_{z} P(y \mid d o(x), z) \sum_{w} P\left(z \mid d o(x), s, s^{\prime}, w\right) P\left(w \mid d o(x), s, s^{\prime}\right) \\
+&=\sum_{z} P(y \mid d o(x), z) \sum_{w} P\left(z \mid s, s^{\prime}, w\right) P\left(w \mid d o(x), s, s^{\prime}\right)\\& \quad \because \left(X \perp Z \mid S, S^{\prime}, W\right)_D
+\\
+&=\sum_{z} P(y \mid d o(x), z) \sum_{w} P\left(z \mid s, s^{\prime}, w\right) \sum_{t} P\left(w \mid d o(x), s, s^{\prime}, t\right) P\left(t \mid d o(x), s, s^{\prime}\right)\\
+&=\sum_{z} P(y \mid d o(x), z) \sum_{w} P\left(z \mid s, s^{\prime}, w\right) \sum_{t} P(w \mid d o(x), t) P\left(t \mid d o(x), s, s^{\prime}\right) 
+\\
+&\quad \because\text{$T$'s $S$-admissibility for CE of X on W}
+\\
+&=\sum_{z} P(y \mid d o(x), z) \sum_{w} P^{*}(z \mid w) \sum_{t} P(w \mid d o(x), t) P^{*}(t)
+\end{aligned}</script><ul>
+<li>이 formula는 필요없는 변수들을 알아내서 learning agent가 무엇을 학습할 지를 guide해준다.</li>
+</ul>
+<h1 id="5-Transportability-Across-Observational-Domains"><a href="#5-Transportability-Across-Observational-Domains" class="headerlink" title="5. Transportability Across Observational Domains"></a>5. Transportability Across Observational Domains</h1><p>이제까지의 analysis는 target domain에서 passive observation만으론 identify될 수 없어서 experimental learning이 필요하다고 가정했다.</p>
+<p>이번 섹션에선 observational finding 간의 transport가 도움될 수 있음을 설명하겠다.</p>
+<p>LA에서 수십개의 변수와 수천개의 sampe를 갖고서 정교한 observation study를 했다고 가정하자.</p>
+<p>NYC에서 똑같은 대상을 estimate하고자 한다.</p>
+<p>이 때, 바닥부터 다시 시작해야할 지에 대한 질문이 생긴다.</p>
+<p>복잡한 모델 $P^*$의 변수 중 일부만 집중할 수 있다면 비용이 줄어들 수 있다.</p>
+<hr>
+<p><strong>Definition 5</strong> (Observational Transportability)</p>
+<p>​    Given the two domain $\Pi$ and $\Pi^{\star}$, a statistical relation $R(P)$ is said to be observational transportable $\Pi \Rightarrow \Pi^{\star}$ if</p>
+<ul>
+<li>$R(P^\star)$ is identified from $\Pi$ and $\Pi^\star(V^\star)$ where $V^\star$ is a subset of variables</li>
+</ul>
+<hr>
+<img src="/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/image-20210818005006259.png" class="">
+<p>$P(x, y, z_1, z_2)$를 학습한 후에, target domain에서 $X, Y$에 대한 관측없이 $X\rightarrow Y$ classification에 관심있다.</p>
+<p>이는 $P(y \mid x)$ is observational transportable over $V^* = \{Z_1, Z_2 \}$에 대한 질문이다.</p>
+<script type="math/tex; mode=display">
+P^{*}\left(x, y, z_{1}, z_{2}\right)=P\left(y \mid z_{2}, x\right) P\left(x \mid z_{1}\right) P\left(z_{2}\right) P^{*}\left(z_{1} \mid z_{2}\right)</script>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/paper-review/" rel="tag"># paper review</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/08/01/Recasting-Gradient-Based-Meta-Learning-as-Hierarchical-Bayes/" rel="prev" title="Recasting Gradient-Based Meta-Learning as Hierarchical Bayes">
+      <i class="fa fa-chevron-left"></i> Recasting Gradient-Based Meta-Learning as Hierarchical Bayes
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-Abstract"><span class="nav-text">0. Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1. Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Motivating-Examples"><span class="nav-text">2. Motivating Examples</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Formalizing-Transportability"><span class="nav-text">3. Formalizing Transportability</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Selection-Diagram-and-Selection-Variables"><span class="nav-text">3.1 Selection Diagram and Selection Variables</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Transportability-Definitions-and-Examples"><span class="nav-text">3.2 Transportability: Definitions and Examples</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Transportability-of-Causal-Effects-A-Graphical-Criterion"><span class="nav-text">4. Transportability of Causal Effects: A Graphical Criterion</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Transportability-Across-Observational-Domains"><span class="nav-text">5. Transportability Across Observational Domains</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">JaeHyun Lee</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">24</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JaeHyun Lee</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://leequant761.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://leequant761.github.io/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/";
+    this.page.identifier = "2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/";
+    this.page.title = "Transportability of Causal and Statistical Relations: A Formal Approach";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://leequant761.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -35,7 +35,7 @@
 <meta property="og:image" content="https://leequant761.github.io/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/image-20210616181417109.png">
 <meta property="og:image" content="https://leequant761.github.io/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/image-20210616184352480.png">
 <meta property="article:published_time" content="2021-07-04T16:02:15.000Z">
-<meta property="article:modified_time" content="2021-07-21T06:20:04.451Z">
+<meta property="article:modified_time" content="2021-08-25T05:56:02.088Z">
 <meta property="article:author" content="JaeHyun Lee">
 <meta property="article:tag" content="paper review">
 <meta property="article:tag" content="dynamic treatment regime">
@@ -205,7 +205,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-07-21 15:20:04" itemprop="dateModified" datetime="2021-07-21T15:20:04+09:00">2021-07-21</time>
+                <time title="Modified: 2021-08-25 14:56:02" itemprop="dateModified" datetime="2021-08-25T14:56:02+09:00">2021-08-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -337,19 +337,16 @@
 <p>Policy $\boldsymbol\pi$는 interventional distribution over $\overline{\boldsymbol{X}}_{K}, \overline{\boldsymbol{S}}_{K}, Y$를 유도한다.</p>
 <script type="math/tex; mode=display">
 P_{\pi}\left(\overline{\boldsymbol{x}}_{K}, \overline{\boldsymbol{s}}_{K}, y\right)=P_{\overline{\boldsymbol{x}}_{K}}\left(y \mid \overline{\boldsymbol{s}}_{K}\right) \prod_{k=0}^{K-1} P_{\overline{\boldsymbol{x}}_{k}}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right) \pi_{k+1}\left(x_{k+1} \mid \overline{\boldsymbol{s}}_{k+1}, \overline{\boldsymbol{x}}_{k}\right)</script><img src="/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/image-20210614125233956.png" class="">
-<p>$M^{<em>} + \pi$에 따라 expected reward $V_{\boldsymbol{\pi}}\left(M^{</em>}\right)=E_{\boldsymbol{\pi}}[Y]$ 이 주어진다.</p>
-<p>우리는 optimal policy $\pi^{<em>} := \arg \max _{\boldsymbol{\pi} \in \boldsymbol{\Pi}} V_{\boldsymbol{\pi}}\left(M^{</em>}\right)$ 를 찾는 게 목표이다.</p>
+<p>$M^{\star} + \pi$에 따라 expected reward $V_{\boldsymbol{\pi}}\left(M^{\star}\right)=E_{\boldsymbol{\pi}}[Y]$ 이 주어진다.</p>
+<p>우리는 optimal policy $\pi^{\star} := \arg \max _{\boldsymbol{\pi} \in \boldsymbol{\Pi}} V_{\boldsymbol{\pi}}\left(M^{\star}\right)$ 를 찾는 게 목표이다.</p>
 <blockquote>
 <p>Decision theory에서 random policy들만으로 구성된 policy space나 deterministic policy로만 구성된 policy space나 optimal value가 같다는 게 알려져있으니 편의를 위해 deterministic policy만으로 구성된 policy space를 사용하겠다.</p>
 </blockquote>
 <hr>
-<p>Unknown DTR $M^{*}$를 최적화하고 싶다.</p>
-<blockquote>
-<p>DTR 최적화라는 표현이 자주 나오는데 무슨 최적화인지 아직 잘 모르겠다.</p>
-</blockquote>
+<p>Unknown DTR $M^{*}$를 학습하고 싶다.</p>
 <p>Agent(의사)는 반복된 experiment들로 학습한다.</p>
 <p>이 때 각 episode $t$는 DTR과 policy의 realization이다.</p>
-<p>$T$번 째 episode까지의 regret을 $R(T)=\sum_{t=1}^{T}\left(V_{\pi^{<em>}}\left(M^{</em>}\right)-Y^{t}\right)$로 표기하자.</p>
+<p>$T$번 째 episode까지의 regret을 $R(T)=\sum_{t=1}^{T}\left(V_{\pi^{*}}\left(M^{\star}\right)-Y^{t}\right)$로 표기하자.</p>
 <p>Agent가 optimal policy $\pi^*$에 수렴함에 따라 $\lim _{T \rightarrow \infty} E[R(T)] / T=0$을 기대한다.</p>
 <h2 id="2-1-The-UC-DTR-Algorithm"><a href="#2-1-The-UC-DTR-Algorithm" class="headerlink" title="2.1 The UC-DTR Algorithm"></a>2.1 The UC-DTR Algorithm</h2><p>UC-DTR은 unknown DTR을 최적화하는 RL 알고리즘이다.</p>
 <p>Domain $\boldsymbol{\mathcal{S}}, \boldsymbol{\mathcal{X}}$ 상의 지식만 갖고서 total regret의 near optimal에 도달한다는 것을 증명하겠다.</p>
@@ -371,16 +368,12 @@ P_{\pi}\left(\overline{\boldsymbol{x}}_{K}, \overline{\boldsymbol{s}}_{K}, y\rig
 </blockquote>
 <p>${}^{\forall} \overline{\boldsymbol{x}}_{k} \in \overline{\boldsymbol{\mathcal{X}}}_{k}$, $^{\exists}  \overline{\boldsymbol{x}}^+_{k} \in \overline{\boldsymbol{\mathcal{X}}}^+_{k}$ s.t.</p>
 <script type="math/tex; mode=display">
-P_{\bar{x}_{k}^+}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right) = P_{\overline{\boldsymbol{x}}_{k}}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right)</script><p>$^\forall \boldsymbol\pi_{+} \text { on } M_{+}$, $^\exists\boldsymbol{\pi}_{t} \text{ on } M_t$ s.t.</p>
+P_{\overline{\boldsymbol{x}}_{k}^+}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right) = P_{\overline{\boldsymbol{x}}_{k}}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right)
+\\
+E_{\overline{\boldsymbol{x}}_{K}^+}\left[Y \mid \overline{\boldsymbol{s}}_{K}\right] = E_{\overline{\boldsymbol{x}}_{K}}\left[Y \mid \overline{\boldsymbol{s}}_{K}\right]</script><p>$^\forall \boldsymbol\pi_{+} \text { on } M_{+}$, $^\exists\boldsymbol{\pi}_{t} \text{ on } M_t$ s.t.</p>
 <script type="math/tex; mode=display">
 P_{\boldsymbol\pi_{+}}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right) = P_{\boldsymbol\pi_{t}}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right)</script><p>그래서 Step 5는 extended DTR $M_+$에서 optimal policy를 찾는 문제와 동일하다.</p>
-<blockquote>
-<p>아직 제대로 이해가진 않았음…</p>
-</blockquote>
-<p>Let $V^{<em>}\left(\overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{x}}_{k-1}\right)$ denote the optimal value $E_{\pi_{+}^{</em>}}\left[Y \mid \bar{s}_{k}, \overline{\bar{x}}_{k-1}\right]$.</p>
-<blockquote>
-<p>Value function에 action이 들어간 이유는 이전의 action들에도 영향을 받는다는 설정 때문</p>
-</blockquote>
+<p>Let $V^{\star}(\overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{x}}_{k-1})$ denote the optimal value $E_{\pi_{+}^{\star}}\left[Y \mid \overline{\boldsymbol s}_{k}, \overline{\boldsymbol x}_{k-1}\right]$.</p>
 <p>Then, the Bellman equation on $M_+$ for $k=1, \cdots, K-1$ is defined as follows:</p>
 <script type="math/tex; mode=display">
 \begin{aligned}
@@ -391,7 +384,21 @@ V^{*}\left(\overline{\boldsymbol{s}}_{K}, \overline{\boldsymbol{x}}_{K-1}\right)
 \end{aligned}</script><p>where $\mathcal{R}, \mathcal{P}_{k}$ are the convex polytope of parameters $E_{\overline{\boldsymbol{x}}_{K}}\left[Y \mid \overline{\boldsymbol{s}}_{K}\right], P_{\overline{\boldsymbol{x}}_{k}}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right)$</p>
 <p>이는 convex polytope 상에서의 linear programming으로 해결될 수 있다.</p>
 <blockquote>
-<p>의도는 알겠으나 방법적으로 이해가 잘 되지 않는다…</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+V_{\boldsymbol \pi}( \overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{x}}_{k-1}) &= E_{\boldsymbol \pi} [Y \mid \overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{x}}_{k-1}]
+\\
+&= \sum_{s_{k+1}}E_{\boldsymbol \pi} [Y \mid \overline{\boldsymbol{s}}_{k+1}, \overline{\boldsymbol{x}}_{k-1}] P_{\overline{\boldsymbol{x}}_{k}} (s_{k+1} \mid \overline{\boldsymbol{s}}_{k}) \quad \because\text{$\boldsymbol \pi$ is deterministic}
+\\
+&= \sum_{s_{k+1}}E_{\boldsymbol \pi} [Y \mid \overline{\boldsymbol{s}}_{k+1}, \overline{\boldsymbol{x}}_{k}] P_{\overline{\boldsymbol{x}}_{k}} (s_{k+1} \mid \overline{\boldsymbol{s}}_{k}) \quad \because\text{$\boldsymbol \pi$ is deterministic}
+\\
+&= \sum_{s_{k+1}}V_{\boldsymbol \pi}( \overline{\boldsymbol{s}}_{k+1}, \overline{\boldsymbol{x}}_{k})P_{\overline{\boldsymbol{x}}_{k}} (s_{k+1} \mid \overline{\boldsymbol{s}}_{k})
+\end{aligned}</script><p>Let $V^{*}\left(\overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{x}}_{k-1}\right) = \max_{\boldsymbol \pi} V_{\boldsymbol \pi} \left(\overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{x}}_{k-1}\right)$</p>
+<p>Then $V^\star$ satisfies </p>
+</blockquote>
+<script type="math/tex; mode=display">
+V^*_{\boldsymbol \pi}( \overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{x}}_{k-1}) = \max _{x_k}\sum_{s_{k+1}}V^*_{\boldsymbol \pi}( \overline{\boldsymbol{s}}_{k+1}, \overline{\boldsymbol{x}}_{k})P_{\overline{\boldsymbol{x}}_{k}} (s_{k+1} \mid \overline{\boldsymbol{s}}_{k})</script><blockquote>
+<p>논문의 max에 $\mathcal{R}, \mathcal{P}_{k}$가 추가된 이유는 dynamics를 모르기 때문에 empirical에서 크게 벗어나지 않은 optimistic DTR 하에서 최대화하려는 의도이다.</p>
 </blockquote>
 <h2 id="2-2-Theoretical-Analysis"><a href="#2-2-Theoretical-Analysis" class="headerlink" title="2.2 Theoretical Analysis"></a>2.2 Theoretical Analysis</h2><p>UC-DTR의 asymptotic behavior를 알아보자.</p>
 <p>모든 증명들은 appendix에 제공된다.</p>
@@ -401,8 +408,8 @@ V^{*}\left(\overline{\boldsymbol{s}}_{K}, \overline{\boldsymbol{x}}_{K-1}\right)
 <script type="math/tex; mode=display">
 R(T) \leq12 K \sqrt{|\mathcal{S}||\mathcal{X}| T \log (2 K|\boldsymbol{\mathcal{S}} \| \boldsymbol{\mathcal{X}}| T / \delta)}+4 K \sqrt{T \log (2 T / \delta)}</script><hr>
 <p><strong>Theorem 2</strong> (Gap-dependent upper bound)</p>
-<p>​    Let $\mathbf{\Pi}^{-}$ denote the set of sub-optimal policies $\left\{\boldsymbol{\pi} \in \boldsymbol{\Pi}: V_{\boldsymbol{\pi}}\left(M^{<em>}\right)&lt;V_{\boldsymbol{\pi}^{</em>}}\left(M^{*}\right)\right\}$</p>
-<p>​    Let $\Delta_{\boldsymbol{\pi}}=\hat{V}_{\boldsymbol{\pi}^{<em>}}\left(M^{</em>}\right)-V_{\boldsymbol{\pi}}\left(M^{*}\right)$</p>
+<p>​    Let $\mathbf{\Pi}^{-}$ denote the set of sub-optimal policies $\{\boldsymbol{\pi} \in \boldsymbol{\Pi}: V_{\boldsymbol{\pi}}\left(M^{\star}\right)&lt;V_{\boldsymbol{\pi}^{\star}}\left(M^{\star}\right)\}$</p>
+<p>​    Let $\Delta_{\boldsymbol{\pi}}=\hat{V}_{\boldsymbol{\pi}^{*}}\left(M^{\star}\right)-V_{\boldsymbol{\pi}}\left(M^{\star}\right)$</p>
 <p>​    Then, the expected regret of UC-DTR with parameter $\delta=\frac{1}{T}$ is bounded by</p>
 <script type="math/tex; mode=display">
 E[R(T)] \leq \max _{\boldsymbol{\pi} \in \Pi^{-}}\left\{\frac{33^{2} K^{2}|\boldsymbol{\mathcal{S}}||\boldsymbol{\mathcal{X}}| \log (T)}{\Delta_{\pi}}+\frac{32}{\Delta_{\pi}^{3}}+\frac{4}{\Delta_{\pi}}\right\}+1</script><hr>
@@ -420,7 +427,7 @@ E[R(T)] \geq 0.05 \sqrt{|\mathcal{S} \| \mathcal{X}| T} \quad \text{where $T\geq
 <p>Observational sample들을 활용하여 online learner의 performance가 향상될 수 있도록하는 procedure를 보이겠다.</p>
 <hr>
 <p>만약 $\overline{\boldsymbol{S}}_{K}$가 $\overline{\boldsymbol{X}}_{K}, Y$에 대한 sequential backdoor criterion을 만족할 때, ${P}_{\overline{\boldsymbol{x}}_{k}}\left(s_{k+1} \mid \overline{\boldsymbol{s}}_{k}\right)$와 $E_{\overline{\boldsymbol{x}}_{K}}\left[Y \mid \bar{s}_{k}\right]$는 identifiable하다.</p>
-<p>그러면 optimal policy는 Q-learning같은 standard off-policy learning으로 구할 수 있다.</p>
+<p>그러면 optimal policy는 Q-learning같은 standard off-policy learning으로 구할 수 있다. See [7] Sec 3.5</p>
 <img src="/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/image-20210614085211721.png" class="">
 <p>하지만 위처럼 sbc가 깨지는 경우 non identifiability 문제가 발생한다.</p>
 <hr>

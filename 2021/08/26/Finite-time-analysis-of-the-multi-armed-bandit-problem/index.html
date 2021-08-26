@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://leequant761.github.io/2021/08/26/Finite-time-analysis-of-the-multi-armed-bandit-problem/image-20210615211640333.png">
 <meta property="og:image" content="https://leequant761.github.io/2021/08/26/Finite-time-analysis-of-the-multi-armed-bandit-problem/image-20210615213833053.png">
 <meta property="article:published_time" content="2021-08-26T12:03:33.000Z">
-<meta property="article:modified_time" content="2021-08-26T12:12:22.005Z">
+<meta property="article:modified_time" content="2021-08-26T12:17:14.963Z">
 <meta property="article:author" content="JaeHyun Lee">
 <meta property="article:tag" content="paper review">
 <meta property="article:tag" content="bandit">
@@ -196,7 +196,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-08-26 21:03:33 / Modified: 21:12:22" itemprop="dateCreated datePublished" datetime="2021-08-26T21:03:33+09:00">2021-08-26</time>
+              <time title="Created: 2021-08-26 21:03:33 / Modified: 21:17:14" itemprop="dateCreated datePublished" datetime="2021-08-26T21:03:33+09:00">2021-08-26</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -262,9 +262,10 @@
 <script type="math/tex; mode=display">
 \begin{equation}
 \mathbb{E}\left[T_{j}(n)\right] \leq\left(\frac{1}{KL\left(p_{j} \| p^{*}\right)}+o(1)\right) \ln n
-\end{equation} \quad \text{as $n \rightarrow \infty$}</script><p>임을 보였다.</p>
+ \quad \text{as $n \rightarrow \infty$}
+\end{equation}</script><p>임을 보였다.</p>
 <p>그래서 그 policy를 사용하면, optimal machine이 다른 머신들보다 exponentially 많이 실행된다는 것이다.</p>
-<p>추가로, 어떤 $A$를 쓰더라도 임의의 머신 $j$에 대해 $\begin{equation}<br>\mathbb{E}\left[T_{j}(n)\right] \geq(\ln n) / KL\left(p_{j} | p^{*}\right)<br>\end{equation}$ 임을 asymptotically 보였다.</p>
+<p>추가로, 어떤 $A$를 쓰더라도 임의의 머신 $j$에 대해 $\mathbb{E}\left[T_{j}(n)\right] \geq(\ln n) / KL\left(p_{j} | p^{*}\right)$ 임을 asymptotically 보였다.</p>
 <p>결국 특정 policy가 optimal임을 보였다.</p>
 <hr>
 <p>이에 대한 previous work이 있었는데 스킵하겠다.</p>

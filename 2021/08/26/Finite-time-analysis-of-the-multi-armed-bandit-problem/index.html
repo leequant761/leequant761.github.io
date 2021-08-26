@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leequant761.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="0. Abstract강화학습에서 policy learning을 하는 동안, exp vs exp dillema에 빠지게 된다.  empirically choose the best action explore the environment to find more profitable actions  MABP는 이 딜레마의 가장 간단한 예시이다. Regret이 이 딜">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Finite-time analysis of the multi-armed bandit problem">
+<meta property="og:url" content="https://leequant761.github.io/2021/08/26/Finite-time-analysis-of-the-multi-armed-bandit-problem/index.html">
+<meta property="og:site_name" content="Study Repo">
+<meta property="og:description" content="0. Abstract강화학습에서 policy learning을 하는 동안, exp vs exp dillema에 빠지게 된다.  empirically choose the best action explore the environment to find more profitable actions  MABP는 이 딜레마의 가장 간단한 예시이다. Regret이 이 딜">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leequant761.github.io/2021/08/26/Finite-time-analysis-of-the-multi-armed-bandit-problem/image-20210615141408505.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/08/26/Finite-time-analysis-of-the-multi-armed-bandit-problem/image-20210615205922851.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/08/26/Finite-time-analysis-of-the-multi-armed-bandit-problem/image-20210615211640333.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/08/26/Finite-time-analysis-of-the-multi-armed-bandit-problem/image-20210615213833053.png">
+<meta property="article:published_time" content="2021-08-26T12:03:33.000Z">
+<meta property="article:modified_time" content="2021-08-26T12:09:57.691Z">
+<meta property="article:author" content="JaeHyun Lee">
+<meta property="article:tag" content="paper review">
+<meta property="article:tag" content="bandit">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leequant761.github.io/2021/08/26/Finite-time-analysis-of-the-multi-armed-bandit-problem/image-20210615141408505.png">
+
+<link rel="canonical" href="https://leequant761.github.io/2021/08/26/Finite-time-analysis-of-the-multi-armed-bandit-problem/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Finite-time analysis of the multi-armed bandit problem | Study Repo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Study Repo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leequant761.github.io/2021/08/26/Finite-time-analysis-of-the-multi-armed-bandit-problem/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="JaeHyun Lee">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Study Repo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Finite-time analysis of the multi-armed bandit problem
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-08-26 21:03:33 / Modified: 21:09:57" itemprop="dateCreated datePublished" datetime="2021-08-26T21:03:33+09:00">2021-08-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Reinforcement/" itemprop="url" rel="index"><span itemprop="name">Reinforcement</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/08/26/Finite-time-analysis-of-the-multi-armed-bandit-problem/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/08/26/Finite-time-analysis-of-the-multi-armed-bandit-problem/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="0-Abstract"><a href="#0-Abstract" class="headerlink" title="0. Abstract"></a>0. Abstract</h1><p>강화학습에서 policy learning을 하는 동안, exp vs exp dillema에 빠지게 된다.</p>
+<ul>
+<li>empirically choose the best action</li>
+<li>explore the environment to find more profitable actions</li>
+</ul>
+<p>MABP는 이 딜레마의 가장 간단한 예시이다.</p>
+<p>Regret이 이 딜레마에서 인기있는 measure인데 optimal log regret을 찾는 알고리즘을 제안한다.</p>
+<span id="more"></span>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a>1. Introduction</h1><p><strong>K-armed bandit problem</strong>은</p>
+<ul>
+<li>확률변수 $X_{i, n}$ for $1 \leq i \leq K \text { and } n \geq 1$ 로 이루어져 있고</li>
+<li>이 때 $i$는 gambling machine의 index이고</li>
+<li>머신 $i$의 연속적 플레이는 i.i.d. reward $X_{i, 1}, X_{i, 2}, \ldots$ 들의 값을 뱉는다.</li>
+<li>머신들 간에도 독립적이다.</li>
+<li><p>머신 $i$의 reward의 기댓값은 $\mu_i:= \mathbb E\left[X_i\right ]$으로 표기된다.</p>
+</li>
+<li><p>$A$ 는 이전의 플레이 기록과 보상들에 기반하여 다음의 머신을 선택하는 allocation strategy (policy으로도 불림) 이다.</p>
+</li>
+<li>$T_i(n)$ 는 머신 $i$가 $n$회 동안 플레이된 횟수이다.</li>
+<li>Let $\Delta_{i} \stackrel{\text { def }}{=} \mu^{*}-\mu_{i}$</li>
+<li>Regret $R(n) = \sum_{s=1}^nX_{*, s}-\sum_{i=1}^K\sum_{s=1}^{T_{i}(n)}X_{i,s}$</li>
+<li>Expected regret $\begin{aligned}\mathbb E \left[R(n)\right]&amp;=\mu^{*} n- \sum_{j=1}^{K} \mu_{j}\mathbb E\left[T_{j}(n) \right] \\ &amp;=\sum_{j=1}^{K} \Delta_{j}\mathbb E\left[T_{j}(n) \right] \end{aligned}$ 는 policy $A$의 regret이다.</li>
+</ul>
+<hr>
+<p>Regret은 best machine을 항상 플레이하지 못함에 따른 expected loss이다.</p>
+<p> <a href="">Lai and Robbins (1985)</a>는 특정 reward distribution을 따르는 머신들에 대해 특정 policy가,</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+\mathbb{E}\left[T_{j}(n)\right] \leq\left(\frac{1}{KL\left(p_{j} \| p^{*}\right)}+o(1)\right) \ln n
+\end{equation} \quad \text{as $n \rightarrow \infty$}</script><p>임을 보였다.</p>
+<p>그래서 그 policy를 사용하면, optimal machine이 다른 머신들보다 exponentially 많이 실행된다는 것이다.</p>
+<p>추가로, 어떤 $A$를 쓰더라도 임의의 머신 $j$에 대해 $\begin{equation}<br>\mathbb{E}\left[T_{j}(n)\right] \geq(\ln n) / KL\left(p_{j} | p^{*}\right)<br>\end{equation}$ 임을 asymptotically 보였다.</p>
+<p>결국 특정 policy가 optimal임을 보였다.</p>
+<hr>
+<p>이에 대한 previous work이 있었는데 스킵하겠다.</p>
+<hr>
+<p>이 논문에선 asymptotically가 아닌 모든 시간에 걸쳐서 regret이 log로 bounded됨을 보이겠다.</p>
+<h1 id="2-Main-results"><a href="#2-Main-results" class="headerlink" title="2. Main results"></a>2. Main results</h1><img src="/2021/08/26/Finite-time-analysis-of-the-multi-armed-bandit-problem/image-20210615141408505.png" class="">
+<p><strong>Theorem 1</strong></p>
+<p>​    If UCB1 is run on $K$ machines having arbitrary reward with support $\left[0,1 \right]$, </p>
+<p>​    then its expected regret after $n$ plays is at most</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+\mathbb E \left[R(n)\right] \leq \left[8 \sum_{i: \mu_{i}<\mu^{*}}\left(\frac{\ln n}{\Delta_{i}}\right)\right]+\left(1+\frac{\pi^{2}}{3}\right)\left(\sum_{j=1}^{K} \Delta_{j}\right)
+\end{equation}</script><hr>
+<p>증명을 하기 위해 알아야할 사실이 있다.</p>
+<p><strong>Fact 1</strong> (Chernoff-Hoeffding bound)</p>
+<p>​    Let $X_{1}, \ldots, X_{n}$ be i.i.d. random variables on $\left[0, 1\right]$ with $\mu = \mathbb E\left[X_i\right]$</p>
+<p>​    Let $S_{n}=X_{1}+\cdots+X_{n}$</p>
+<p>​    Then, for all $a \geq 0$,</p>
+<script type="math/tex; mode=display">
+P\left\{S_{n} \geq n \mu+a\right\} \leq e^{-2 a^{2} / n} \quad \text { and } \quad P\left\{S_{n} \leq n \mu-a\right\} \leq e^{-2 a^{2} / n}</script><hr>
+<p>(Proof)</p>
+<p>​    Let $c_{t, s}=\sqrt{(2 \ln t) / s}$</p>
+<p>​    Let $\ell$ be an arbitrary positive integer.</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+T_{i}(n) &=1+\sum_{t=K+1}^{n}\left\{I_{t}=i\right\} \\
+& \leq \ell+\sum_{t=K+1}^{n}\left\{I_{t}=i, T_{i}(t-1) \geq \ell\right\} \\
+& \leq \ell+\sum_{t=K+1}^{n}\left\{\bar{X}_{T^{*}(t-1)}^{*}+c_{t-1, T^{*}(t-1)} \leq \bar{X}_{i, T_{i}(t-1)} +c_{t-1, T_{i}(t-1)} \: \&  \: T_{i}(t-1) \geq \ell\right\}
+\\
+&\leq \ell+\sum_{t=K+1}^{n}\left\{\min _{0<s<t} \bar{X}_{s}^{*}+c_{t-1, s} \leq \max _{\ell \leq s_{i}<t} \bar{X}_{i, s_{i}}+c_{t-1, s_{i}}\right\}
+\\
+&\leq \ell+\sum_{t=1}^{\infty} \sum_{s=1}^{t-1} \sum_{s_{i}=\ell}^{t-1}\left\{\bar{X}_{s}^{*}+c_{t, s} \leq \bar{X}_{i, s_{i}}+c_{t, s_{i}}\right\}
+\end{aligned}</script><blockquote>
+<p>1번째 줄은 UCB1의 selection rule 때문이다. </p>
+<p>2번째 줄의 $\leq$인 이유는 $\ell$회 미만으로 play될 때를 고려하여.</p>
+<p>3번째 줄이 등식이 아닌 $\leq$인 이유는 선택 기준이 tie를 이룰 때를 대비.</p>
+<p>4번째 줄은 </p>
+<ul>
+<li>$i$ 머신을 $\ell \sim t-1$번 땡기게 된 경우와 최적머신을 $1\sim t-1$회 땡기게 된 경우를 동시에 고려해보자.</li>
+<li>3번째 줄의 이벤트가 일어났을 때는 그 경우 중에 하나에 속할 것이다.</li>
+<li>그 경우가 발생했었을 때의<ul>
+<li>$i$ 머신의 선택 기준은 $\max _{\ell \leq s_{i}&lt;t} \bar{X}_{i, s_{i}}+c_{t-1, s_{i}}$ 보단 작거나 같고</li>
+<li>최적 머신의 선택 기준은 $\min _{0&lt;s&lt;t} \bar{X}_{s}^{*}+c_{t-1, s}$ 보단 크거나 같다</li>
+</ul>
+</li>
+<li>결론은 3번째 줄의 이벤트를 포함한다.</li>
+</ul>
+<p>마지막 줄은 모든 이벤트를 포함시키려는 의도이다.</p>
+</blockquote>
+<p>​    $\bar{X}_{s}^{*}+c_{t, s} \leq \bar{X}_{i, s_{i}}+c_{t, s_{i}}$은 세가지 사건 중 하나가 발생했음을 암시한다.</p>
+<blockquote>
+<p>대우 명제로 확인</p>
+</blockquote>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\bar{X}_{s}^{*} & \leq \mu^{*}-c_{t, s} \\
+\bar{X}_{i, s_{i}} & \geq \mu_{i}+c_{t, s_{i}} \\
+\mu^{*} &<\mu_{i}+2 c_{t, s_{i}}
+\end{aligned}</script><p>​    Chernoff-Hoeffding bound를 사용하여,</p>
+<ul>
+<li>$\mathbb{P}\left\{\bar{X}_{s}^{<em>} \leq \mu^{</em>}-c_{t, s}\right\} \leq e^{-4 \ln t}=t^{-4}$</li>
+<li>$\mathbb P\left\{\bar{X}_{i, s_{i}} \geq \mu_{i}+c_{t, s_{i}}\right\} \leq e^{-4 \ln t}=t^{-4}$</li>
+</ul>
+<p>​    3번째 이벤트에 대한 확률은 임의의 양의 정수 $\ell (\leq s_i)$을 $(8 \ln n) / \Delta_{i}^{2}$보다 크게 잡을 때 0이 된다.</p>
+<script type="math/tex; mode=display">
+\mu^{*}-\mu_{i}-2 c_{t, s_{i}}=\mu^{*}-\mu_{i}-2 \sqrt{2(\ln t) / s_{i}} \geq \mu^{*}-\mu_{i}-\Delta_{i}=0</script><p>​    결국 $\ell= \left\lceil(8 \ln n) / \Delta_{i}^{2}\right]$에 대해서, $T_i(n)$의 부등식의 양변에 Expectation을 씌우면</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\mathbb{E}\left[T_{i}(n)\right] &\leq\left\lceil\frac{8 \ln n}{\Delta_{i}^{2}}\right\rceil+\sum_{t=1}^{\infty} \sum_{s=1}^{t-1} \sum_{s_{i}=\left\lceil(8 \ln n) / \Delta_{i}^{2}\right\rceil}^{t-1} \left( \mathbb P\left\{\bar{X}_{s}^{*} \leq \mu^{*}-c_{t, s}\right\}+\mathbb P\left\{\bar{X}_{i, s_{i}} \geq \mu_{i}+c_{t, s_{i}}\right\}\right)
+\\
+&\leq\left\lceil\frac{8 \ln n}{\Delta_{i}^{2}}\right\rceil+\sum_{t=1}^{\infty} \sum_{s=1}^{t} \sum_{s_{i}=1}^{t} 2 t^{-4}
+\\
+&\leq \frac{8 \ln n}{\Delta_{i}^{2}}+1+\frac{\pi^{2}}{3}
+\end{aligned}</script><hr>
+<p>Let $a_{n, r}=\sqrt{\frac{(1+\alpha) \ln (e n / \tau(r))}{2 \tau(r)}}$ where $\tau(r)=\left\lceil(1+\alpha)^{r}\right\rceil$</p>
+<img src="/2021/08/26/Finite-time-analysis-of-the-multi-armed-bandit-problem/image-20210615205922851.png" class="">
+<p><strong>Theorem 2</strong></p>
+<p>​    For any $n \geq \max _{i: \mu_{i}&lt;\mu^{*}} \frac{1}{2 \Delta_{i}^{2}}$</p>
+<script type="math/tex; mode=display">
+\mathbb E \left[R(n)\right] \leq \sum_{i: \mu_{i}<\mu^{*}}\left(\frac{(1+\alpha)(1+4 \alpha) \ln \left(2 e \Delta_{i}^{2} n\right)}{2 \Delta_{i}}+\frac{c_{\alpha}}{\Delta_{i}}\right)</script><blockquote>
+<p>앞으로 증명은 <strong>일단</strong> 생략</p>
+<p>필요하면 보강 예정</p>
+</blockquote>
+<hr>
+<p>Bandit problem에서 간단하고 잘알려진 $\epsilon$-greedy rule이 있다.</p>
+<p>$1-\epsilon$ 확률로 머신은 highest average reward를 실행하고 $\epsilon$ 확률로 랜덤하게 고른다.</p>
+<p>Constant $\epsilon$은 $\log$가 아닌 $\mathbb E \left[R(n)\right] = O( n)$이다.</p>
+<p>그래서 $\varepsilon_{n}$-GREEDY는 reward estimate이 정확해짐에 따라 $\epsilon \rightarrow 0$으로 보내는 방식으로 한다.</p>
+<img src="/2021/08/26/Finite-time-analysis-of-the-multi-armed-bandit-problem/image-20210615211640333.png" class="">
+<p><strong>Theorem 3</strong></p>
+<p>​    If $0 &lt; d \leq \min _{i: \mu_{i}&lt;\mu^{*}} \Delta_{i}$, for $n \geq c K / d$</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P(\{ I_n = j\}) \leq\frac{c}{d^{2} n} &+2\left(\frac{c}{d^{2}} \ln \frac{(n-1) d^{2} e^{1 / 2}}{c K}\right)\left(\frac{c K}{(n-1) d^{2} e^{1 / 2}}\right)^{c /\left(5 d^{2}\right)} \\
+&+\frac{4 e}{d^{2}}\left(\frac{c K}{(n-1) d^{2} e^{1 / 2}}\right)^{c / 2}
+\end{aligned}</script><blockquote>
+<p>적당히 큰 $c &gt; 5$가 주어졌을 때, 위의 bound는 $c /\left(d^{2} n\right)+o(1 / n)$이 된다.</p>
+<p>이는 Theorem1과 Theorem2의 bound보다 좋은 bound가 된다.</p>
+<p>하지만, $\min _{i: \mu_{i}&lt;\mu^{*}} \Delta_{i}$이 무엇인 지 알아야 한다는 게 단점이다.</p>
+</blockquote>
+<hr>
+<p>밴딧 머신들의 Reward의 분포가 normal distribution을 따르는 경우,</p>
+<img src="/2021/08/26/Finite-time-analysis-of-the-multi-armed-bandit-problem/image-20210615213833053.png" class="">
+<p><strong>Theorem 4</strong></p>
+<p>​    Any $n &gt; 0$,</p>
+<script type="math/tex; mode=display">
+\mathbb E \left[R(n)\right] \leq 256(\log n)\left(\sum_{i: \mu_{i}<\mu^{*}} \frac{\sigma_{i}^{2}}{\Delta_{i}}\right)+\left(1+\frac{\pi^{2}}{2}+8 \log n\right)\left(\sum_{j=1}^{K} \Delta_{j}\right)</script>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/paper-review/" rel="tag"># paper review</a>
+              <a href="/tags/bandit/" rel="tag"># bandit</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/08/18/Transportability-of-Causal-and-Statistical-Relations-A-Formal-Approach/" rel="prev" title="Transportability of Causal and Statistical Relations: A Formal Approach">
+      <i class="fa fa-chevron-left"></i> Transportability of Causal and Statistical Relations: A Formal Approach
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-Abstract"><span class="nav-text">0. Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1. Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Main-results"><span class="nav-text">2. Main results</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">JaeHyun Lee</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JaeHyun Lee</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://leequant761.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://leequant761.github.io/2021/08/26/Finite-time-analysis-of-the-multi-armed-bandit-problem/";
+    this.page.identifier = "2021/08/26/Finite-time-analysis-of-the-multi-armed-bandit-problem/";
+    this.page.title = "Finite-time analysis of the multi-armed bandit problem";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://leequant761.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

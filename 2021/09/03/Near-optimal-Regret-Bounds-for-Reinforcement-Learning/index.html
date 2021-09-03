@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leequant761.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="0. AbstractUndiscounted RL in MDP에서, total regret w.r.t. optimal policy를 고려한다. MDP의 transition structure를 설명하기 위해서 특정 state까지 도달하는데 걸리는 step을 의미하는 diameter $D$를 도입한다. 임의의 MDP w&#x2F; $D$, $\mathcal S$, $\m">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Near-optimal Regret Bounds for Reinforcement Learning">
+<meta property="og:url" content="https://leequant761.github.io/2021/09/03/Near-optimal-Regret-Bounds-for-Reinforcement-Learning/index.html">
+<meta property="og:site_name" content="Study Repo">
+<meta property="og:description" content="0. AbstractUndiscounted RL in MDP에서, total regret w.r.t. optimal policy를 고려한다. MDP의 transition structure를 설명하기 위해서 특정 state까지 도달하는데 걸리는 step을 의미하는 diameter $D$를 도입한다. 임의의 MDP w&#x2F; $D$, $\mathcal S$, $\m">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leequant761.github.io/2021/09/03/Near-optimal-Regret-Bounds-for-Reinforcement-Learning/image-20210829213835744.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/09/03/Near-optimal-Regret-Bounds-for-Reinforcement-Learning/image-20210830034033789.png">
+<meta property="article:published_time" content="2021-09-03T08:08:38.000Z">
+<meta property="article:modified_time" content="2021-09-03T08:13:45.779Z">
+<meta property="article:author" content="JaeHyun Lee">
+<meta property="article:tag" content="paper review">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leequant761.github.io/2021/09/03/Near-optimal-Regret-Bounds-for-Reinforcement-Learning/image-20210829213835744.png">
+
+<link rel="canonical" href="https://leequant761.github.io/2021/09/03/Near-optimal-Regret-Bounds-for-Reinforcement-Learning/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Near-optimal Regret Bounds for Reinforcement Learning | Study Repo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Study Repo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leequant761.github.io/2021/09/03/Near-optimal-Regret-Bounds-for-Reinforcement-Learning/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="JaeHyun Lee">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Study Repo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Near-optimal Regret Bounds for Reinforcement Learning
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-03 17:08:38 / Modified: 17:13:45" itemprop="dateCreated datePublished" datetime="2021-09-03T17:08:38+09:00">2021-09-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Reinforcement/" itemprop="url" rel="index"><span itemprop="name">Reinforcement</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/09/03/Near-optimal-Regret-Bounds-for-Reinforcement-Learning/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/09/03/Near-optimal-Regret-Bounds-for-Reinforcement-Learning/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="0-Abstract"><a href="#0-Abstract" class="headerlink" title="0. Abstract"></a>0. Abstract</h1><p>Undiscounted RL in MDP에서, total regret w.r.t. optimal policy를 고려한다.</p>
+<p>MDP의 transition structure를 설명하기 위해서 특정 state까지 도달하는데 걸리는 step을 의미하는 <em>diameter</em> $D$를 도입한다.</p>
+<p>임의의 MDP w/ $D$, $\mathcal S$, $\mathcal A$에 대해, total regret $\tilde{O}(D S \sqrt{A T})$을 만족하는 RL algorithm을 제시한다.</p>
+<blockquote>
+<p>읽은 이유는 near optimal DTR의 증명을 이해하기 위해서이다.<br>아직 다 읽진 못했지만 나머지는 곧 읽을 것이다.</p>
+</blockquote>
+<span id="more"></span>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a>1. Introduction</h1><p>MDP의 reward의 범위를 $\left [0, 1\right]$로 두겠다.</p>
+<p>특정 알고리즘으로 학습된 policy의 performance보단, 학습 동안의 performance에 관심이 있다.</p>
+<p>이를 위해, 몇가지 정의를 하자면</p>
+<ul>
+<li>Accumulated reward of algorithm $\mathfrak A$ after $T$ steps in MDP $M$ with initial state $s$<ul>
+<li>$R(M, \mathfrak{A}, s, T):=\sum_{t=1}^{T} r_{t}$</li>
+</ul>
+</li>
+<li>Expected average reward of the process $(M, \mathfrak A, s)$<ul>
+<li>$\boldsymbol{\rho}(M, \mathfrak{A}, s):=\lim _{T \rightarrow \infty} \frac{1}{T} \mathbb{E}[R(M, \mathfrak{A}, s, T)]$</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>편의를 위해, stationary policy만 고려하겠다.</p>
+<p>Optimal policy 학습의 어려움은 $| S|, |A|$ 뿐만 아니라 transition structure에도 의존한다.</p>
+<p><strong>Definition 1</strong></p>
+<p>​    Consider the stochastic process $(M, \pi , s)$</p>
+<p>​    Let $T\left(s^{\prime} \mid M, \pi, s\right)$ be the random variable for the first time step w/ $s \Rightarrow s^\prime$</p>
+<p>​    Then, the diameter of $M$ is defined as</p>
+<script type="math/tex; mode=display">
+D(M):=\max _{s \neq s^{\prime} \in S} \min _{\pi: S \rightarrow \mathcal{A}} \mathbb{E}\left[T\left(s^{\prime} \mid M, \pi, s\right)\right]</script><hr>
+<p>어떤 policy를 가져와도 특정 state에 도달하기 어렵다면 diameter는 커지게된다.</p>
+<p>당연히 알고리즘의 regret의 bound는 finite diameter를 요구할 것처럼 보인다.</p>
+<p>왜냐면 learner의 suboptimal action으로 explore한다면, 좋은 쪽으로 가는데 $D$ step이 걸리기 때문이다.</p>
+<p>훨씬 간단한 MAB 문제에서 UCB 알고리즘이 $\sum \frac{\log T}{\text{gap}}$의 바운드를 갖기 때문에 $\Theta(D|S||\mathcal{A}| \log T)$ 일것이라고 기대할 수도 있다.</p>
+<p><a href="">Mannor, 2004</a>의 gap independent algorithm의 $\Omega(\sqrt{|\mathcal{B}| T})$를 생각해보면 $\Theta(\sqrt{D|S||\mathcal{A}| T})$ 일 것이라고 기대할 수도 있다.</p>
+<p>Finite diameter를 갖는 경우에 optimal expected average reward는 initial state $s$에 의존하지 않는다.</p>
+<script type="math/tex; mode=display">
+\rho^{*}(M):=\rho^{*}(M, s):=\max _{\pi} \rho(M, \pi, s)</script><p>학습 알고리즘 $\mathfrak A$의 평가를 위해 total regret을 정의하자.</p>
+<script type="math/tex; mode=display">
+\Delta(M, \mathfrak{A}, s, T):=T \rho^{*}(M)-R(M, \mathfrak{A}, s, T)</script><p>우리가 제안할 UCRL2는 $\tilde{O}(D|\mathcal{S}| \sqrt{|\mathcal{A}| T})$의 total regret을 갖는다.</p>
+<h1 id="3-The-UCRL2-Algorithm"><a href="#3-The-UCRL2-Algorithm" class="headerlink" title="3. The UCRL2 Algorithm"></a>3. The UCRL2 Algorithm</h1><p>UCRL <a href="">Auer and Ortner, 2007</a>처럼, UCRL2는 optimism in the face of uncertainty를 따른다.</p>
+<ul>
+<li>이제까지의 observation들을 갖고서 statistically plausible MDP들의 집합 $\mathcal{M}$을 정의한다.</li>
+<li>Optimistic MDP $\tilde M \in \mathcal M$ w.r.t. optimal reward를 고른다.</li>
+<li>(nearly) optimal policy $\tilde{\pi}$ for $\tilde M$을 찾고 실행한다.</li>
+</ul>
+<img src="/2021/09/03/Near-optimal-Regret-Bounds-for-Reinforcement-Learning/image-20210829213835744.png" class="">
+<ul>
+<li>Step 2+3 : empirically estimates $\hat{r}_{k}(s, a)$ and $\hat{p}_{k}\left(s^{\prime} \mid s, a\right)$</li>
+<li>Step 4 : 높은 확률로 true MDP $M$이 속해있는 plausible MDPs set $\mathcal M_k$ 정의</li>
+<li>Step 5 : extended value iteration to find near optimal $\tilde \pi_k$ and optimistic MDP $\tilde M_k \in \mathcal M_k$</li>
+<li>Step 6 : $\tilde \pi_k$를 실행하고 $(s_t, \tilde \pi_k(s_t))$가 $k$ episode 이전에 등장한 횟수를 넘기면 끝낸다.</li>
+</ul>
+<h2 id="3-1-Extended-Value-Iteration-Finding-Optimistic-Model-and-Optimal-Policy"><a href="#3-1-Extended-Value-Iteration-Finding-Optimistic-Model-and-Optimal-Policy" class="headerlink" title="3.1  Extended Value Iteration: Finding Optimistic Model and Optimal Policy"></a>3.1  Extended Value Iteration: Finding Optimistic Model and Optimal Policy</h2><p>UCRL2에서 near optimal policy $\tilde \pi_k$와 optimistic MDP $\tilde M_k \in \mathcal M_k$를 찾을 필요가 있다.</p>
+<p>일반적으로 VI는 fixed MDP에서 optimal policy를 찾아주지만, 우리는 plausible MDP 사이에서 가장 높은 average reward를 줄 MPD를 고를 필요가 있다.</p>
+<h3 id="3-1-1-Problem-Formulation"><a href="#3-1-1-Problem-Formulation" class="headerlink" title="3.1.1 Problem Formulation"></a>3.1.1 Problem Formulation</h3><p>Given $\hat p, \hat r$, let $\mathcal M$ be the set of all MDPs w/ $\tilde p$ and $\tilde r$ s.t.</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\|\tilde{p}(\cdot \mid s, a)-\hat{p}(\cdot \mid s, a)\|_{1} & \leq d(s, a) \\
+|\tilde{r}(s, a)-\hat{r}(s, a)| & \leq d^{\prime}(s, a)
+\end{aligned} \quad \text{where $r \in [0, 1]$}</script><blockquote>
+<p>UCRL2의 EVI에 사용되는 $d$와 $d^\prime$은 Step 4에서 정의한 confidence interval이다.</p>
+</blockquote>
+<p>Assume</p>
+<ol>
+<li>$M$ contains at least one MDP w/ finite diameter</li>
+<li>True MDP has finite diameter</li>
+</ol>
+<p>목표는 $\tilde \pi, \tilde M = \arg \max _{\pi , M \in \mathcal M} \rho\left(M^{\prime}, \pi, s^{\prime}\right)$를 찾는 것이다.</p>
+<blockquote>
+<p>continuous action space 이야기를 꺼내는 데 왜 꺼내는 지 이해 안되니 일단 생략</p>
+<p>느낌 상은 convergence 보장을 위해서 하는 거 같은데 이쪽을 잘 모름</p>
+</blockquote>
+<h2 id="3-1-2-Extended-Value-Iteration"><a href="#3-1-2-Extended-Value-Iteration" class="headerlink" title="3.1.2 Extended Value Iteration"></a>3.1.2 Extended Value Iteration</h2><p>Let $u_i(s)$ denote the state values of $i$-th iteration.</p>
+<p>Then, undiscounted value iteration</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+u_{0}(s) &=0 \\
+u_{i+1}(s) &=\max _{a \in \mathcal{A}}\left\{\tilde{r}(s, a)+\max _{p(\cdot) \in \mathcal{P}(s, a)}\left\{\sum_{s^{\prime} \in \mathcal{S}} p\left(s^{\prime}\right) \cdot u_{i}\left(s^{\prime}\right)\right\}\right\}
+\end{aligned}</script><p>Inner maximization은 linear optimization problem over the convex polytope $\mathcal{P}(s, a)$로 풀린다.</p>
+<img src="/2021/09/03/Near-optimal-Regret-Bounds-for-Reinforcement-Learning/image-20210830034033789.png" class="">
+<p>이 아이디어는 </p>
+<ul>
+<li>state의 value가 낮은 쪽의 확률을 최대 $\frac{d(s,a)}{2}$만큼 끌어와서 </li>
+<li>가장 높은 쪽으로 transition probability를 할당하는 것이다.</li>
+</ul>
+<h2 id="3-1-3-Convergence-of-Extended-Value-Iteration"><a href="#3-1-3-Convergence-of-Extended-Value-Iteration" class="headerlink" title="3.1.3 Convergence of Extended Value Iteration"></a>3.1.3 Convergence of Extended Value Iteration</h2><blockquote>
+<p>continuous action space 이야기를 꺼내는 데 왜 꺼내는 지 이해 안되니 일단 생략</p>
+<p>느낌 상은 convergence 보장을 위해서 하는 거 같은데 이쪽을 잘 모름</p>
+</blockquote>
+<p>Convergence를 보장하기 위해 EVI가 periodic transition matrix를 갖는 policy를 고르지 않음을 보이면 된다.</p>
+<blockquote>
+<p>See Appendix B ??</p>
+</blockquote>
+<p>사실 EVI는 $s_1^\prime$에 몰아주는 방식이기에 aperiodic transition matrix를 갖는 policy만 고른다.</p>
+<p>Policy가 aperiodic이기에 state independent average reward를 갖는다.</p>
+<p><strong>Theorem 7</strong></p>
+<p>​    Let $\mathcal M$ be the set of MDPs.</p>
+<p>​    If $\mathcal M$ contains at least one communicating MDP, EVI converges and stops when</p>
+<script type="math/tex; mode=display">
+\max _{s \in S}\left\{u_{i+1}(s)-u_{i}(s)\right\}-\min _{s \in S}\left\{u_{i+1}(s)-u_{i}(s)\right\}<\varepsilon</script><hr>
+<p>UCRL2의 step5는 (지금 정확히는 모르겠지만)</p>
+<script type="math/tex; mode=display">
+\max _{s \in S}\left\{u_{i+1}(s)-u_{i}(s)\right\}-\min _{s \in S}\left\{u_{i+1}(s)-u_{i}(s)\right\}<\frac{1}{\sqrt{t_{k}}}</script><p>에 대응한다.</p>
+<hr>
+<p><strong>Remark 8</strong></p>
+<p>​    나중에</p>
+<h1 id="4-Analysis-of-UCRL2"><a href="#4-Analysis-of-UCRL2" class="headerlink" title="4. Analysis of UCRL2"></a>4. Analysis of UCRL2</h1><p>Let $\Delta_{k}:=\sum_{s, a} v_{k}(s, a)\left(\rho^{*}-\bar{r}(s, a)\right)$ be the regret in episode $k$</p>
+<p>4.1에선 total regret이 episode 단위의 regret으로 나눠질 수 있음을 보인다.</p>
+<p>4.2에선 true MDP를 포함하지 못한 episode들의 regret의 sum이 $\sqrt{T}$로 bound됨을 보인다.</p>
+<p>4.3에선 true MDP를 포함한 episode의 regret의 bound를 보이겠다.</p>
+<script type="math/tex; mode=display">
+\Delta_{k} \leq \boldsymbol{v}_{k}\left(\tilde{\boldsymbol{P}}_{k}-\boldsymbol{I}\right) \boldsymbol{w}_{k}+2 \sum_{s, a} v_{k}(s, a) \sqrt{\frac{7 \log \left(2 S A t_{k} / \delta\right)}{2 \max \left\{1, N_{k}(s, a)\right\}}}+2 \sum_{s, a} \frac{v_{k}(s, a)}{\sqrt{t_{k}}}</script><p>4.4와 4.5에선 이 결과들을 묶어서 Theorem2와 Corollary3을 증명하겠다.</p>
+<hr>
+<p><strong>Theorem 2</strong></p>
+<script type="math/tex; mode=display">
+{}^\forall \text{initial state } s \in \mathcal S \text{ and } {}^\forall T >0,
+\\
+\quad \Delta(M, \operatorname{UCRL2}, s, T) \leq 34 \cdot D S \sqrt{A T \log \left(\frac{T}{\delta}\right)} \quad \text{w/ pbt at least $1-\delta$}</script><hr>
+<p><strong>Corollary 3</strong></p>
+<script type="math/tex; mode=display">
+\text{Given } \epsilon > 0 \text{,  } {}^\forall T \geq 4 \cdot 34^{2} \cdot \frac{D^{2} S^{2} A}{\varepsilon^{2}} \log \left(\frac{34 D S A}{\delta \varepsilon}\right),
+\\
+\quad \frac{\Delta(M, \operatorname{UCRL2}, s, T) }{T} \leq \epsilon \quad \text{w/ pbt at least $1-\delta$}</script><h2 id="4-1-Splitting-into-Episodes"><a href="#4-1-Splitting-into-Episodes" class="headerlink" title="4.1 Splitting into Episodes"></a>4.1 Splitting into Episodes</h2><p>Total regret을 episode 단위로 쪼개보자.</p>
+<p>모든 (state, action) pair를 conditional로 뒀을 때, reward끼리 상호독립이므로 Hoeffding’s inequality를 적용하면</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+
+\mathbb{P}&\left\{\sum_{t=1}^{T} r_{t} \leq \sum_{s, a} N(s, a) \bar{r}(s, a)-\sqrt{\frac{5}{8} T \log \left(\frac{8 T}{\delta}\right)} \mid(N(s, a))_{s, a}\right\} 
+\\
+&\leq \exp(-2 \times \frac{5}{8} \log \frac{8T}{\delta}) = 
+\left(\frac{\delta}{8 T}\right)^{5 / 4}
+
+\\ &<\frac{\delta}{12 T^{5 / 4}}
+\end{aligned}</script><p>이를 이용해 UCRL2의 total regret의 bound를 구할 수 있다.</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\Delta\left(s_{1}, T\right)&=T \rho^{*}-\sum_{t=1}^{T} r_{t}
+\\
+&<T \rho^{*}-\sum_{s, a} N(s, a) \bar{r}(s, a)+\sqrt{\frac{5}{8} T \log \left(\frac{8 T}{\delta}\right)} \quad \text{w/ pbt at least $1-\frac{\delta}{12 T^{5 / 4}}$}
+\end{aligned}</script><p>이제 이를 episode 단위로 나누기 위해 몇가지 notation을 도입하자면</p>
+<ul>
+<li>$m$ denotes the number of episodes up to $T$</li>
+<li>$\sum_{k=1}^{m} v_{k}(s, a)=N(s, a)$</li>
+<li>$\Delta_{k}:=\sum_{s, a} v_{k}(s, a)\left(\rho^{*}- \bar{r}(s, a)\right)$</li>
+<li>$\Delta_{k}$는UCRL2의 $k$번째 episode의 regret이다.</li>
+</ul>
+<p>관계식을 이용하면 episode 단위로 나눠서 total regret의 bound를 구할 수 있다.</p>
+<script type="math/tex; mode=display">
+\Delta\left(s_{1}, T\right) \leq \sum_{k=1}^{m} \Delta_{k}+\sqrt{\frac{5}{8} T \log \left(\frac{8 T}{\delta}\right)} \quad \text{w/ pbt at least $1-\frac{\delta}{12 T^{5 / 4}}$}</script><h2 id="4-2-Dealing-with-Failing-Confidence-Regions"><a href="#4-2-Dealing-with-Failing-Confidence-Regions" class="headerlink" title="4.2 Dealing with Failing Confidence Regions"></a>4.2 Dealing with Failing Confidence Regions</h2><p>True MDP를 포함하지 않는 episode들의 regret의 sum $\sum_{k=1}^{m} \Delta_{k} \mathbb{1}_{M \notin \mathcal{M}_{k}}$을 고려해보자.</p>
+<p>Episode의 종료 조건에 의해 $v_{k}(s, a)=1 \text{ and } N_{k}(s, a)=0 \text{ and } \sum_{s, a} v_{k}(s, a)=1$인 trivial episode를 제외하곤,</p>
+<script type="math/tex; mode=display">
+\sum_{s, a} v_{k}(s, a) \leq \sum_{s, a} N_{k}(s, a)=t_{k}-1</script><p>Therefore,</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+
+\sum_{k=1}^{m} \Delta_{k} \mathbb{1}_{M \notin \mathcal{M}_{k}} &= \sum_{k=1}^{m} \left(\sum_{s, a} v_{k}(s, a)\left(\rho^{*}- \bar{r}(s, a)\right)  \right )\mathbb{1}_{M \notin \mathcal{M}_{k}}
+\\
+&\leq \sum_{k=1}^{m} \left(\sum_{s, a} v_{k}(s, a)  \right )\mathbb{1}_{M \notin \mathcal{M}_{k}}
+
+\\
+&\leq \sum_{k=1}^{m} t_k\mathbb{1}_{M \notin \mathcal{M}_{k}} = \sum_{t=1}^{T} t \sum_{k=1}^{m} \mathbb{1}_{t_{k}=t, M \notin \mathcal{M}_{k}}
+\\
+&\leq \sum_{t=1}^{T} t \mathbb{1}_{M \notin \mathcal{M}(t)} \quad \text{where $\mathcal M(t) = \mathcal M_k$ w/ $t_k\leq t < t_{k+1}$}
+\\
+&= \sum_{t=1}^{\left\lfloor T^{1 / 4}\right\rfloor} t \mathbb{1}_{M \notin \mathcal{M}(t)}+\sum_{t=\left\lfloor T^{1 / 4}\right\rfloor+1}^{T} t \mathbb{1}_{M \notin \mathcal{M}(t)}
+\\
+&\leq \sqrt{T}+\sum_{t=\left\lfloor T^{1 / 4}\right\rfloor+1}^{T} t \mathbb{1}_{M \notin \mathcal{M}(t)}
+\end{aligned}</script><p>Furthermore, $\mathbb{P}\{M \notin \mathcal{M}(t)\} \leq \frac{\delta}{15 t^{6}}$ (see Appendix C.1)</p>
+<p>Hence,</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\mathbb P \left( \sum_{k=1}^{m} \Delta_{k} \mathbb{1}_{M \notin \mathcal{M}_{k}}  \leq \sqrt T\right) &\geq \mathbb P \left( \sum_{t=\left\lfloor T^{1 / 4}\right\rfloor+1}^{T} t \mathbb{1}_{M \notin \mathcal{M}(t)} = 0\right)
+\\
+&= 1- \mathbb P \left( \sum_{t=\left\lfloor T^{1 / 4}\right\rfloor+1}^{T} t \mathbb{1}_{M \notin \mathcal{M}(t)} \neq 0\right)
+\\
+&=  1 - \mathbb P \left({}^{\exists}t \in (T^{1/4}, T] :  \quad  M \notin \mathcal{M}(t)\right)
+\\
+&\geq 1- \sum_{t=1} ^T\mathbb P\left(  M \notin \mathcal{M}(t)\right)
+\\
+&\geq 1 - \sum_{t=1} ^T\frac{\delta}{15 t^{6}} \quad \because \text{see Appendix C.1}
+\\
+&\geq 1 - \frac{\delta}{12 T^{5 / 4}}
+\end{aligned}</script><p>즉, true MDP를 포함하지 못한 episode들의 regret의 sum이 $\sqrt{T}$로 (확률적으로) bound됨을 보였다.</p>
+<h2 id="4-3-Episodes-with-M-in-mathcal-M-k"><a href="#4-3-Episodes-with-M-in-mathcal-M-k" class="headerlink" title="4.3 Episodes with $M \in \mathcal M_k$"></a>4.3 Episodes with $M \in \mathcal M_k$</h2><p>True MDP를 포함하는 episode를 고려하자.</p>
+<p>그 경우 optimistic policy $\tilde \pi_k$ in $\tilde M_k$의 average reward $\tilde{\rho}_{k}$는 true MDP의 optimal average reward $\rho^{*}$보다 크다.</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\tilde{\rho}_{k}&:=\min _{s} \rho\left(\tilde{M}_{k}, \tilde{\pi}_{k}, s\right) 
+\\
+&\geq \max _{M^{\prime} \in \mathcal{M}_{k}, \pi, s^{\prime}} \rho\left(M^{\prime}, \pi, s^{\prime}\right)-\frac{1}{\sqrt{t_{k}}}
+\\
+&\geq \max _ {\pi, s^{\prime}} \rho\left(M, \pi, s^{\prime}\right) - \frac{1}{\sqrt {t_k}} 
+\\
+& = \rho^*(M)- \frac{1}{\sqrt {t_k}} 
+\end{aligned}</script><p>Hence, (Relationship btw $\rho^{\star} \sim \tilde \rho _k$)</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\Delta_{k} &= \sum_{s, a} v_{k}(s, a)\left(\rho^{*}-\bar{r}(s, a)\right) 
+\\
+&\leq \sum_{s, a} v_{k}(s, a)\left(\tilde{\rho}_{k}-\bar{r}(s, a)\right)+\sum_{s, a} \frac{v_{k}(s, a)}{\sqrt{t_{k}}}
+\end{aligned}</script><h3 id="4-3-1-Extended-Value-Iteration-Revisited"><a href="#4-3-1-Extended-Value-Iteration-Revisited" class="headerlink" title="4.3.1 Extended Value Iteration Revisited"></a>4.3.1 Extended Value Iteration Revisited</h3><p>Let $D$ be the diameter of true MDP. Then,</p>
+<script type="math/tex; mode=display">
+\max_s u_i(s) - \min_s u_i(s) \leq D \quad \text{for $i = 1, 2, 3, \ldots$}</script><p>$u_i(s)$ is</p>
+<ul>
+<li>the total expected reward of </li>
+<li>$1\sim i$-step non-stationary policy</li>
+<li>starting from state $s$ in $i$-step</li>
+<li>on the MDP $\tilde M^+$ w/ extended action set</li>
+</ul>
+<p>Since extended action set contains action set of $M$, we can get $D(\tilde M^+) \leq D$</p>
+<p>$\max_s u_i(s) - \min_s u_i(s) \leq D $ 를 증명하기 위해서 그렇지 않은 state가 있다고 가정하자.</p>
+<blockquote>
+<p>$u_{i}\left(s^{\prime \prime}\right)-u_{i}\left(s^{\prime}\right)&gt;D$</p>
+</blockquote>
+<p>$s^{\prime}$에서 $s^{\prime \prime}$으로 바로는 못가더라도 (평균적으로) 최대 $D$ step 안에 옮기는 방식으로 $i+1$번쨰 policy를 정할 수 있다.</p>
+<p>그 경우에 $u_{i+1}\left(s^{\prime \prime}\right)-u_{i+1}\left(s^{\prime}\right) \leq D$ 이므로, 모순이다.</p>
+<hr>
+<p>$\max _{s \in S}\left\{u_{i+1}(s)-u_{i}(s)\right\}-\min _{s \in S}\left\{u_{i+1}(s)-u_{i}(s)\right\}&lt;\frac{1}{\sqrt{t_{k}}}$이 종료조건 일 때,</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\left|\left(\tilde{\rho}_{k}-\tilde{r}_{k}\left(s, \tilde{\pi}_{k}(s)\right)\right)-\left(\sum_{s^{\prime}} \tilde{p}_{k}\left(s^{\prime} \mid s, \tilde{\pi}_{k}(s)\right) \cdot u_{i}\left(s^{\prime}\right)-u_{i}(s)\right)\right|&= \left|u_{i+1}(s)-u_{i}(s)-\tilde{\rho}_{k}\right| \quad \because\text{def of $u_{i+1}$} 
+
+
+\\&\leq \frac{1}{\sqrt{t_{k}}} \quad \text{for every $s \in \mathcal S$} \quad \because \text{Theorem 8.5.6. of Puterman}
+\\
+
+\end{aligned}</script><blockquote>
+<p>참고</p>
+<ul>
+<li>$\tilde r(s, a)$ : $\tilde M_k$의 reward</li>
+<li>$\bar r(s,a )$ : $M$의 expected reward</li>
+</ul>
+</blockquote>
+<p>Therefore,</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\Delta_{k} & \leq \sum_{s, a} v_{k}(s, a)\left(\tilde{\rho}_{k}-\bar{r}(s, a)\right)+\sum_{s, a} \frac{v_{k}(s, a)}{\sqrt{t_{k}}} \quad \because \text{Rel of $\rho^{\star} \sim \tilde \rho _k$}\\
+&=\sum_{s, a} v_{k}(s, a)\left(\tilde{\rho}_{k}-\tilde{r}_{k}(s, a)\right)+\sum_{s, a} v_{k}(s, a)\left(\tilde{r}_{k}(s, a)-\bar{r}(s, a)\right)+\sum_{s, a} \frac{v_{k}(s, a)}{\sqrt{t_{k}}}  \\
+& \leq \boldsymbol{v}_{k}\left(\tilde{\boldsymbol{P}}_{k}-\boldsymbol{I}\right) \boldsymbol{u}_{i}+\sum_{s, a} v_{k}(s, a)\left(\tilde{r}_{k}(s, a)-\bar{r}(s, a)\right)+2 \sum_{s, a} \frac{v_{k}(s, a)}{\sqrt{t_{k}}}
+\\
+&\text{Let $w_{k}(s):=u_{i}(s)-\frac{\min _{s} u_{i}(s)+\max _{s} u_{i}(s)}{2}$}
+\\
+&= \boldsymbol{v}_{k}\left(\tilde{\boldsymbol{P}}_{k}-\boldsymbol{I}\right) \boldsymbol{w}_{k} +\sum_{s, a} v_{k}(s, a)\left(\tilde{r}_{k}(s, a)-\bar{r}(s, a)\right)+2 \sum_{s, a} \frac{v_{k}(s, a)}{\sqrt{t_{k}}}
+\\
+&\text{Since $M \in {\mathcal M}_k$}
+\\
+&\leq \boldsymbol{v}_{k}\left(\tilde{\boldsymbol{P}}_{k}-\boldsymbol{I}\right) \boldsymbol{w}_{k}+2 \sum_{s, a} v_{k}(s, a) \sqrt{\frac{7 \log \left(2 S A t_{k} / \delta\right)}{2 \max \left\{1, N_{k}(s, a)\right\}}}+2 \sum_{s, a} \frac{v_{k}(s, a)}{\sqrt{t_{k}}}
+\\
+&\text{Since $\max \left\{1, N_{k}(s, a)\right\} \leq t_{k} \leq T$}
+\\
+&\leq \boldsymbol{v}_{k}\left(\tilde{\boldsymbol{P}}_{k}-\boldsymbol{I}\right) \boldsymbol{w}_{k}+\left(\sqrt{14 \log \left(\frac{2 \mathrm{SAT}}{\delta}\right)}+2\right) \sum_{s, a} \frac{v_{k}(s, a)}{\sqrt{\max \left\{1, N_{k}(s, a)\right\}}}
+\end{aligned}</script><h3 id="4-3-2-The-True-Transition-Matrix"><a href="#4-3-2-The-True-Transition-Matrix" class="headerlink" title="4.3.2 The True Transition Matrix"></a>4.3.2 The True Transition Matrix</h3><p>위의 부등식에서 첫텀의 transition matrix $\tilde{\boldsymbol P_k}$ in $\tilde M_k$ w/ $\tilde \pi_k$를 true transition matrix $\boldsymbol P_k$ in $M$ w/ $\tilde \pi _k$로 바꾸고 싶다.</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\boldsymbol{v}_{k}\left(\tilde{\boldsymbol{P}}_{k}-\boldsymbol{I}\right) \boldsymbol{w}_{k} &=\boldsymbol{v}_{k}\left(\tilde{\boldsymbol{P}}_{k}-\boldsymbol{P}_{k}+\boldsymbol{P}_{k}-\boldsymbol{I}\right) \boldsymbol{w}_{k} \\
+&=\boldsymbol{v}_{k}\left(\tilde{\boldsymbol{P}}_{k}-\boldsymbol{P}_{k}\right) \boldsymbol{w}_{k}+\boldsymbol{v}_{k}\left(\boldsymbol{P}_{k}-\boldsymbol{I}\right) \boldsymbol{w}_{k}
+\end{aligned}</script><blockquote>
+<p>앞에 있는 벡터는 행벡터이고 뒤에 있는 벡터는 열벡터인데 잘 구분하기 바란다.</p>
+</blockquote>
+<h4 id="4-3-2-1-Bound-of-boldsymbol-v-k-left-tilde-boldsymbol-P-k-boldsymbol-P-k-right-boldsymbol-w-k"><a href="#4-3-2-1-Bound-of-boldsymbol-v-k-left-tilde-boldsymbol-P-k-boldsymbol-P-k-right-boldsymbol-w-k" class="headerlink" title="4.3.2.1 Bound of $\boldsymbol{v}_{k}\left(\tilde{\boldsymbol{P}}_{k}-\boldsymbol{P}_{k}\right) \boldsymbol{w}_{k}$"></a>4.3.2.1 Bound of $\boldsymbol{v}_{k}\left(\tilde{\boldsymbol{P}}_{k}-\boldsymbol{P}_{k}\right) \boldsymbol{w}_{k}$</h4><script type="math/tex; mode=display">
+\begin{aligned}
+\boldsymbol{v}_{k}\left(\tilde{\boldsymbol{P}}_{k}-\boldsymbol{P}_{k}\right) \boldsymbol{w}_{k} &=\sum_{s} \sum_{s^{\prime}} v_{k}\left(s, \tilde{\pi}_{k}(s)\right) \cdot\left(\tilde{p}_{k}\left(s^{\prime} \mid s, \tilde{\pi}_{k}(s)\right)-p\left(s^{\prime} \mid s, \tilde{\pi}_{k}(s)\right)\right) \cdot w_{k}\left(s^{\prime}\right) \\
+& \leq \sum_{s} v_{k}\left(s, \tilde{\pi}_{k}(s)\right) \cdot\left\|\tilde{p}_{k}\left(\cdot \mid s, \tilde{\pi}_{k}(s)\right)-p\left(\cdot \mid s, \tilde{\pi}_{k}(s)\right)\right\|_{1} \cdot\left\|\boldsymbol{w}_{k}\right\|_{\infty} \\
+& \leq \sum_{s} v_{k}\left(s, \tilde{\pi}_{k}(s)\right) \cdot 2 \sqrt{\frac{14 S \log (2 A T / \delta)}{\max \left\{1, N_{k}\left(s, \tilde{\pi}_{k}(s)\right)\right\}}} \cdot \frac{D}{2} \\
+& \leq D \sqrt{14 S \log \left(\frac{2 A T}{\delta}\right)} \sum_{s, a} \frac{v_{k}(s, a)}{\sqrt{\max \left\{1, N_{k}(s, a)\right\}}}
+\end{aligned}</script><h4 id="4-3-2-2-Bound-of-boldsymbol-v-k-left-boldsymbol-P-k-boldsymbol-I-right-boldsymbol-w-k"><a href="#4-3-2-2-Bound-of-boldsymbol-v-k-left-boldsymbol-P-k-boldsymbol-I-right-boldsymbol-w-k" class="headerlink" title="4.3.2.2 Bound of $\boldsymbol{v}_{k}\left(\boldsymbol{P}_{k}-\boldsymbol{I}\right) \boldsymbol{w}_{k}$"></a>4.3.2.2 Bound of $\boldsymbol{v}_{k}\left(\boldsymbol{P}_{k}-\boldsymbol{I}\right) \boldsymbol{w}_{k}$</h4><p>Let $s_1, a_1, s_2, \cdots, a_T, s_{T+1}$ be the sequence of states and actions.</p>
+<p>Let $k(t)$ be the episodes which contains step $t$</p>
+<p>Then,</p>
+<hr>
+<script type="math/tex; mode=display">
+\begin{aligned}
+^\forall \text{episode $k$ w/ $M\in \mathcal M_k$}
+\\
+\boldsymbol{v}_{k}\left(\boldsymbol{P}_{k}-\boldsymbol{I}\right) \boldsymbol{w}_{k}&=\sum_{t=t_{k}}^{t_{k+1}-1}\left(p\left(\cdot \mid s_{t}, a_{t}\right)-\boldsymbol{e}_{S_{t}}\right) \boldsymbol{w}_{k}
+\\
+& =\left(\sum_{t=t_{k}}^{t_{k+1}-1} p\left(\cdot \mid s_{t}, a_{t}\right)-\sum_{t=t_{k}}^{t_{k+1}-1} e_{S_{t+1}}+e_{S_{t_{k+1}}}-e_{S_{t_{k}}}\right) \boldsymbol{w}_{k}
+\\
+& =\sum_{t=t_{k}}^{t_{k+1}-1} X_{t}+w_{k}\left(s_{t_{k+1}}\right)-w_{k}\left(s_{t_{k}}\right) \quad \text{where $X_{t}:=\left(p\left(\cdot \mid s_{t}, a_{t}\right)-\boldsymbol{e}_{S_{t+1}}\right) \boldsymbol{w}_{k(t)} \mathbb{1}_{M \in \mathcal{M}_{k(t)}}$}
+\\
+&\leq \sum_{t=t_{k}}^{t_{k+1}-1} X_{t}+D \quad \text{$\because\left\|\boldsymbol{w}_{k}\right\|_{\infty} \leq \frac{D}{2}$ }
+\end{aligned}</script><hr>
+<p>Since $X_{t}$ is a sequence of martingale differences satisfying</p>
+<ul>
+<li>$\left|X_{t}\right| \leq\left(\left|p\left(\cdot \mid s_{t}, a_{t}\right)\right|_{1}+\left|e_{S_{t+1}}\right|_{1}\right) \frac{D}{2} \leq D$</li>
+<li>and</li>
+<li>$\mathbb{E}\left[X_{t} \mid s_{1}, a_{1}, \ldots, s_{t}, a_{t}\right]=0$,</li>
+</ul>
+<script type="math/tex; mode=display">
+\mathbb{P}\left\{\sum_{t=1}^{T} X_{t} \geq D \sqrt{2 T \cdot \frac{5}{4} \log \left(\frac{8 T}{\delta}\right)}\right\} \leq\left(\frac{\delta}{8 T}\right)^{5 / 4}<\frac{\delta}{12 T^{5 / 4}}</script><blockquote>
+<p>마팅게일 부분은 확률론 책 보고 다시 오겠음</p>
+</blockquote>
+<hr>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\sum_{k=1}^{m} \boldsymbol{v}_{k}\left(\boldsymbol{P}_{k}-\boldsymbol{I}\right) \boldsymbol{w}_{k} \mathbb{1}_{M \in \mathcal{M}_{k}} &\leq \sum_{t=1}^{T} X_{t}+m D
+\\
+& \leq D \sqrt{\frac{5}{2} T \log \left(\frac{8 T}{\delta}\right)} + mD \quad \text{w/ pbt at least $1-\frac{\delta}{12 T^{5 / 4}}$}
+\\
+& \leq D \sqrt{\frac{5}{2} T \log \left(\frac{8 T}{\delta}\right)}+D S A \log _{2}\left(\frac{8 T}{S A}\right) \quad \text{w/ pbt at least $1-\frac{\delta}{12 T^{5 / 4}}$}
+\end{aligned}</script><blockquote>
+<p>$m \leq S A \log _{2}\left(\frac{8 T}{S A}\right)$는 Appendix C.2에 증명되어있다.</p>
+</blockquote>
+<h3 id="4-3-3-Summing-over-Episodes-with-M-in-mathcal-M-k"><a href="#4-3-3-Summing-over-Episodes-with-M-in-mathcal-M-k" class="headerlink" title="4.3.3 Summing over Episodes with $M \in \mathcal{M}_{k}$"></a>4.3.3 Summing over Episodes with $M \in \mathcal{M}_{k}$</h3><script type="math/tex; mode=display">
+\begin{aligned}
+\sum_{k=1}^{m} \Delta_{k} \mathbb{1}_{M \in \mathcal{M}_{k}} &\leq \sum_{k=1}^{m} \boldsymbol{v}_{k}\left(\tilde{\boldsymbol{P}}_{k}-\boldsymbol{P}_{k}\right) \boldsymbol{w}_{k} \mathbb{1}_{M \in \mathcal{M}_{k}}+\sum_{k=1}^{m} \boldsymbol{v}_{k}\left(\boldsymbol{P}_{k}-\boldsymbol{I}\right) \boldsymbol{w}_{k} \mathbb{1}_{M \in \mathcal{M}_{k}}
+\\
+&\quad +\sum_{k=1}^{m}\left(\sqrt{14 \log \left(\frac{2 S A T}{\delta}\right)}+2\right) \sum_{s, a} \frac{v_{k}(s, a)}{\sqrt{\max \left\{1, N_{k}(s, a)\right\}}}
+\\
+&\leq D \sqrt{14 S \log \left(\frac{2 A T}{\delta}\right)} \cdot \sum_{k=1}^{m} \sum_{s, a} \frac{v_{k}(s, a)}{\sqrt{\max \left\{1, N_{k}(s, a)\right\}}}
+\\
+& \quad +D \sqrt{\frac{5}{2} T \log \left(\frac{8 T}{\delta}\right)}+D S A \log _{2}\left(\frac{8 T}{S A}\right)
+\\
+&\quad +\left(\sqrt{14 \log \left(\frac{2 S A T}{\delta}\right)}+2\right) \sum_{k=1}^{m} \sum_{s, a} \frac{v_{k}(s, a)}{\sqrt{\max \left\{1, N_{k}(s, a)\right\}}}
+\\&\text{w/ pbt at least $1-\frac{\delta}{12 T^{5 / 4}}$}
+\end{aligned}</script><hr>
+<p>추가로 $\sum_{k=1}^{m} \sum_{s, a} \frac{v_{k}(s, a)}{\sqrt{\max \left\{1, N_{k}(s, a)\right\}}}$을 $T$로 bound를 해보자.</p>
+<p>Let $Z_{k}=\max \left\{1, \sum_{i=1}^{k} z_{i}\right\}$ and $0 \leq z_{k} \leq Z_{k-1}$</p>
+<p>Then, $\sum_{k=1}^{n} \frac{z_{k}}{\sqrt{Z_{k-1}}} \leq(\sqrt{2}+1) \sqrt{Z_{n}}$ by Appendix C.3</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\sum_{s, a} \sum_{k=1}^ m \frac{v_{k}(s, a)}{\sqrt{\max \left\{1, N_{k}(s, a)\right\}}} &\leq (\sqrt{2}+1) \sum_{s, a} \sqrt{N(s, a)}
+\\
+& = (\sqrt{2}+1) \frac{\sum_{s, a}\sqrt{N(s, a)}}{SA} \times SA
+\\
+&\leq (\sqrt{2}+1) \sqrt{\frac{\sum_{s, a}N(s, a)}{SA}} \times SA \quad \text{$\because$ Jensen's ineq}
+\\
+&= (\sqrt{2}+1) \sqrt{S A T}
+\end{aligned}</script><hr>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\sum_{k=1}^{m} \Delta_{k} \mathbb{1}_{M \in \mathcal{M}_{k}} \leq & D \sqrt{\frac{5}{2} T \log \left(\frac{8 T}{\delta}\right)}+D S A \log _{2}\left(\frac{8 T}{S A}\right) \\
+&+\left(2 D \sqrt{14 S \log \left(\frac{2 A T}{\delta}\right)}+2\right)(\sqrt{2}+1) \sqrt{S A T}
+\\
+\\&\text{w/ pbt at least $1-\frac{\delta}{12 T^{5 / 4}}$}
+\end{aligned}</script><h2 id="4-4-Completing-the-Proof-of-Theorem-2"><a href="#4-4-Completing-the-Proof-of-Theorem-2" class="headerlink" title="4.4 Completing the Proof of Theorem 2"></a>4.4 Completing the Proof of Theorem 2</h2><script type="math/tex; mode=display">
+\begin{aligned}
+\Delta\left(s_{1}, T\right) &\leq \sum_{k=1}^{m} \Delta_{k}+\sqrt{\frac{5}{8} T \log \left(\frac{8 T}{\delta}\right)} \quad \text{w/ pbt at least $1-\frac{\delta}{12 T^{5 / 4}}$}
+\\
+&\leq \sqrt{\frac{5}{8} T \log \left(\frac{8 T}{\delta}\right)}+\sqrt{T}+D \sqrt{\frac{5}{2} T \log \left(\frac{8 T}{\delta}\right)}+D S A \log _{2}\left(\frac{8 T}{S A}\right)
+\\ & \quad +\left(2 D \sqrt{14 S \log \left(\frac{2 A T}{\delta}\right)}+2\right)(\sqrt{2}+1) \sqrt{S A T}
+
+\\&\text{w/ pbt at least $1-\frac{3\times \delta}{12 T^{5 / 4}}$}
+\end{aligned}</script><p>추가로 간단함을 위해 몇가지 부등식을 사용하면 (Appendix C.4)</p>
+<script type="math/tex; mode=display">
+\Delta\left(s_{1}, T\right) \leq 34 D S \sqrt{A T \log \left(\frac{T}{\delta}\right)} \quad \text{w/ pbt at least $1-\frac{\delta}{4 T^{5 / 4}}$}</script><h2 id="4-5-Proof-of-Corollary-3"><a href="#4-5-Proof-of-Corollary-3" class="headerlink" title="4.5 Proof of Corollary 3"></a>4.5 Proof of Corollary 3</h2><p>$\Delta\left(s_{1}, T\right) / T\leq 34 D S \sqrt{A T \log \left(\frac{T}{\delta}\right)} /T &lt; \epsilon$ implies $T&gt;\frac{34^{2} D^{2} S^{2} A \log \left(\frac{T}{\delta}\right)}{\varepsilon^{2}}$</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/paper-review/" rel="tag"># paper review</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/08/26/Finite-time-analysis-of-the-multi-armed-bandit-problem/" rel="prev" title="Finite-time analysis of the multi-armed bandit problem">
+      <i class="fa fa-chevron-left"></i> Finite-time analysis of the multi-armed bandit problem
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-Abstract"><span class="nav-text">0. Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1. Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-The-UCRL2-Algorithm"><span class="nav-text">3. The UCRL2 Algorithm</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Extended-Value-Iteration-Finding-Optimistic-Model-and-Optimal-Policy"><span class="nav-text">3.1  Extended Value Iteration: Finding Optimistic Model and Optimal Policy</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-1-Problem-Formulation"><span class="nav-text">3.1.1 Problem Formulation</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-2-Extended-Value-Iteration"><span class="nav-text">3.1.2 Extended Value Iteration</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-3-Convergence-of-Extended-Value-Iteration"><span class="nav-text">3.1.3 Convergence of Extended Value Iteration</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Analysis-of-UCRL2"><span class="nav-text">4. Analysis of UCRL2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-Splitting-into-Episodes"><span class="nav-text">4.1 Splitting into Episodes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-Dealing-with-Failing-Confidence-Regions"><span class="nav-text">4.2 Dealing with Failing Confidence Regions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-Episodes-with-M-in-mathcal-M-k"><span class="nav-text">4.3 Episodes with $M \in \mathcal M_k$</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-1-Extended-Value-Iteration-Revisited"><span class="nav-text">4.3.1 Extended Value Iteration Revisited</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-2-The-True-Transition-Matrix"><span class="nav-text">4.3.2 The True Transition Matrix</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-2-1-Bound-of-boldsymbol-v-k-left-tilde-boldsymbol-P-k-boldsymbol-P-k-right-boldsymbol-w-k"><span class="nav-text">4.3.2.1 Bound of $\boldsymbol{v}_{k}\left(\tilde{\boldsymbol{P}}_{k}-\boldsymbol{P}_{k}\right) \boldsymbol{w}_{k}$</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-2-2-Bound-of-boldsymbol-v-k-left-boldsymbol-P-k-boldsymbol-I-right-boldsymbol-w-k"><span class="nav-text">4.3.2.2 Bound of $\boldsymbol{v}_{k}\left(\boldsymbol{P}_{k}-\boldsymbol{I}\right) \boldsymbol{w}_{k}$</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-3-Summing-over-Episodes-with-M-in-mathcal-M-k"><span class="nav-text">4.3.3 Summing over Episodes with $M \in \mathcal{M}_{k}$</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-4-Completing-the-Proof-of-Theorem-2"><span class="nav-text">4.4 Completing the Proof of Theorem 2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-5-Proof-of-Corollary-3"><span class="nav-text">4.5 Proof of Corollary 3</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">JaeHyun Lee</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JaeHyun Lee</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://leequant761.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://leequant761.github.io/2021/09/03/Near-optimal-Regret-Bounds-for-Reinforcement-Learning/";
+    this.page.identifier = "2021/09/03/Near-optimal-Regret-Bounds-for-Reinforcement-Learning/";
+    this.page.title = "Near-optimal Regret Bounds for Reinforcement Learning";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://leequant761.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

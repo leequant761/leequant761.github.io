@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://leequant761.github.io/2021/09/22/Implicit-Causal-Models-for-Genome-wide-Association-Studies/image-20210907135322621.png">
 <meta property="og:image" content="https://leequant761.github.io/2021/09/22/Implicit-Causal-Models-for-Genome-wide-Association-Studies/image-20210907144730364.png">
 <meta property="article:published_time" content="2021-09-22T07:52:21.000Z">
-<meta property="article:modified_time" content="2021-09-22T07:57:11.789Z">
+<meta property="article:modified_time" content="2021-09-22T11:20:42.231Z">
 <meta property="article:author" content="JaeHyun Lee">
 <meta property="article:tag" content="paper review">
 <meta name="twitter:card" content="summary">
@@ -193,7 +193,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-09-22 16:52:21 / Modified: 16:57:11" itemprop="dateCreated datePublished" datetime="2021-09-22T16:52:21+09:00">2021-09-22</time>
+              <time title="Created: 2021-09-22 16:52:21 / Modified: 20:20:42" itemprop="dateCreated datePublished" datetime="2021-09-22T16:52:21+09:00">2021-09-22</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -365,12 +365,9 @@ p(\theta \mid \mathbf{x}, \mathbf{y})=\int p(\mathbf{z} \mid \mathbf{x}, \mathbf
 </li>
 <li><p>$x_{nm} | z_n, w_m \sim \operatorname B(2,  \pi_{nm})$ where $\operatorname{logit} \pi_{n m}=z_{n}^{\top} w_{m}$</p>
 </li>
-<li><p>$w_m$의 prior는 logistic factor analysis처럼 standard normal로 둔다.</p>
+<li><p>$w_m$의 prior는 비교모델인 logistic factor analysis처럼 standard normal로 둔다.</p>
 </li>
 <li><p>그 경우에, $w_m$은 principal component의 역할로 $M$차원의 원본을 $K$차원의 embedding이 된다.</p>
-<blockquote>
-<p>PCA~factor analysis 좀 가물가물 해서 Logistic factor analysis 보고 다시 오겠다.</p>
-</blockquote>
 </li>
 <li><p>Logit을 NN으로 둬서 좀 더 완화된 가정을 둬도 된다. $\operatorname{logit} \pi_{n m}=\mathrm{NN}\left(\left[z_{n}, w_{m}\right] \mid \phi\right)$</p>
 </li>

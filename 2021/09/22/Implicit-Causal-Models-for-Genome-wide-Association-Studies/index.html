@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leequant761.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="PGM의 발전은 richer model with neural architectures with scalable bayesian inference로 가속화되고 있다. 그러나 causal relationship을 capture 하는 데는 한계가 있다. 예를 들어, 특정 유전 요인이 특정 질병에 어떤 영향을 줄 지에 대한 질문이 있다. 이 논문에선, 2가지 어려">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Implicit Causal Models for Genome-wide Association Studies">
+<meta property="og:url" content="https://leequant761.github.io/2021/09/22/Implicit-Causal-Models-for-Genome-wide-Association-Studies/index.html">
+<meta property="og:site_name" content="Study Repo">
+<meta property="og:description" content="PGM의 발전은 richer model with neural architectures with scalable bayesian inference로 가속화되고 있다. 그러나 causal relationship을 capture 하는 데는 한계가 있다. 예를 들어, 특정 유전 요인이 특정 질병에 어떤 영향을 줄 지에 대한 질문이 있다. 이 논문에선, 2가지 어려">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leequant761.github.io/2021/09/22/Implicit-Causal-Models-for-Genome-wide-Association-Studies/image-20210907135322621.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/09/22/Implicit-Causal-Models-for-Genome-wide-Association-Studies/image-20210907144730364.png">
+<meta property="article:published_time" content="2021-09-22T07:52:21.000Z">
+<meta property="article:modified_time" content="2021-09-22T07:57:11.789Z">
+<meta property="article:author" content="JaeHyun Lee">
+<meta property="article:tag" content="paper review">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leequant761.github.io/2021/09/22/Implicit-Causal-Models-for-Genome-wide-Association-Studies/image-20210907135322621.png">
+
+<link rel="canonical" href="https://leequant761.github.io/2021/09/22/Implicit-Causal-Models-for-Genome-wide-Association-Studies/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Implicit Causal Models for Genome-wide Association Studies | Study Repo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Study Repo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leequant761.github.io/2021/09/22/Implicit-Causal-Models-for-Genome-wide-Association-Studies/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="JaeHyun Lee">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Study Repo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Implicit Causal Models for Genome-wide Association Studies
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-22 16:52:21 / Modified: 16:57:11" itemprop="dateCreated datePublished" datetime="2021-09-22T16:52:21+09:00">2021-09-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Causality/" itemprop="url" rel="index"><span itemprop="name">Causality</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Causality/Latent-Variable-Model/" itemprop="url" rel="index"><span itemprop="name">Latent Variable Model</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/09/22/Implicit-Causal-Models-for-Genome-wide-Association-Studies/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/09/22/Implicit-Causal-Models-for-Genome-wide-Association-Studies/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>PGM의 발전은 richer model with neural architectures with scalable bayesian inference로 가속화되고 있다.</p>
+<p>그러나 causal relationship을 capture 하는 데는 한계가 있다.</p>
+<p>예를 들어, 특정 유전 요인이 특정 질병에 어떤 영향을 줄 지에 대한 질문이 있다.</p>
+<p>이 논문에선, 2가지 어려움에 집중한다.</p>
+<ol>
+<li>어떻게 richer causal model을 세울 수 있을까?</li>
+<li>어떻게 latent confounder로 adjust 할 수 있을까?</li>
+</ol>
+<p>이를 위해 causality와 modern probabilistic modeling의 아이디어를 결합한다.</p>
+<span id="more"></span>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a>1. Introduction</h1><p>Probabilistic model은 generative process를 기술하는 언어이다.</p>
+<p>이와 NN을 엮어서 Bayesian inference까지 하는 연구들이 있다.</p>
+<p>하지만, high-dimensional causal relationships를 capture하는 모델들은 덜 발전을 했다.</p>
+<p>Statistical model과 다르게 Causal model은</p>
+<ul>
+<li>intervention이 가능하고</li>
+<li>counterfactual statement(noise 분포 변화)에 대한 답을 할 수 있다.</li>
+</ul>
+<hr>
+<p>GWAS는 SNP들이 개인에게 특징(병)들을 유발하는 지에 대한 질문이다.</p>
+<p>2가지 어려움이 있다.</p>
+<ol>
+<li><strong>Expressiveness</strong><ul>
+<li>Probabilistic causal models은 deterministic function으로 표현된다.</li>
+<li>추가로 additive noise를 사용하는 연구들이 많다. <a href="">Hoyer, 2009</a></li>
+<li>하지만 GWAS  도메인에서, 유전자들 간의 상호작용이 질병에 영향을 준다고 한다.</li>
+<li>그러한 상호작용들을 capture(+ discover)하기 위해, learnable function을 요구한다.</li>
+</ul>
+</li>
+<li><strong>Population-based confounders</strong><ul>
+<li>조상이 같은 그룹들 끼리 통하는 무엇인가가 SNP와 질병에 spurious correlation을 만든다.</li>
+<li>현재 연구들은 confounder를 estimate하고 causal inference를 수행한다.</li>
+<li>그러나 principled causal model로 이해되기 어렵고 complex structure에 적용되기 어렵다.</li>
+</ul>
+</li>
+</ol>
+<p>이를 다루기 위해, causality와 modern probabilistic modeling을 섞을 것이다.</p>
+<p>1을 대처하기 위해 neural network를 활용하고</p>
+<p>2를 대처하기 위해 population confounder를 조정하는 ICM을 설명한다.</p>
+<p>Model이 consistent하게 causal relationship을 estimate하는 조건을 유도한다.</p>
+<h2 id="1-1-Related-Work"><a href="#1-1-Related-Work" class="headerlink" title="1.1 Related Work"></a>1.1 Related Work</h2><p><strong>Richer causal model</strong></p>
+<ul>
+<li><a href="">Louizos, 2017</a>는 proxy variable에 대한 latent인 confounder를 추론하려 했다.</li>
+<li><a href="">Mooij, 2010</a>은 함수에 GP prior를 삼고 Bayesian model selection으로 discovery를 했다.</li>
+<li>우리는 nonlinearity를 NN으로 대체한다.</li>
+</ul>
+<p><strong>Causality with population-confounders</strong></p>
+<ul>
+<li>이는 GWAS 쪽에서 연구됐다.</li>
+<li>가장 인기있는 방법은 top principal component로 confounder를 estimate하는 것이다.</li>
+<li>…</li>
+</ul>
+<h1 id="2-Implicit-Causal-Models"><a href="#2-Implicit-Causal-Models" class="headerlink" title="2. Implicit Causal Models"></a>2. Implicit Causal Models</h1><p>Probabilistic causal model framework를 설명하고 ICM을 소개하겠다.</p>
+<h2 id="2-1-Probabilistic-Causal-Models"><a href="#2-1-Probabilistic-Causal-Models" class="headerlink" title="2.1 Probabilistic Causal Models"></a>2.1 Probabilistic Causal Models</h2><img src="/2021/09/22/Implicit-Causal-Models-for-Genome-wide-Association-Studies/image-20210907135322621.png" class="">
+<ul>
+<li>$\beta=f_{\beta}\left(\epsilon_{\beta}\right), \quad \epsilon_{\beta} \sim s(\cdot)$</li>
+<li>$x_{n}=f_{x}\left(\epsilon_{x, n}, \beta\right) , \quad \epsilon_{x, n} \sim s(\cdot)$</li>
+<li>$y_{n}=f_{y}\left(\epsilon_{y, n}, x_{n}, \beta\right) \quad \epsilon_{y, n} \sim s(\cdot)$</li>
+</ul>
+<p>이 셋팅에서, causal mechanism $f_y$에 관심있다. to calculate $p(y \mid \operatorname{do}(X=x), \beta)$</p>
+<hr>
+<p>물론 Figure 1의 경우는 $p(y \mid \operatorname{do}(x), \beta)=p(y \mid x, \beta)$다.</p>
+<p>즉, $\beta$를 관측하였다고 가정하면, $f_y$를 estimate할 수 있다. 예를 들어,</p>
+<script type="math/tex; mode=display">
+y_{n}=f\left(x_{n}, \beta \mid \theta\right)+\epsilon_{n}, \quad \epsilon \sim s(\cdot)</script><script type="math/tex; mode=display">
+p(\theta \mid \mathbf{x}, \mathbf{y}, \beta) \propto p(\theta) p(\mathbf{y} \mid \mathbf{x}, \theta, \beta)</script><p>$\theta$를 VI나 MCMC로 구할 수 있다.</p>
+<hr>
+<p>Deterministic 함수(linear, polynomial, …)를 쓰는 경우엔 hand-engineered low-order interactions를 사용하게 된다.</p>
+<p>이러한 제한들을 완화하기 위해 Richer causal model을 세우는 방법을 소개하겠다.</p>
+<h2 id="2-2-Implicit-Causal-Models"><a href="#2-2-Implicit-Causal-Models" class="headerlink" title="2.2 Implicit Causal Models"></a>2.2 Implicit Causal Models</h2><p>IM은 structure에 대한 detail마저 unknown인 상황에서 generative process를 capture한다.</p>
+<script type="math/tex; mode=display">
+x=g(\epsilon \mid \theta), \quad \epsilon \sim s(\cdot)</script><p>이 때, $g$는 neural network로 둬서 nonlinear interaction을 다루게 된다.</p>
+<p>이 역시도, randomness를 변수와 분리해서 input으로 넣기에 causal model의 structural invariance를 흉내낸다.</p>
+<p>Causality를 강화하기 위해, ICM을 정의한다.</p>
+<p>이 때, $g$는 structural equation이다.</p>
+<p>Causal network가 Bayesian network를 확장했듯이 ICM은 IM을 확장한다.</p>
+<h1 id="3-ICMs-with-Latent-Confounders"><a href="#3-ICMs-with-Latent-Confounders" class="headerlink" title="3. ICMs with Latent Confounders"></a>3. ICMs with Latent Confounders</h1><p>임의의 causal relation을 capture 할 수 있는 ICMs를 설명했다.</p>
+<p>간결함을 위해, global structure는 주어졌다고 가정하겠다.</p>
+<blockquote>
+<p>느낌상 Causal network까지만 known임을 가정하는 걸 말하는 것 같다.</p>
+</blockquote>
+<h2 id="3-1-Causal-Inference-with-a-Latent-Confounder"><a href="#3-1-Causal-Inference-with-a-Latent-Confounder" class="headerlink" title="3.1 Causal Inference with a Latent Confounder"></a>3.1 Causal Inference with a Latent Confounder</h2><img src="/2021/09/22/Implicit-Causal-Models-for-Genome-wide-Association-Studies/image-20210907144730364.png" class="">
+<ul>
+<li>$N$명의 개인들 (500~1만)</li>
+<li>$M$개의 SNP (10만~100만)</li>
+<li>$p\left(y \mid \operatorname{do}\left(x_{m}\right), x_{-m}\right)$에 관심있지만 $z_n$이 latent variable이라 unidentifiable이다.</li>
+</ul>
+<blockquote>
+<p>왼쪽 그림은 causal graph로 세모는 noise를 나타낸다.</p>
+<p>오른쪽 그림은 ICM으로 $\phi$와 $\theta$는 NN의 parameter로 mechanism에 대한 것이라 생각하자.</p>
+<p>$z_n$은 population 관점에서 local latent variable이고</p>
+<p>$w_m$은 SNP 관점에서 local latent variable이다.</p>
+</blockquote>
+<p>Consider the ICM </p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+z_{n} &=g_{z}\left(\epsilon_{z_{n}}\right), & & \epsilon_{z_{n}} \sim s(\cdot) \\
+x_{n m} &=g_{x_{m}}\left(\epsilon_{x_{n m}}, z_{n} \mid w_{m}, \phi\right), & & \epsilon_{x_{n m}} \sim s(\cdot) \\
+y_{n} &=g_{y}\left(\epsilon_{y_{n}}, x_{n, 1: M}, z_{n} \mid \theta\right), & & \epsilon_{y_{n}} \sim s(\cdot)
+\end{aligned}</script><p>$z_n$이 latent variable이므로 $f_y$의 posterior는 적분 꼴로 나온다.</p>
+<script type="math/tex; mode=display">
+p(\theta \mid \mathbf{x}, \mathbf{y})=\int p(\mathbf{z} \mid \mathbf{x}, \mathbf{y}) p(\theta \mid \mathbf{x}, \mathbf{y}, \mathbf{z}) \mathrm{d} \mathbf{z}</script><p>이 식을 해석하면, latent structure를 반영한 $p(\mathbf{z} \mid \mathbf{x}, \mathbf{y})$로 $p(\theta \mid \mathbf{x}, \mathbf{y}, \mathbf{z})$를 추론하게 된다.</p>
+<p>Latent confounder를 갖고 causal inference를 하는 것은 위험할 수 있다.</p>
+<p>$x$와 $y$를 갖고 $z$를 추정하고서, 추정된 $z$를 갖고서 mechanism을 추정하기에 bias를 가질 수 있다.</p>
+<p>왜 이게 정당화될까?</p>
+<p><strong>Proposition 1</strong></p>
+<ul>
+<li>True causal model이 ICM의 범위에 속한다고 가정하자.</li>
+<li>그러면 $p(\theta \mid \mathbf{x}, \mathbf{y})$는 consistent estimator of causal mechanism $f_{y}$를 제공한다.</li>
+</ul>
+<hr>
+<p>증명에 대한 직감으로는 $M$이 엄청 큰 상황에서 $p(z_n \mid x_{1:M})$은 $\delta_{z_{n}^{true}}$에 가까워진다.</p>
+<p>같은 논리로 $N$이 커짐에 따라 true mechanism에 가까워지게 된다.</p>
+<hr>
+<p>기존의 two-stage estimation 방법은 <a href="2009">Astle &amp; Balding</a> $z$를 MAP로 대체한 것과 동일하다.</p>
+<h2 id="3-2-Implicit-Causal-Model-with-a-Latent-Confounder"><a href="#3-2-Implicit-Causal-Model-with-a-Latent-Confounder" class="headerlink" title="3.2 Implicit Causal Model with a Latent Confounder"></a>3.2 Implicit Causal Model with a Latent Confounder</h2><ul>
+<li><p>$z_n$</p>
+<ul>
+<li>$g_z$는 그저 identity function으로 두고 </li>
+<li>Prior는 standard normal로 두고</li>
+<li>차원 $K$는 적당히 큰 정도로 설정한다. (hyperparameter)</li>
+</ul>
+</li>
+<li><p>$x_{nm}$</p>
+<ul>
+<li><p>GWAS에서 성공한 factor analysis formulation에 기반을 한다.</p>
+</li>
+<li><p>$0$은 two major alleles, 1은 one major allele, 그리고 2는 two minor alleles를 의미한다.</p>
+</li>
+<li><p>$x_{nm} | z_n, w_m \sim \operatorname B(2,  \pi_{nm})$ where $\operatorname{logit} \pi_{n m}=z_{n}^{\top} w_{m}$</p>
+</li>
+<li><p>$w_m$의 prior는 logistic factor analysis처럼 standard normal로 둔다.</p>
+</li>
+<li><p>그 경우에, $w_m$은 principal component의 역할로 $M$차원의 원본을 $K$차원의 embedding이 된다.</p>
+<blockquote>
+<p>PCA~factor analysis 좀 가물가물 해서 Logistic factor analysis 보고 다시 오겠다.</p>
+</blockquote>
+</li>
+<li><p>Logit을 NN으로 둬서 좀 더 완화된 가정을 둬도 된다. $\operatorname{logit} \pi_{n m}=\mathrm{NN}\left(\left[z_{n}, w_{m}\right] \mid \phi\right)$</p>
+</li>
+</ul>
+</li>
+<li><p>$y_n$</p>
+<ul>
+<li><p>$y_{n}=\left[x_{n, 1: M}, z_{n}\right]^{\top} \theta+\epsilon_{n}, \quad \epsilon_{n} \sim \operatorname{Normal}(0,1)$</p>
+</li>
+<li><p>$y_{n}=\mathrm{NN}\left(\left[x_{n, 1: M}, z_{n}, \epsilon\right] \mid \theta\right), \quad \epsilon_{n} \sim \operatorname{Normal}(0,1)$</p>
+</li>
+<li><p>SNP에서 hidden layer로 가는 부분에 group Lasso prior를 둬서 sparse input 만으로 $y_n$을 예측하도록 유도하자.</p>
+<blockquote>
+<p>Group Lasso prior도 한번 봐야겠다.</p>
+</blockquote>
+</li>
+<li><p>나머지는 standard normal prior를 사용하자.</p>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="4-Likelihood-Free-Variational-Inference"><a href="#4-Likelihood-Free-Variational-Inference" class="headerlink" title="4. Likelihood-Free Variational Inference"></a>4. Likelihood-Free Variational Inference</h1><p>Given GWAS data, we want to infer $p(\theta \mid \mathbf x, \mathbf y)$.</p>
+<p>이는 joint posterior를 추론한 뒤에 marginalize를 하거나, 중간 과정을 collapse하면 된다.</p>
+<script type="math/tex; mode=display">
+p\left(z_{1: N}, w_{1: M}, \phi, \theta \mid \mathbf{x}, \mathbf{y}\right) \propto p(\phi) p(\theta) \prod_{n=1}^{N}\left[p\left(z_{n}\right) p\left(y_{n} \mid x_{n, 1: M}, z_{n}, \theta\right) \prod_{m=1}^{M} p\left(w_{m}\right) p\left(x_{n m} \mid z_{n}, w_{m}, \phi\right)\right]</script><p>다만 어려움은 $p\left(y_{n} \mid x_{n, 1: M}, z_{n}, \theta\right), p\left(x_{n m} \mid z_{n}, w_{m}, \phi\right)$를 모른다는 것이다.</p>
+<p>이 경우, LFVI를 적용하면 된다.</p>
+<p>VI과정에서, </p>
+<ul>
+<li>$q\left(w_{m}\right)=\operatorname{Normal}\left(w_{m} ; \mu_{w_{m}}, \sigma_{w_{m}} I\right)$</li>
+<li>$q\left(z_{n}\right)=\operatorname{Normal}\left(z_{n} ; \mu_{z_{n}}, \sigma_{z_{n}} I\right)$</li>
+<li>$q(\theta) = \delta_{\theta}$</li>
+<li>$q(\phi) = \delta_{\phi}$</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/paper-review/" rel="tag"># paper review</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/22/Deep-and-Hierarchical-Implicit-Models/" rel="prev" title="Deep and Hierarchical Implicit Models">
+      <i class="fa fa-chevron-left"></i> Deep and Hierarchical Implicit Models
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/22/A-Simulation-Based-Test-of-Identifiability-for-Bayesian-Causal-Inference/" rel="next" title="A Simulation-Based Test of Identifiability for Bayesian Causal Inference">
+      A Simulation-Based Test of Identifiability for Bayesian Causal Inference <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1. Introduction</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-Related-Work"><span class="nav-text">1.1 Related Work</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Implicit-Causal-Models"><span class="nav-text">2. Implicit Causal Models</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Probabilistic-Causal-Models"><span class="nav-text">2.1 Probabilistic Causal Models</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Implicit-Causal-Models"><span class="nav-text">2.2 Implicit Causal Models</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-ICMs-with-Latent-Confounders"><span class="nav-text">3. ICMs with Latent Confounders</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Causal-Inference-with-a-Latent-Confounder"><span class="nav-text">3.1 Causal Inference with a Latent Confounder</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Implicit-Causal-Model-with-a-Latent-Confounder"><span class="nav-text">3.2 Implicit Causal Model with a Latent Confounder</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Likelihood-Free-Variational-Inference"><span class="nav-text">4. Likelihood-Free Variational Inference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">JaeHyun Lee</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JaeHyun Lee</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://leequant761.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://leequant761.github.io/2021/09/22/Implicit-Causal-Models-for-Genome-wide-Association-Studies/";
+    this.page.identifier = "2021/09/22/Implicit-Causal-Models-for-Genome-wide-Association-Studies/";
+    this.page.title = "Implicit Causal Models for Genome-wide Association Studies";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://leequant761.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

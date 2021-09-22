@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leequant761.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="0. Abstract이 논문은 Bayesian model for causal inference의 identifiability를 확인하는 방법을 소개한다. 비록 do-calculus는 causeal graph가 주어졌을 때 sound&amp;complete 하지만, 많은 실용적인 가정들이 표현될 수 없다.  instrumental variable design">
+<meta property="og:type" content="article">
+<meta property="og:title" content="A Simulation-Based Test of Identifiability for Bayesian Causal Inference">
+<meta property="og:url" content="https://leequant761.github.io/2021/09/22/A-Simulation-Based-Test-of-Identifiability-for-Bayesian-Causal-Inference/index.html">
+<meta property="og:site_name" content="Study Repo">
+<meta property="og:description" content="0. Abstract이 논문은 Bayesian model for causal inference의 identifiability를 확인하는 방법을 소개한다. 비록 do-calculus는 causeal graph가 주어졌을 때 sound&amp;complete 하지만, 많은 실용적인 가정들이 표현될 수 없다.  instrumental variable design">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leequant761.github.io/2021/09/22/A-Simulation-Based-Test-of-Identifiability-for-Bayesian-Causal-Inference/image-20210915215453514.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/09/22/A-Simulation-Based-Test-of-Identifiability-for-Bayesian-Causal-Inference/image-20210922103400577.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/09/22/A-Simulation-Based-Test-of-Identifiability-for-Bayesian-Causal-Inference/image-20210922152422421.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/09/22/A-Simulation-Based-Test-of-Identifiability-for-Bayesian-Causal-Inference/image-20210922152330715.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/09/22/A-Simulation-Based-Test-of-Identifiability-for-Bayesian-Causal-Inference/image-20210922160620000.png">
+<meta property="article:published_time" content="2021-09-22T07:55:42.000Z">
+<meta property="article:modified_time" content="2021-09-22T08:12:51.779Z">
+<meta property="article:author" content="JaeHyun Lee">
+<meta property="article:tag" content="paper review">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leequant761.github.io/2021/09/22/A-Simulation-Based-Test-of-Identifiability-for-Bayesian-Causal-Inference/image-20210915215453514.png">
+
+<link rel="canonical" href="https://leequant761.github.io/2021/09/22/A-Simulation-Based-Test-of-Identifiability-for-Bayesian-Causal-Inference/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>A Simulation-Based Test of Identifiability for Bayesian Causal Inference | Study Repo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Study Repo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leequant761.github.io/2021/09/22/A-Simulation-Based-Test-of-Identifiability-for-Bayesian-Causal-Inference/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="JaeHyun Lee">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Study Repo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          A Simulation-Based Test of Identifiability for Bayesian Causal Inference
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-22 16:55:42 / Modified: 17:12:51" itemprop="dateCreated datePublished" datetime="2021-09-22T16:55:42+09:00">2021-09-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Causality/" itemprop="url" rel="index"><span itemprop="name">Causality</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/09/22/A-Simulation-Based-Test-of-Identifiability-for-Bayesian-Causal-Inference/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/09/22/A-Simulation-Based-Test-of-Identifiability-for-Bayesian-Causal-Inference/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="0-Abstract"><a href="#0-Abstract" class="headerlink" title="0. Abstract"></a>0. Abstract</h1><p>이 논문은 Bayesian model for causal inference의 identifiability를 확인하는 방법을 소개한다.</p>
+<p>비록 do-calculus는 causeal graph가 주어졌을 때 sound&amp;complete 하지만, 많은 실용적인 가정들이 표현될 수 없다.</p>
+<ul>
+<li>instrumental variable design</li>
+<li>regression discontinuity design</li>
+<li>within-subjects design</li>
+</ul>
+<p>Simulation-based identifiability test를 소개하겠다.</p>
+<p>이는 causal assumption을 SCM상의 함수들의 prior로 나타낸다.</p>
+<p>SBI가 asymptotically sound&amp;complete임을 증명하고 practical finite sample bound를 제공하겠다.</p>
+<p>Empirical하게 SBI가 graph-based identification과 일치하는 것을 보이겠다.</p>
+<span id="more"></span>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a>1. Introduction</h1><p>Causal graph가 주어졌을 때, do-calculus는 nonparametric identification에서 complte&amp;sound procedure이다.</p>
+<p>하지만 graph structure 단독으로는 causal knowledge의 완벽한 정보를 제공할 수 없다.</p>
+<ul>
+<li>Instrumental variable designs은 monotonicity 또는 linearity를 요구한다.</li>
+<li>Within-subjects designs은 unit들 간에 공유하는 latent confounder를 요구한다.</li>
+<li>Regression discontinuity는 do-calculus의 positivity assumption에 위배된다.</li>
+</ul>
+<p>이 논문은 이에 대한 대안적인 방법을 소개한다.</p>
+<ol>
+<li>causal assumption을 SCM상의 prior로 표현하고</li>
+<li>likelihood가 동일하지만 effect가 다른 모델들을 찾는다.</li>
+</ol>
+<hr>
+<p>우리는 SCM에 prior를 거는 모델들과 호환이 되는 automated identification technique인 SBI를 소개하겠다.</p>
+<p>SBI는 causal identification 문제를 두개의 SCM 후보를 갖고서 CE를 최대한 떨어트리되, likelihood를 최대화하는 최적화 문제로 해석한다.</p>
+<p>만약, 두 모델이 CE estimate마저 일치하게 된다면 CE가 identifiable이라는 결론이 나온다.</p>
+<img src="/2021/09/22/A-Simulation-Based-Test-of-Identifiability-for-Bayesian-Causal-Inference/image-20210915215453514.png" class="">
+<hr>
+<p>Section 4에서 SBI에 대한 증명을 할 것이고, Section 5에서 SBI가 위에서 말한 designs에 적용 가능함을 보이겠다.</p>
+<p>그리고 Gaussian processes를 활용한 SBI의 semi-parametric extension을 소개하겠다.</p>
+<blockquote>
+<p>Bayesian nonparametrics이라는 용어가 있음에도 semi-parametric이라 부른 이유는 nonparametric identification의 nonparametric과 확실한 구분을 위해서 라고 한다.</p>
+</blockquote>
+<h2 id="1-1-Related-Work"><a href="#1-1-Related-Work" class="headerlink" title="1.1. Related Work"></a>1.1. Related Work</h2><p><strong>Automatic Identification</strong></p>
+<ul>
+<li><a href="">Pearl, 1995</a>, <a href="">Huang &amp; Valtorta, 2012</a>등 do-calculus에 기반하여 nonparametric identifiability를 결정하는 연구들이 있다.</li>
+<li><a href="">Bollen, 2005</a>, <a href="">Kumor, 2019</a> 등 linear parametric identifiability 연구들이 있다.</li>
+<li>그러나 이들 연구는 semi-parametric causal model(rich structure)나 non-graphical assumption에 대해 커버하지 않는다.</li>
+</ul>
+<p><strong>Likelihood equivalent parameters using gradient-based search</strong></p>
+<ul>
+<li><a href="">Raue, 2009</a>, <a href="">Valdes-Sosa, 2011</a></li>
+<li>SBI는 이들과 달리<ul>
+<li>particle-based objective를 사용해 single MLE보단 전역적으로 찾는다.</li>
+<li>제안하는 objective function은 명시적으로 different CE를 estimate하는 모델들을 찾는다.</li>
+</ul>
+</li>
+<li>이러한 차이점은 SBI가 semi-parametric일 때나 parameter가 많은 경우에서도 올바르게 identifiability를 결정할 수 있음을 의미한다.</li>
+</ul>
+<blockquote>
+<p>It is well known that causal effects can be identified even in settings where individual parameters can not (Pearl, 2009).</p>
+<p>이게 뭔 지 잘 모르겠다.</p>
+</blockquote>
+<h1 id="2-Preliminaries"><a href="#2-Preliminaries" class="headerlink" title="2. Preliminaries"></a>2. Preliminaries</h1><h2 id="2-1-Structural-Causal-Models"><a href="#2-1-Structural-Causal-Models" class="headerlink" title="2.1 Structural Causal Models"></a>2.1 Structural Causal Models</h2><p>SBI는 causal assumption이 SCM 상의 prior로 표현되길 요구한다.</p>
+<p>SCM $(\mathbf F, \mathbf V, \mathbf U, P(\boldsymbol \epsilon))$은 $P\left(\mathbf{V}, \mathbf{V}_{\mathbf{V}^{\prime}=\mathbf{v}^{\prime}}, \mathbf{V}_{\mathbf{V}^{\prime}=\mathbf{v}^{\prime \prime}}\right)$의 분포를 induce한다.</p>
+<p>$\mathbf{V}_{\mathbf{V}^{\prime}=\mathbf{v}^{\prime}}$은 $do(\mathbf V^\prime = \mathbf v^\prime)$을 했을 때 induce된 randomvariable을 나타낸다.</p>
+<p>$\mathbf{V}_{\mathbf{V}^{\prime}=\mathbf{v}^{\prime}}, \mathbf{V}_{\mathbf{V}^{\prime}=\mathbf{v}^{\prime \prime}}$을 같이 joint에 묶은 이유는 counterfactuals인데 이러한 표기를 쓴 이유는 noise variable을 같게 하기 위함으로 보인다.</p>
+<blockquote>
+<p>그래야, 다른 intervention을 줬을 때 뭐가 나왔을 것이다에 정확하게 대응됨</p>
+</blockquote>
+<ul>
+<li>$\mathbf{V} = \{ \mathbf{V}_i \}_{i=1, \cdots, n} $</li>
+<li>$\mathbf{U} = \{ \mathbf{U}_i \}_{i=1, \cdots, n} $</li>
+</ul>
+<h2 id="2-2-Priors-over-Functions"><a href="#2-2-Priors-over-Functions" class="headerlink" title="2.2 Priors over Functions"></a>2.2 Priors over Functions</h2><p><strong>Parametric prior</strong></p>
+<p>$f_{y}\left(x_{i}, \epsilon_{i}\right)=\beta \cdot x_{i}+\epsilon$ 에 대해 $\beta \sim \mathcal{N}(0,1)$ 를 prior로 건다.</p>
+<p><strong>Semiparametric prior</strong></p>
+<p>Prior가 joint distribution $P\left(\mathbf{V}, \mathbf{V}_{\mathbf{V}^{\prime}=\mathbf{v}^{\prime}}, \mathbf{V}_{\mathbf{V}^{\prime}=\mathbf{v}^{\prime \prime}}\right)$으로 주어진다.</p>
+<h1 id="3-Identifiability-in-Bayesian-Causal-Inference"><a href="#3-Identifiability-in-Bayesian-Causal-Inference" class="headerlink" title="3. Identifiability in Bayesian Causal Inference"></a>3. Identifiability in Bayesian Causal Inference</h1><p>Given prior over $(\mathbf F, \mathbf U, P(\boldsymbol \epsilon))$, we are interested in $P\left(Q\left(\mathbf{V}_{\mathbf{V}^{\prime}=\mathbf{v}^{\prime}}, \mathbf{V}_{\mathbf{V}^{\prime}=\mathbf{v}^{\prime \prime}}\right) \mid \mathbf{V}\right)$</p>
+<p>Causal effect의 posterior에 관심이 있는 경우 causal estimand $Q = \frac{1}{N}\sum_{i=1}^NY_{T=t^\prime} - Y_{T=t^{\prime \prime}}$ 일 것이다.</p>
+<hr>
+<p>Let $\mathbf{F}^{\star}, \mathbf{U}^{\star}, \boldsymbol{\epsilon}^{\star} \sim P(\mathbf{F}, \mathbf{U}, \boldsymbol{\epsilon})$ be a sample from the prior.</p>
+<p>Let $\mathbf{V}^{\star}, \mathbf{V}_{\mathbf{V}^{\prime}=\mathbf{v}^{\prime}}^{\star}, \mathbf{V}_{\mathbf{V}^{\prime}=\mathbf{v}^{\prime \prime}}^{\star}$ be observed and counterfactual random variables generated by $\mathbf{F}^{\star}, \mathbf{U}^{\star}, \boldsymbol{\epsilon}^{\star}$</p>
+<p>Then,</p>
+<hr>
+<p><strong>Definition 3.1</strong></p>
+<p>​    Given a sample $\mathbf{F}^{\star}, \mathbf{U}^{\star}, \boldsymbol{\epsilon}^{\star}$, causal estimand $Q$ is identifiable if</p>
+<p>​    the posterior $Q\left(\mathbf{V}_{\mathbf{V}^{\prime}=\mathbf{v}^{\prime}}, \mathbf{V}_{\mathbf{V}^{\prime}=\mathbf{v}^{\prime \prime}}\right) \mid \mathbf{V}^{\star}$ converges to $Q\left(\mathbf{V}_{\mathbf{V}^{\prime}=\mathbf{v}^{\prime}}^{\star}, \mathbf{V}_{\mathbf{V}^{\prime}=\mathbf{v}^{\prime \prime}}^{\star}\right)$ as $n\rightarrow \infty$</p>
+<hr>
+<p>비록 정의는 posterior convergence로 주어졌으나, causal estimand가 identifiable인 지 결정하는 것은 posterior를 구하는 것을 요구하지 않는다.</p>
+<p>대신에, conditional density를 최대화하는 함수와 confounder가 유일함으로 보인다.</p>
+<hr>
+<p><strong>Theorem 3.1</strong></p>
+<p>​    Let $\mathbf V$ be composed of $n$ i.i.d. instances.</p>
+<p>​    Then, $^\forall \left(\mathbf{F}^{\dagger}, \mathbf{U}^{\dagger}\right) \in \operatorname{supp}(P(\mathbf{F}, \mathbf{U}))$, $\frac{P\left(\mathbf{V}^{\star} \mid \mathbf{F}^{\dagger}, \mathbf{U}^{\dagger}\right)}{P\left(\mathbf{V}^{\star} \mid \mathbf{F}^{\star}, \mathbf{U}^{\star}\right)} \rightarrow 1 \quad \text{or} \quad 0 \quad \text{as $n \rightarrow \infty$}$</p>
+<p>(proof sketh)</p>
+<ul>
+<li>Let $p=\mathbb{E}\left[\frac{P\left(\mathbf{V}_{i}^{\star} \mid \mathbf{F}^{\dagger}, \mathbf{U}^{\dagger}\right)}{P\left(\mathbf{V}_{i}^{\star} \mid \mathbf{F}^{\star}, \mathbf{U}^{\star}\right)}\right]$ for a single data instance</li>
+<li>Then, $\mathbb{E}\left[\frac{P\left(\mathbf{V}_{i}^{\star} \mid \mathbf{F}^{\dagger}, \mathbf{U}^{\dagger}\right)}{P\left(\mathbf{V}_{i}^{\star} \mid \mathbf{F}^{\star}, \mathbf{U}^{\star}\right)}\right]=p^{n}$ for $n$ data instances.</li>
+<li>As $0 \leq p \leq 1$, $\lim _{n\rightarrow \infty} p^n = 0\quad \text{or} \quad 1$</li>
+<li>By WLLN, $\frac{P\left(\mathbf{V}^{\star} \mid \mathbf{F}^{\dagger}, \mathbf{U}^{\dagger}\right)}{P\left(\mathbf{V}^{\star} \mid \mathbf{F}^{\star}, \mathbf{U}^{\star}\right)} \rightarrow 0 \quad \text{or} \quad 1$</li>
+</ul>
+<blockquote>
+<p>WLLN은 sum에 대한 수렴이라, 제대로 이해하려면 likelihood ratio convergence theorem을 봐야알 듯 하다.</p>
+</blockquote>
+<hr>
+<p><strong>Theorem 3.2</strong></p>
+<p>​    Given a sample $\mathbf{F}^{\star}, \mathbf{U}^{\star}, \boldsymbol{\epsilon}^{\star} \sim P(\mathbf{F}, \mathbf{U}, \boldsymbol{\epsilon})$, a causal estimand $Q$ is identifiable iff</p>
+<p>​    $^{\not \exists} \left(\mathbf{F}^{\dagger}, \mathbf{U}^{\dagger}\right)$ s.t.</p>
+<ul>
+<li><p>$P\left(\mathbf{V}^{\star} \mid \mathbf{F}^{\dagger}, \mathbf{U}^{\dagger}\right) \rightarrow P\left(\mathbf{V}^{\star} \mid \mathbf{F}^{\star}, \mathbf{U}^{\star}\right)$ as $n \rightarrow \infty$</p>
+<p>and</p>
+</li>
+<li><p>$Q\left(\mathbf{V}_{\mathbf{V}^{\prime}=\mathbf{v}^{\prime}}^{\dagger}, \mathbf{V}_{\mathbf{V}^{\prime}=\mathbf{v}^{\prime \prime}}^{\dagger}\right) \neq Q\left(\mathbf{V}_{\mathbf{V}^{\prime}=\mathbf{v}^{\prime}}^{\star}, \mathbf{V}_{\mathbf{V}^{\prime}=\mathbf{v}^{\prime \prime}}^{\star}\right)$ where $\mathbf{V}^{\dagger}$ is the simulated result with $ \left(\mathbf{F}^{\dagger}, \mathbf{U}^{\dagger}, \boldsymbol{\epsilon}^{\star} \right)$</p>
+<p>and</p>
+</li>
+<li><p>$P\left(\mathbf{F}^{\dagger}, \mathbf{U}^{\dagger}\right)&gt;0$</p>
+</li>
+</ul>
+<p>(Proof)</p>
+<p><strong>&lt;==</strong></p>
+<p>​    적절한 prior와 regularity condition에 대해서, Bernstein-von Mises 정리가 posterior의 consistency와 asymptotically normality를 보장한다.</p>
+<blockquote>
+<p><a href="">Variational Bayes under Model Misspecification</a> 봐보면 좋을 듯</p>
+</blockquote>
+<p><strong>==&gt;</strong></p>
+<blockquote>
+<p>증명이 이해가 안되어서 sketch만 적겠다.</p>
+</blockquote>
+<p>​    Let $\mathbb A^\dagger = \left\{(\mathbf{F}, \mathbf{U}) \in \operatorname{supp}(P(\mathbf{F}, \mathbf{U})): Q\left(\mathbf{V}_{\mathbf{V}^{\prime}=\mathbf{v}_{1}^{\prime}}, \mathbf{V}_{\mathbf{V}^{\prime}=\mathbf{v}_{2}^{\prime}}\right)= Q\left(\mathbf{V}_{\mathbf{V}^{\prime}=\mathbf{v}^{\prime}}^{\dagger}, \mathbf{V}_{\mathbf{V}^{\prime}=\mathbf{v}^{\prime \prime}}^{\dagger}\right) \right \}$</p>
+<p>​    Let $\mathbb{L}^{\star} = \left \{(\mathbf{F}, \mathbf{U}) \in \operatorname{supp}(P(\mathbf{F}, \mathbf{U})): \frac{P\left(\mathbf{V}^{\star} \mid \mathbf{F}, \mathbf{U}\right)}{P\left(\mathbf{V}^{\star} \mid \mathbf{F}^{\star}, \mathbf{U}^{\star}\right)} \rightarrow 1 \text { as } n \rightarrow \infty\right\}$</p>
+<p>​    WTS, $Q$ is identifiable $\Rightarrow$ $P \left( \sim \mathbb A^\dagger \cap \mathbb L^\star \mid \mathbf V^\star\right) \rightarrow 0$</p>
+<p>​    Since $Q$ is identifiable iff $P \left( \sim \mathbb A^\dagger \mid \mathbf V^\star\right) \not \rightarrow 0$ by definition 3.1, it’s all done.</p>
+<hr>
+<p>Theorem 3.2는 identifiability를 multiple maximum likelihood SCM의 CE가 같은 지 여부로 연관시켜서 SBI procedure를 제공한다.</p>
+<blockquote>
+<p>대우로 사용해선 안된다고 한다.</p>
+<p>이 부분은 정확하게 이해가 안됨</p>
+</blockquote>
+<h1 id="4-Simulation-Based-Identifiability"><a href="#4-Simulation-Based-Identifiability" class="headerlink" title="4. Simulation-Based Identifiability"></a>4. Simulation-Based Identifiability</h1><p>Consider the following objective function</p>
+<script type="math/tex; mode=display">
+\mathcal{L}\left(\mathbf{F}^{1}, \mathbf{U}^{1}, \mathbf{F}^{2}, \mathbf{U}^{2}; \mathbf{V}^{\star}\right) =\log P\left(\mathbf{V}^{\star} \mid \mathbf{F}^{1}, \mathbf{U}^{1}\right)+\log P\left(\mathbf{V}^{\star} \mid \mathbf{F}^{2}, \mathbf{U}^{2}\right)+\lambda \Delta Q</script><p>where $\Delta Q=\left|Q^{1}-Q^{2}\right|$ is the difference of causal estimates of two SCMs.</p>
+<p>Let $\hat{\mathbf{F}}^{1}, \hat{\mathbf{U}}^{1}, \hat{\mathbf{F}}^{2}, \hat{\mathbf{U}}^{2} = \arg\max \mathcal{L}\left(\mathbf{F}^{1}, \mathbf{U}^{1}, \mathbf{F}^{2}, \mathbf{U}^{2}; \mathbf{V}^{\star}\right)$</p>
+<p>Let $\Delta \hat{Q}$ be the corresponding $\Delta Q$</p>
+<hr>
+<p><strong>Theorem 4.1</strong> (Two SCMs converge to MLE solutions)</p>
+<p>​    $^{\forall}\mathbf V^\star \sim  P(\mathbf V \mid \mathbf F^\star, \mathbf U ^{\star})$, $P\left(\mathbf{V}^{\star} \mid \hat{\mathbf{F}}^{i}, \hat{\mathbf{U}}^{i}\right) \rightarrow P\left(\mathbf{V}^{\star} \mid \mathbf{F}^{\star}, \mathbf{U}^{\star}\right) \quad \text{as $n\rightarrow \infty$}$ for $i=1, 2$</p>
+<p>(Proof)</p>
+<p>​    WLOG, toward a contradiction, assume that $P\left(\mathbf{V}^{\star} \mid \hat{\mathbf{F}}^{1}, \hat{\mathbf{U}}^{1}\right) \not \rightarrow P\left(\mathbf{V}^{\star} \mid \mathbf{F}^{\star}, \mathbf{U}^{\star}\right)$</p>
+<p>​    By theorem 3.1, $\frac{P\left(\mathbf{V}^{\star} \mid \hat{\mathbf{F}}^{1}, \hat{\mathbf{U}}^{1}\right)}{P\left(\mathbf{V}^{\star} \mid \mathbf{F}^{\star}, \mathbf{U}^{\star}\right)} \rightarrow 0 \text { as } n \rightarrow \infty$</p>
+<p>​    Then, $\mathcal{L}\left(\mathbf{F}^{\star}, \mathbf{U}^{\star}, \mathbf{F}^{\star}, \mathbf{U}^{\star}, \mathbf{V}^{\star}\right) &gt;  \mathcal{L}\left(\hat{\mathbf{F}}^{1}, \hat{\mathbf{U}}^{1}, \hat{\mathbf{F}}^{2}, \hat{\mathbf{U}}^{2}, \mathbf{V}^{\star}\right) \rightarrow -\infty \quad \text{as $n \rightarrow \infty$}$</p>
+<p>​    It contradicts to $\hat{\mathbf{F}}^{1}, \hat{\mathbf{U}}^{1}, \hat{\mathbf{F}}^{2}, \hat{\mathbf{U}}^{2} = \arg\max \mathcal{L}\left(\mathbf{F}^{1}, \mathbf{U}^{1}, \mathbf{F}^{2}, \mathbf{U}^{2}; \mathbf{V}^{\star}\right)$</p>
+<hr>
+<p>Let $\mathbb L$ be the set of maximum likelihood functions and latent confounders, $(\mathbf F , \mathbf U)$</p>
+<p><strong>Theorem 4.2</strong></p>
+<p>​    $\Delta \hat{Q} \rightarrow \max _{\left(\mathbf{F}^{1}, \mathbf{U}^{1}, \mathbf{F}^{2}, \mathbf{U}^{2}\right) \in \mathbb{L}} \Delta Q \quad \text{as $n \rightarrow \infty$ }$</p>
+<p>(Proof)</p>
+<p>​    Toward a contradiction, assume that $^{\exists}\left(\mathbf{F}^{1}, \mathbf{U}^{1}, \mathbf{F}^{2}, \mathbf{U}^{2}\right)$ s.t. $\mathcal{L}\left(\mathbf{F}^{1}, \mathbf{U}^{1}, \mathbf{F}^{2}, \mathbf{U}^{2}, \mathbf{V}^{\star}\right) = \mathcal{L}\left(\hat{\mathbf{F}}^{1}, \hat{\mathbf{U}}^{1}, \hat{\mathbf{F}}^{2}, \hat{\mathbf{U}}^{2}, \mathbf{V}^{\star}\right)$ and $\left|Q^{1}-Q^{2}\right| &gt;\left|\hat{Q}^{1}-\hat{Q}^{2}\right|$</p>
+<p>​    By theorem 4.1, $P\left(\mathbf{V}^{\star} \mid \mathbf{F}^{1}, \mathbf{U}^{1}\right), P\left(\mathbf{V}^{\star} \mid \mathbf{F}^{2}, \mathbf{U}^{2}\right), P\left(\mathbf{V}^{\star} \mid \hat{\mathbf{F}}^{1}, \hat{\mathbf{U}}^{1}\right), P\left(\mathbf{V}^{\star} \mid \hat{\mathbf{F}}^{2}, \hat{\mathbf{U}}^{2}\right)$ all converge to $P\left(\mathbf{V}^{\star} \mid \mathbf{F}^{\star}, \mathbf{U}^{\star}\right) \text { as } n \rightarrow \infty$</p>
+<p>​    $\mathcal{L}\left(\mathbf{F}^{1}, \mathbf{U}^{1}, \mathbf{F}^{2}, \mathbf{U}^{2}, \mathbf{V}^{\star}\right) \rightarrow 2 \log P\left(\mathbf{V}^{\star} \mid \mathbf{F}^{\star}, \mathbf{U}^{\star}\right)+\left|Q^{1}-Q^{2}\right| = 2 \log P\left(\mathbf{V}^{\star} \mid \mathbf{F}^{\star}, \mathbf{U}^{\star}\right) +\left|\hat{Q}^{1}-\hat{Q}^{2}\right|$ is contradiction to $\left|Q^{1}-Q^{2}\right| &gt;\left|\hat{Q}^{1}-\hat{Q}^{2}\right|$</p>
+<blockquote>
+<p>Theorem 4.1 덕분에, $n$이 무한대로 감에 따라서 maximizer 중에서 MLE가 아닌 애가 있다는 것에 모순이 생김</p>
+</blockquote>
+<hr>
+<p><strong>Theorem 4.3</strong></p>
+<p>​    Given a prior $P(\mathbf{F}, \mathbf{U}, \boldsymbol{\epsilon})$ and a sample $\mathbf{F}^{\star}, \mathbf{U}^{\star}, \boldsymbol{\epsilon}^{\star}$ from that prior, a causal estimand $Q$ is identifiable iff</p>
+<p>​    $\Delta \hat{Q} \rightarrow 0 \text { as } n \rightarrow \infty$</p>
+<p>(Proof)</p>
+<p>​    Theorem 4.1 : $\left(\hat{\mathbf{F}}^{1}, \hat{\mathbf{U}}^{1}\right) , \left(\hat{\mathbf{F}}^{2}, \hat{\mathbf{U}}^{2}\right) \in \mathbb L^{\star}$</p>
+<p>​    Theorem 4.2 : $ \hat \Delta Q $ maximizes the distance between induced causal estimates</p>
+<p>​    $\Delta \hat{Q} \rightarrow 0$ implies $^{\not \exists} \left(\hat{\mathbf{F}}^{i}, \hat{\mathbf{U}}^{i}\right) \in \sim \mathbb A^{\dagger}$</p>
+<hr>
+<img src="/2021/09/22/A-Simulation-Based-Test-of-Identifiability-for-Bayesian-Causal-Inference/image-20210922103400577.png" class="">
+<p><strong>Assumption 4.1</strong></p>
+<p>​    Let $\mathbb{E}_{\mathbf{V}^{\star}, n} \Delta \hat{Q}$ denote the expected difference between causal estimates for $n$ instances.</p>
+<p>​    Assume that $\mathbb{E}_{\mathbf{V}^{\star}, n} \Delta \hat{Q} \geq \mathbb{E}_{\mathbf{V}^{\star}, \infty} \Delta \hat{Q}$ for all $n \in \mathbb N$</p>
+<blockquote>
+<p>받아들일 만한 가정이다.</p>
+<p>finite sample의 문제로 likelihood ratio과 0또는 1로 충분히 수렴하지 못했을 수 있다.</p>
+<p>비록 $Q$가 identifiable일 지라도, $\mathbb L^\star$의 느슨해진 범위로 인해 $\Delta \hat Q$을 키울 기회가 생길 수 있다.</p>
+<p>$Q$가 not identifiable인 경우는 $\Delta \hat Q$이 크게 나올 것이므로 알고리즘이 이 가정이 틀릴 수 있어도 False를 뱉을 것이다.</p>
+</blockquote>
+<p><strong>Theorem 4.4</strong></p>
+<p>​    If Algorithm 1 returns TRUE, $P\left(\mathbb{E}_{\mathbf{V}^{\star}, \infty} \Delta \hat{Q}&gt;t\right)&lt;p$</p>
+<hr>
+<p><strong>Selecting the repulsion strength</strong></p>
+<ul>
+<li>$P\left(\mathbf{V}^{\star} \mid \hat{\mathbf{F}}^{1}, \hat{\mathbf{U}}^{1}\right)$와 $P\left(\mathbf{V}^{\star} \mid \hat{\mathbf{F}}^{2}, \hat{\mathbf{U}}^{2}\right)$가 충분히 다르다면, $\lambda$는 감소되어야한다.</li>
+</ul>
+<h2 id="4-1-Example-Confounded-GP-Regression"><a href="#4-1-Example-Confounded-GP-Regression" class="headerlink" title="4.1. Example: Confounded GP Regression"></a>4.1. Example: Confounded GP Regression</h2><img src="/2021/09/22/A-Simulation-Based-Test-of-Identifiability-for-Bayesian-Causal-Inference/image-20210922152422421.png" class="">
+<p>Consider a SCM over </p>
+<ul>
+<li>observed $\mathbf{V}=\left\{T_{1}, Y_{1}, \ldots, T_{n}, Y_{n}\right\}$</li>
+<li>unobserved $\mathbf U = \left\{U_{1}, \ldots, U_{n}\right\}$</li>
+</ul>
+<p>Assume that</p>
+<ul>
+<li>$Y_{i}=f\left(T_{i}, U_{i}\right)$ is drawn from<ul>
+<li>$f \sim GP(0, k(\cdot, \cdot ))$ where $k\left(\left[T_{i}, U_{i}\right],\left[T_{j}, U_{j}\right]\right)=k\left(T_{i}, T_{j} ; l_{T}, s_{T}\right) \cdot k\left(U_{i}, U_{j} ; l_{U}, s_{U}\right)$</li>
+<li>with additive exogeneous noise</li>
+</ul>
+</li>
+<li>$T_{i}=\gamma \cdot U_{i}+\epsilon_{T_{i}}$</li>
+</ul>
+<p>Let $K_{U}, K_{T}, K_{T, t^{\prime}}$ and $K_{T, t^{\prime \prime}}$ be $n \times n$ matrices s.t. $(i,j)$ elements are given by</p>
+<ul>
+<li>$k\left(U_{i}, U_{j} ; l_{U}, s_{U}\right)$</li>
+<li>$k\left(T_{i}, T_{j} ; l_{T}, s_{T}\right)$</li>
+<li>$k\left(T_{i}, t^{\prime} ; l_{T}, s_{T}\right)$</li>
+<li>$k\left(T_{i}, t^{\prime \prime} ; l_{T}, s_{T}\right)$</li>
+</ul>
+<p>Let $\mathbf 1$ be a $n\times n$ block matrix of ones.</p>
+<hr>
+<p>Optimize over $\mathbf F$ involves</p>
+<ul>
+<li>$\theta=\left\{l_{T}, s_{T}, l_{U}, s_{U}, \gamma, \sigma_{T}^{2}, \sigma_{Y}^{2}\right\}$</li>
+<li>inducing counterfactual outcomes $\mathbf{y}_{\mathrm{cf}}=\left[\mathbf{y}^{\prime}, \mathbf{y}^{\prime \prime}\right]$</li>
+</ul>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\log P(\mathbf{V} \mid \mathbf{F}, \mathbf{U}) &:=\log P(\mathbf{V} \mid \theta, \mathbf{U}, \mathbf y_{\text{cf}}) 
+\\
+&= \log P(\mathbf t \mid \theta, \mathbf U, \mathbf y_{\text{cf}}) + \log P(\mathbf y \mid \theta, \mathbf U, \mathbf t, \mathbf y_{\text{cf}})
+\\
+&=\log \mathcal{N}\left(\mathbf{t} ; \gamma \mathbf{u}, \sigma_{T}^{2} \mathbf{I}\right)+\log \mathcal{N}\left(\mathbf{y} ; \mu_{Y}, \Sigma_{Y}\right)
+\\
+&=: L_{\mathbf{t}} + L_{\mathbf{y}}
+\end{aligned}</script><p>where</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+&\mu_{Y}=K_{\star} K_{\star}^{-1} \mathbf{y}_{\mathrm{cf}} \\
+&\Sigma_{Y}=K-K_{\star} K_{\star}^{-1} K_{\star}^{t}+\sigma_{Y}^{2} \mathbf{I} \\
+&K=K_{T} \odot K_{U} \\
+&K_{\star}=\left[\begin{array}{l}
+K_{T, t^{\prime}} \\
+K_{T, t^{\prime \prime}}
+\end{array}\right] \odot\left[\begin{array}{l}
+K_{U} \\
+K_{U}
+\end{array}\right] \\
+&K_{\star}=\left[\begin{array}{cc}
+s_{T} \mathbf{1} & k_{t^{\prime}, t^{\prime \prime}} \mathbf{1} \\
+k_{t^{\prime}, t^{\prime \prime}} \mathbf{1} & s_{T} \mathbf{1}
+\end{array}\right] \odot\left[\begin{array}{ll}
+K_{U} & K_{U} \\
+K_{U} & K_{U}
+\end{array}\right]
+\end{aligned}</script><hr>
+<p>Let $Q = \frac{1}{n} \sum_{i \in n} \mathbf{y}_{i}^{\prime}-\mathbf{y}_{i}^{\prime \prime}$</p>
+<script type="math/tex; mode=display">
+\frac{\partial}{\partial s} \mathcal{L}=\frac{\partial}{\partial s} \log P\left(\mathbf{V}^{\star} \mid \mathbf{F}^{1}, \mathbf{U}^{1}\right)+\frac{\partial}{\partial s} \log P\left(\mathbf{V}^{\star} \mid \mathbf{F}^{2}, \mathbf{U}^{2}\right)+\lambda \frac{\partial}{\partial s} \Delta Q</script><p>Then,</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\frac{\partial}{\partial s} \Delta Q &= \begin{cases}\frac{\partial Q}{\partial s} & Q^{1}>Q^{2} \\
+-\frac{\partial Q}{\partial s} & \text { otherwise }\end{cases} \\
+\frac{\partial Q}{\partial s} &= \begin{cases}\frac{1}{n} & s \in \mathbf{y}_{i}^{\prime} \forall i \in 1 \ldots n \\
+-\frac{1}{n} & s \in \mathbf{y}_{i}^{\prime \prime} \forall i \in 1 \ldots n \\
+0 & \text { otherwise }\end{cases}
+\end{aligned}</script><p>나머지도 closed form으로 구했는데 이들은 automatic differentiation으로 구할 수 있다.</p>
+<img src="/2021/09/22/A-Simulation-Based-Test-of-Identifiability-for-Bayesian-Causal-Inference/image-20210922152330715.png" class="">
+<p>Confounded model은 identifiable하지 않음을 나타낸다.</p>
+<h1 id="5-Experiments"><a href="#5-Experiments" class="headerlink" title="5. Experiments"></a>5. Experiments</h1><img src="/2021/09/22/A-Simulation-Based-Test-of-Identifiability-for-Bayesian-Causal-Inference/image-20210922160620000.png" class="">
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/paper-review/" rel="tag"># paper review</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/22/Implicit-Causal-Models-for-Genome-wide-Association-Studies/" rel="prev" title="Implicit Causal Models for Genome-wide Association Studies">
+      <i class="fa fa-chevron-left"></i> Implicit Causal Models for Genome-wide Association Studies
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-Abstract"><span class="nav-text">0. Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1. Introduction</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-Related-Work"><span class="nav-text">1.1. Related Work</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Preliminaries"><span class="nav-text">2. Preliminaries</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Structural-Causal-Models"><span class="nav-text">2.1 Structural Causal Models</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Priors-over-Functions"><span class="nav-text">2.2 Priors over Functions</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Identifiability-in-Bayesian-Causal-Inference"><span class="nav-text">3. Identifiability in Bayesian Causal Inference</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Simulation-Based-Identifiability"><span class="nav-text">4. Simulation-Based Identifiability</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-Example-Confounded-GP-Regression"><span class="nav-text">4.1. Example: Confounded GP Regression</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Experiments"><span class="nav-text">5. Experiments</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">JaeHyun Lee</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JaeHyun Lee</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://leequant761.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://leequant761.github.io/2021/09/22/A-Simulation-Based-Test-of-Identifiability-for-Bayesian-Causal-Inference/";
+    this.page.identifier = "2021/09/22/A-Simulation-Based-Test-of-Identifiability-for-Bayesian-Causal-Inference/";
+    this.page.title = "A Simulation-Based Test of Identifiability for Bayesian Causal Inference";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://leequant761.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

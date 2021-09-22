@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leequant761.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="0. AbstractIPMs는 data를 modeling하는 flexible class이다. 이는 observation을 simulate할 수 있는 process이다.  GAN 처럼 likelihood를 몰라도 된다.   이 논문에선 HIMs와 DIMs를 도입한다. DNN을 사용하여 HBM with implicit density를 정의한다. IPM을 쓰는">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Deep and Hierarchical Implicit Models">
+<meta property="og:url" content="https://leequant761.github.io/2021/09/22/Deep-and-Hierarchical-Implicit-Models/index.html">
+<meta property="og:site_name" content="Study Repo">
+<meta property="og:description" content="0. AbstractIPMs는 data를 modeling하는 flexible class이다. 이는 observation을 simulate할 수 있는 process이다.  GAN 처럼 likelihood를 몰라도 된다.   이 논문에선 HIMs와 DIMs를 도입한다. DNN을 사용하여 HBM with implicit density를 정의한다. IPM을 쓰는">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leequant761.github.io/2021/09/22/Deep-and-Hierarchical-Implicit-Models/image-20210914145135369.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/09/22/Deep-and-Hierarchical-Implicit-Models/image-20210914145306791.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/09/22/Deep-and-Hierarchical-Implicit-Models/image-20210914163629221.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/09/22/Deep-and-Hierarchical-Implicit-Models/image-20210914170204715.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/09/22/Deep-and-Hierarchical-Implicit-Models/image-20210914171657090.png">
+<meta property="og:image" content="https://leequant761.github.io/2021/09/22/Deep-and-Hierarchical-Implicit-Models/image-20210914171836109.png">
+<meta property="article:published_time" content="2021-09-22T07:47:03.000Z">
+<meta property="article:modified_time" content="2021-09-22T07:49:43.115Z">
+<meta property="article:author" content="JaeHyun Lee">
+<meta property="article:tag" content="paper review">
+<meta property="article:tag" content="sequential latent variable model">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leequant761.github.io/2021/09/22/Deep-and-Hierarchical-Implicit-Models/image-20210914145135369.png">
+
+<link rel="canonical" href="https://leequant761.github.io/2021/09/22/Deep-and-Hierarchical-Implicit-Models/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Deep and Hierarchical Implicit Models | Study Repo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Study Repo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leequant761.github.io/2021/09/22/Deep-and-Hierarchical-Implicit-Models/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="JaeHyun Lee">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Study Repo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Deep and Hierarchical Implicit Models
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-09-22 16:47:03 / Modified: 16:49:43" itemprop="dateCreated datePublished" datetime="2021-09-22T16:47:03+09:00">2021-09-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Latent-Variable-Model/" itemprop="url" rel="index"><span itemprop="name">Latent Variable Model</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/09/22/Deep-and-Hierarchical-Implicit-Models/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/09/22/Deep-and-Hierarchical-Implicit-Models/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="0-Abstract"><a href="#0-Abstract" class="headerlink" title="0. Abstract"></a>0. Abstract</h1><p>IPMs는 data를 modeling하는 flexible class이다.</p>
+<p>이는 observation을 simulate할 수 있는 process이다.</p>
+<blockquote>
+<p>GAN 처럼 likelihood를 몰라도 된다.</p>
+</blockquote>
+<hr>
+<p>이 논문에선 HIMs와 DIMs를 도입한다.</p>
+<p>DNN을 사용하여 HBM with implicit density를 정의한다.</p>
+<p>IPM을 쓰는 경우 일반적으로 accurate &amp; scalable inference는 어렵다.</p>
+<p>우리는 model의 implicity도 허용하면서 A&amp;S posterior inference도 혀용한다.</p>
+<span id="more"></span>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a>1. Introduction</h1><p>Coin toss modeling을 간단하게 할 수 있다.</p>
+<ul>
+<li>$p \sim \text{Beta}(a,b)$</li>
+<li>$X \sim \text{Ber}(p)$</li>
+<li>$p | X \sim \text{Beta}(a’, b’)$</li>
+</ul>
+<p>하지만 각도 세기 등의 initial parameter의 noisy로 coin toss에 randomness가 생긴 것이다.</p>
+<hr>
+<p>IM은 이러한 것들을 담는다.</p>
+<p>IM이란 표현은 simulator로도 알려져 있다.</p>
+<p>IM으로 부터 sampling은 가능하나 density를 모를 것이다.</p>
+<hr>
+<p>우리는 HIMs을 도입한다.</p>
+<p>HIM은 HBM인데 sampling은 가능하고 density는 모르는 경우이다.</p>
+<p>이는 대부분의 simulator를 포함하고 GAN도 포함한다.</p>
+<p>HIMs에서 추가로 LV의 생성에도 DNN으로 쌓아서 rich하게 만든 것을 DIMs라고 하겠다.</p>
+<hr>
+<p>IM의 이전 연구들은 likelihood를 모르기 때문에 A&amp;S BI에 한계가 있다.</p>
+<p>Ratio estimation에 영감을 받아서, 새로운 VI를 개발했다.</p>
+<hr>
+<p>IM을 다루는 일반적인 method는 approximate Bayesian computation (ABC) 이다.</p>
+<p>잘은 모르겠지만 사람이 고른 summary statistics으로 가까움을 잰다고 한다.</p>
+<p>그러나 이는 너무 사람의 선택에 의존하고 차원이 증가하면 안된다고 한다.</p>
+<hr>
+<p>GAN은 NN으로 이미지를 simulate한다.</p>
+<ul>
+<li><a href="">Larsen, 2016</a> : variational method for improved reconstruction</li>
+<li><a href="">Chen, 2016</a> : disentangle factors of variation</li>
+</ul>
+<p>우리는 hierarchical and deep latent structure로 posterior를 추론한다.</p>
+<hr>
+<p>Design of variational family를 모델링 문제로 던지는 연구들이 있다.</p>
+<ul>
+<li><a href="">Ranganath, 2016a</a></li>
+<li><a href="">Liu &amp; Feng, 2016</a></li>
+</ul>
+<h1 id="2-Implicit-Probabilistic-Models"><a href="#2-Implicit-Probabilistic-Models" class="headerlink" title="2. Implicit Probabilistic Models"></a>2. Implicit Probabilistic Models</h1><h2 id="2-1-Hierarchical-Implicit-Models"><a href="#2-1-Hierarchical-Implicit-Models" class="headerlink" title="2.1. Hierarchical Implicit Models"></a>2.1. Hierarchical Implicit Models</h2><p>HBM은 tractable likelihood $p\left(\mathbf{x}_{n} \mid \mathbf{z}_{n}, \boldsymbol{\beta}\right)$을 사용한다.</p>
+<img src="/2021/09/22/Deep-and-Hierarchical-Implicit-Models/image-20210914145135369.png" class="">
+<script type="math/tex; mode=display">
+p(\mathbf{x}, \mathbf{z}, \boldsymbol{\beta})=p(\boldsymbol{\beta}) \prod_{n=1}^{N} p\left(\mathbf{x}_{n} \mid \mathbf{z}_{n}, \boldsymbol{\beta}\right) p\left(\mathbf{z}_{n} \mid \boldsymbol{\beta}\right)</script><p>하지만 simulator-based model과 GAN은 그렇지 않다.</p>
+<p>그것마저 포함하는 HIM을 도입하겠다.</p>
+<hr>
+<img src="/2021/09/22/Deep-and-Hierarchical-Implicit-Models/image-20210914145306791.png" class="">
+<script type="math/tex; mode=display">
+\mathbf{x}_{n}=g\left(\boldsymbol{\epsilon}_{n} \mid \mathbf{z}_{n}, \boldsymbol{\beta}\right), \quad \boldsymbol{\epsilon}_{n} \sim s(\cdot)</script><p>즉 함수 $g$와 noise의 분포만 명시한다.</p>
+<p><strong>예시</strong></p>
+<ul>
+<li><script type="math/tex; mode=display">
+\begin{aligned}
+&\frac{\mathrm{d} x_{1}}{\mathrm{~d} t}=\beta_{1} x_{1}-\beta_{2} x_{1} x_{2}+\epsilon_{1}, \quad \epsilon_{1} \sim \operatorname{Normal}(0,10) \\
+&\frac{\mathrm{d} x_{2}}{\mathrm{~d} t}=-\beta_{2} x_{2}-\beta_{3} x_{1} x_{2}+\epsilon_{2}, \quad \epsilon_{2} \sim \operatorname{Normal}(0,10)
+\end{aligned}</script></li>
+<li><script type="math/tex; mode=display">
+\mathbf{x}_{n}=g\left(\boldsymbol{\epsilon}_{n} ; \boldsymbol{\theta}\right), \quad \boldsymbol{\epsilon}_{n} \sim s(\cdot)</script></li>
+</ul>
+<h2 id="2-2-Deep-Implicit-Models"><a href="#2-2-Deep-Implicit-Models" class="headerlink" title="2.2 Deep Implicit Models"></a>2.2 Deep Implicit Models</h2><p>Latent variable의 $\mathbf z_n$에 간단한 노이즈를 주되 층을 쌓아서 complex density로 설정할 수 있다.</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\mathbf{z}_{n, L} &=g_{L}\left(\boldsymbol{\epsilon}_{n, L} \mid \boldsymbol{\beta}_{L}\right) & \boldsymbol{\epsilon}_{n, L} \sim s(\cdot) \\
+\mathbf{z}_{n, L-1} &=g_{L-1}\left(\boldsymbol{\epsilon}_{n, L-1} \mid \mathbf{z}_{n, L}, \boldsymbol{\beta}_{L-1}\right) & \boldsymbol{\epsilon}_{n, L-1} \sim s(\cdot)\\
+& \vdots \\
+\mathbf{z}_{n, 1} &=g_{1}\left(\boldsymbol{\epsilon}_{n, 1} \mid \mathbf{z}_{n, 2}, \boldsymbol{\beta}_{1}\right) & \boldsymbol{\epsilon}_{n, 1} \sim s(\cdot)
+\end{aligned}</script><p>이는 complex prior density를 허용한다.</p>
+<p>VAE와 같은 구조에 바로 적용 가능한 방법이다.</p>
+<p>Reparameterization trick을 이용하기 위해 간단하게 $g_l$은 $\boldsymbol \epsilon_l$에 대해 linear하게 둔다.</p>
+<script type="math/tex; mode=display">
+g_{\ell}\left(\boldsymbol{\epsilon}_{n, \ell} \mid \mathbf{z}_{n, \ell+1}, \beta_{\ell}\right)=\mu\left(\mathbf{z}_{n, \ell+1}, \beta_{\ell}\right)+\sigma\left(\mathbf{z}_{n, \ell+1}, \beta_{\ell}\right) \boldsymbol{\epsilon}_{n, \ell}</script><h1 id="3-Variational-Inference-for-Implicit-Models"><a href="#3-Variational-Inference-for-Implicit-Models" class="headerlink" title="3. Variational Inference for Implicit Models"></a>3. Variational Inference for Implicit Models</h1><p>Posterior $p(\mathbf{z}, \boldsymbol{\beta} \mid \mathbf{x})=p(\mathbf{x}, \mathbf{z}, \boldsymbol{\beta}) / p(\mathbf{x})$ 를 구하고 싶으나  marginal distribution 뿐만 아니라 joint distribution도 모르는 상황이다.</p>
+<hr>
+<p>VI로 posterior를 approximate하려고 한다. VI에 다양한 버전이 있다.</p>
+<ul>
+<li><a href="">Ranganath, 2016a</a></li>
+<li><a href="">Li &amp; Turner, 2016</a></li>
+<li><a href="">Dieng, 2016</a></li>
+</ul>
+<p>Objective를 고르는 데에 있어서, 바라는 것들을 나열해보면,</p>
+<ol>
+<li>Scalability<ul>
+<li>미니 배치 단위의 subsampling으로 true objective를 unbiased estimate 할 수 있어야 한다.</li>
+<li>$\sum_{n=1}^{N} f\left(\mathbf{x}_{n}\right) \approx \frac{N}{M} \sum_{m=1}^{M} f\left(\mathbf{x}_{m}\right)$</li>
+</ul>
+</li>
+<li>Implicit Local Approximations<ul>
+<li>IM 자체가 $\mathbf z \rightarrow \mathbf x$를 flexible density로 명시하기에</li>
+<li>$\mathbf z \mid  \mathbf x$의 분포도 complex density를 가질 것이다.</li>
+<li>그렇기에 variational family에도 richness를 주고 싶다.</li>
+<li>즉, $q\left(\mathbf{z}_{n} \mid \mathbf{x}_{n}, \boldsymbol{\beta}\right)$가 뭔 지 몰라도 뽑을 수 있으면 된다는 objective를 원한다.</li>
+</ul>
+</li>
+</ol>
+<h2 id="3-1-KL-Variational-Objective"><a href="#3-1-KL-Variational-Objective" class="headerlink" title="3.1 KL Variational Objective"></a>3.1 KL Variational Objective</h2><p>VI의 classic form은 variational distribution을 posterior에 붙이는 것이다.</p>
+<p>이는 ELBO를 maximization 하는 것과 동일하다.</p>
+<script type="math/tex; mode=display">
+\mathcal{L}=\mathbb{E}_{q(\boldsymbol{\beta}, \mathbf{z} \mid \mathbf{x})}[\log p(\mathbf{x}, \mathbf{z}, \boldsymbol{\beta})-\log q(\boldsymbol{\beta}, \mathbf{z} \mid \mathbf{x})]</script><p>Let $q$ factorize</p>
+<script type="math/tex; mode=display">
+q(\boldsymbol{\beta}, \mathbf{z} \mid \mathbf{x})=q(\boldsymbol{\beta} \mid \mathbf{x}) \prod_{n=1}^{N} q\left(\mathbf{z}_{n} \mid \mathbf{x}_{n}, \boldsymbol{\beta}\right)</script><p> where $q\left(\mathbf{z}_{n} \mid \mathbf{x}_{n}, \boldsymbol{\beta}\right)$ is an intractable density.</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\mathcal{L}=&\mathbb{E}_{q(\boldsymbol{\beta} \mid \mathbf{x})}[\log p(\boldsymbol{\beta})-\log q(\boldsymbol{\beta} \mid \mathbf{x})]
+\\
+&+\sum_{n=1}^{N} \mathbb{E}_{q\left(\boldsymbol{\beta}, \mathbf{z}_{n} \mid \mathbf{x}\right)}\left[\log p\left(\mathbf{x}_{n}, \mathbf{z}_{n} \mid \boldsymbol{\beta}\right)-\log q\left(\mathbf{z}_{n} \mid \mathbf{x}_{n}, \boldsymbol{\beta}\right)\right]
+\end{aligned}</script><p>Classifc objective는 $p\left(\mathbf{x}_{n}, \mathbf{z}_{n} \mid \boldsymbol{\beta}\right)$와 $q\left(\mathbf{z}_{n} \mid \mathbf{x}_{n}, \boldsymbol{\beta}\right)$가 intractable이라 어렵다.</p>
+<h2 id="3-2-Ratio-Estimation-for-the-KL-Objective"><a href="#3-2-Ratio-Estimation-for-the-KL-Objective" class="headerlink" title="3.2 Ratio Estimation for the KL Objective"></a>3.2 Ratio Estimation for the KL Objective</h2><p>Let $q\left(\mathbf{x}_{n}\right)$ be the empirical distribution on the observations $\mathbf x$</p>
+<blockquote>
+<p>이걸 어떻게 구하는 지 모르겠다.</p>
+<p>고차원 데이터에선 더더욱 어렵지 않나??</p>
+</blockquote>
+<p>Then,</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\mathcal{L}:=& \mathcal L - \sum_{n=1}^N \log q (\mathbf x_n)
+\\
+= & \mathbb{E}_{q(\boldsymbol{\beta} \mid \mathbf{x})}[\log p(\boldsymbol{\beta})-\log q(\boldsymbol{\beta} \mid \mathbf{x})] + \sum_{n=1}^{N} \mathbb{E}_{q(\boldsymbol{\beta} \mid \mathbf{x}) q\left(\mathbf{z}_{n} \mid \mathbf{x}_{n}, \boldsymbol{\beta}\right)}\left[\log \frac{p\left(\mathbf{x}_{n}, \mathbf{z}_{n} \mid \boldsymbol{\beta}\right)}{q\left(\mathbf{x}_{n}, \mathbf{z}_{n} \mid \boldsymbol{\beta}\right)}\right]
+\end{aligned}</script><hr>
+<p>Ratio estimator를  proper scoreing rule로 알려진 loss function을 최소화하여 학습할 수 있다.</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\mathcal{D}_{\log }=&\mathbb{E}_{p\left(\mathbf{x}_{n}, \mathbf{z}_{n} \mid \boldsymbol{\beta}\right)}\left[\log \sigma\left(r\left(\mathbf{x}_{n}, \mathbf{z}_{n}, \boldsymbol{\beta} ; \boldsymbol{\theta}\right)\right)\right]
+\\
+ + &\mathbb{E}_{q\left(\mathbf{x}_{n}, \mathbf{z}_{n} \mid \boldsymbol{\beta}\right)}\left[\log \left(1-\sigma\left(r\left(\mathbf{x}_{n}, \mathbf{z}_{n}, \boldsymbol{\beta} ; \boldsymbol{\theta}\right)\right)\right)\right]
+\end{aligned}</script><p>$\sigma$는 sigmoid function이고 $r$은 $p\left(\mathbf{x}_{n}, \mathbf{z}_{n} \mid \boldsymbol{\beta}\right)$에서 나왔을 확률에 대한 logit function이다.</p>
+<p>$\mathcal{D}_{\log }$ loss가 0인 경우</p>
+<ul>
+<li>$p\left(\mathbf{x}_{n}, \mathbf{z}_{n} \mid \boldsymbol{\beta}\right)$에서 나왔을 때 $\sigma(r)$이 1이고</li>
+<li>and</li>
+<li>$q\left(\mathbf{x}_{n}, \mathbf{z}_{n} \mid \boldsymbol{\beta}\right)$에서 나왔을 때 $\sigma(r)$이 0일 때</li>
+</ul>
+<p>$r$이 충분히 expressivie하다면, optimal function은 구하고자하는 함수가 된다.</p>
+<script type="math/tex; mode=display">
+r^{*}\left(\mathbf{x}_{n}, \mathbf{z}_{n}, \boldsymbol{\beta}\right)=\log p\left(\mathbf{x}_{n}, \mathbf{z}_{n} \mid \boldsymbol{\beta}\right)-\log q\left(\mathbf{x}_{n}, \mathbf{z}_{n} \mid \boldsymbol{\beta}\right)</script><blockquote>
+<p>이는 $\mathcal D _{\log}$가 $r$에 대해 convex한 지와 언제 미분이 0이 되는 지로 확인 가능하다.</p>
+</blockquote>
+<h2 id="3-3-Stochastic-Gradients-of-the-KL-Objective"><a href="#3-3-Stochastic-Gradients-of-the-KL-Objective" class="headerlink" title="3.3. Stochastic Gradients of the KL Objective"></a>3.3. Stochastic Gradients of the KL Objective</h2><p>Reparameterization trick</p>
+<h2 id="3-4-Algorithm"><a href="#3-4-Algorithm" class="headerlink" title="3.4. Algorithm"></a>3.4. Algorithm</h2><img src="/2021/09/22/Deep-and-Hierarchical-Implicit-Models/image-20210914163629221.png" class="">
+<ul>
+<li>$\boldsymbol \theta$ update는 risk ratio estimator를 학습하는 것이고</li>
+<li>$\boldsymbol \lambda, \boldsymbol\phi$ update는 variational approximation을 하는 것이다.</li>
+</ul>
+<hr>
+<p>Model의 parameter인 $\boldsymbol \beta$는 상수로 두고 update를 한다.</p>
+<p>$q(\boldsymbol \beta) := \delta_{\boldsymbol \beta}$</p>
+<hr>
+<p>이러한 방식은 variational EM에 대응한다.</p>
+<h2 id="3-5-The-KL-Uniqueness-Theorem"><a href="#3-5-The-KL-Uniqueness-Theorem" class="headerlink" title="3.5 The KL Uniqueness Theorem"></a>3.5 The KL Uniqueness Theorem</h2><p>Scalability와 d implicit local approximation을 만족하는 다른 objective function이 있을까?</p>
+<p><strong>Theorem 1</strong> (Uniqueness Theorem)</p>
+<p>​    KLD is unique divergenvce satisfying our desiderata.</p>
+<h1 id="4-Experiments"><a href="#4-Experiments" class="headerlink" title="4. Experiments"></a>4. Experiments</h1><h2 id="4-1-Stability-of-Ratio-Estimator"><a href="#4-1-Stability-of-Ratio-Estimator" class="headerlink" title="4.1. Stability of Ratio Estimator"></a>4.1. Stability of Ratio Estimator</h2><p>KL-divergence를 활용한 VI와 다른 점은 ratio estimation이 포함됐다는 것이다.</p>
+<p>Ratio estimator의 accuracy를 재고 싶다.</p>
+<p>이를 tractable case에 적용해서 확인할 수 있다.</p>
+<script type="math/tex; mode=display">
+r^{*}(\mathbf{x}, \boldsymbol{\beta})=\log p(\mathbf{x} \mid \boldsymbol{\beta})-\log q(\mathbf{x})</script><p>가 무엇인 지 아는 상황이다.</p>
+<p>$r^{*}(\mathbf{x}, \boldsymbol{\beta}) - \log p(\mathbf{x} \mid \boldsymbol{\beta}) = -\log q(\mathbf{x}) = -\sum_{n} \log q\left(\mathbf{x}_{n}\right)$ 는 $\boldsymbol \beta$의 값에 변화에 흔들리지 않는다.</p>
+<p>그러므로 $r$이 정확하게 estimate한다면, $r(\mathbf{x}, \boldsymbol{\beta}) - \log p(\mathbf{x} \mid \boldsymbol{\beta}) $는 $\boldsymbol \beta$의 값의 변화에 크게 흔들리지 않는다.</p>
+<img src="/2021/09/22/Deep-and-Hierarchical-Implicit-Models/image-20210914170204715.png" class="">
+<p>$q$가 posterior에 수렴하면서 $r(\mathbf{x}, \boldsymbol{\beta}) - \log p(\mathbf{x} \mid \boldsymbol{\beta}) $이 정확해지는 것을 볼 수 있다.</p>
+<p>이를 확인하기 위해 $\boldsymbol \beta$를 update 안하고 ratio estimator만 학습하면</p>
+<img src="/2021/09/22/Deep-and-Hierarchical-Implicit-Models/image-20210914171657090.png" class="">
+<p>$q( \boldsymbol \beta)$를 처음부터 true값에 놓는다면 update 몇번 만에 바로 안정된다.</p>
+<img src="/2021/09/22/Deep-and-Hierarchical-Implicit-Models/image-20210914171836109.png" class="">
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/paper-review/" rel="tag"># paper review</a>
+              <a href="/tags/sequential-latent-variable-model/" rel="tag"># sequential latent variable model</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/03/Near-optimal-Regret-Bounds-for-Reinforcement-Learning/" rel="prev" title="Near-optimal Regret Bounds for Reinforcement Learning">
+      <i class="fa fa-chevron-left"></i> Near-optimal Regret Bounds for Reinforcement Learning
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/22/Implicit-Causal-Models-for-Genome-wide-Association-Studies/" rel="next" title="Implicit Causal Models for Genome-wide Association Studies">
+      Implicit Causal Models for Genome-wide Association Studies <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-Abstract"><span class="nav-text">0. Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1. Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Implicit-Probabilistic-Models"><span class="nav-text">2. Implicit Probabilistic Models</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Hierarchical-Implicit-Models"><span class="nav-text">2.1. Hierarchical Implicit Models</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Deep-Implicit-Models"><span class="nav-text">2.2 Deep Implicit Models</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Variational-Inference-for-Implicit-Models"><span class="nav-text">3. Variational Inference for Implicit Models</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-KL-Variational-Objective"><span class="nav-text">3.1 KL Variational Objective</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Ratio-Estimation-for-the-KL-Objective"><span class="nav-text">3.2 Ratio Estimation for the KL Objective</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-Stochastic-Gradients-of-the-KL-Objective"><span class="nav-text">3.3. Stochastic Gradients of the KL Objective</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-Algorithm"><span class="nav-text">3.4. Algorithm</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5-The-KL-Uniqueness-Theorem"><span class="nav-text">3.5 The KL Uniqueness Theorem</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Experiments"><span class="nav-text">4. Experiments</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-Stability-of-Ratio-Estimator"><span class="nav-text">4.1. Stability of Ratio Estimator</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">JaeHyun Lee</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JaeHyun Lee</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://leequant761.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://leequant761.github.io/2021/09/22/Deep-and-Hierarchical-Implicit-Models/";
+    this.page.identifier = "2021/09/22/Deep-and-Hierarchical-Implicit-Models/";
+    this.page.title = "Deep and Hierarchical Implicit Models";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://leequant761.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

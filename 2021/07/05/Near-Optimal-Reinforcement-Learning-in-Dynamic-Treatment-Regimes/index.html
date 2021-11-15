@@ -35,7 +35,7 @@
 <meta property="og:image" content="https://leequant761.github.io/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/image-20210616181417109.png">
 <meta property="og:image" content="https://leequant761.github.io/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/image-20210616184352480.png">
 <meta property="article:published_time" content="2021-07-04T16:02:15.000Z">
-<meta property="article:modified_time" content="2021-08-25T05:56:02.088Z">
+<meta property="article:modified_time" content="2021-11-15T13:50:51.990Z">
 <meta property="article:author" content="JaeHyun Lee">
 <meta property="article:tag" content="paper review">
 <meta property="article:tag" content="dynamic treatment regime">
@@ -205,7 +205,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-08-25 14:56:02" itemprop="dateModified" datetime="2021-08-25T14:56:02+09:00">2021-08-25</time>
+                <time title="Modified: 2021-11-15 22:50:51" itemprop="dateModified" datetime="2021-11-15T22:50:51+09:00">2021-11-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -406,10 +406,10 @@ V^*_{\boldsymbol \pi}( \overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{x}}_
 <p><strong>Theorem 1</strong> (Upper bound)</p>
 <p>​    The regret of UC-DTR is bounded by w/ probability $\geq 1-\delta$</p>
 <script type="math/tex; mode=display">
-R(T) \leq12 K \sqrt{|\mathcal{S}||\mathcal{X}| T \log (2 K|\boldsymbol{\mathcal{S}} \| \boldsymbol{\mathcal{X}}| T / \delta)}+4 K \sqrt{T \log (2 T / \delta)}</script><hr>
+R(T) \leq12 K \sqrt{|\boldsymbol{\mathcal{S}}||\boldsymbol{\mathcal{X}}| T \log (2 K|\boldsymbol{\mathcal{S}} \| \boldsymbol{\mathcal{X}}| T / \delta)}+4 K \sqrt{T \log (2 T / \delta)}</script><hr>
 <p><strong>Theorem 2</strong> (Gap-dependent upper bound)</p>
 <p>​    Let $\mathbf{\Pi}^{-}$ denote the set of sub-optimal policies $\{\boldsymbol{\pi} \in \boldsymbol{\Pi}: V_{\boldsymbol{\pi}}\left(M^{\star}\right)&lt;V_{\boldsymbol{\pi}^{\star}}\left(M^{\star}\right)\}$</p>
-<p>​    Let $\Delta_{\boldsymbol{\pi}}=\hat{V}_{\boldsymbol{\pi}^{*}}\left(M^{\star}\right)-V_{\boldsymbol{\pi}}\left(M^{\star}\right)$</p>
+<p>​    Let $\Delta_{\boldsymbol{\pi}}=V_{\boldsymbol{\pi}^{<em>}}\left(M^{</em>}\right)-V_{\boldsymbol{\pi}}\left(M^{*}\right)$</p>
 <p>​    Then, the expected regret of UC-DTR with parameter $\delta=\frac{1}{T}$ is bounded by</p>
 <script type="math/tex; mode=display">
 E[R(T)] \leq \max _{\boldsymbol{\pi} \in \Pi^{-}}\left\{\frac{33^{2} K^{2}|\boldsymbol{\mathcal{S}}||\boldsymbol{\mathcal{X}}| \log (T)}{\Delta_{\pi}}+\frac{32}{\Delta_{\pi}^{3}}+\frac{4}{\Delta_{\pi}}\right\}+1</script><hr>
@@ -509,6 +509,311 @@ E[R(T)] \leq \max _{\boldsymbol{\pi} \in \Pi_{\boldsymbol{\mathcal{c}}}^{-}}\lef
 </ul>
 <h1 id="4-Experiments"><a href="#4-Experiments" class="headerlink" title="4 Experiments"></a>4 Experiments</h1><img src="/2021/07/05/Near-Optimal-Reinforcement-Learning-in-Dynamic-Treatment-Regimes/image-20210616184352480.png" class="">
 <p>(c)는 Cancer and Leukemia Group B에서 실행된 two-stage clinical trial이다.</p>
+<h1 id="Appendix-1"><a href="#Appendix-1" class="headerlink" title="Appendix 1"></a>Appendix 1</h1><h2 id="A-1-1-Proof-of-Theorems-1-to-3"><a href="#A-1-1-Proof-of-Theorems-1-to-3" class="headerlink" title="A.1.1 Proof of Theorems 1 to 3"></a>A.1.1 Proof of Theorems 1 to 3</h2><p>Let “an episode $t$ is $\epsilon$-bad” if $V_{\boldsymbol{\pi}^{\star}}\left(M^{\star}\right)-Y^t \geq \epsilon$</p>
+<p>Let $T_\epsilon$ be the number of $\epsilon$-bad episodes in UC_DTR</p>
+<p>Let $L_{\epsilon}$ be the indicies of the $\epsilon$-bad episodes up to $T$</p>
+<p>Let $R_{\epsilon}(T)=\sum_{t \in L_{f}} V_{\pi^{\star}}\left(M^{\star}\right)-Y^{t}$</p>
+<p>Let $N\left(\overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{x}}_{k}\right)=\sum_{t=1}^{T} I_{\overline{\boldsymbol{S}}_{k}^{t}=\overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{X}}_{k}^{t}=\overline{\boldsymbol{x}}_{k}}$</p>
+<p>Let $\mathcal{H}^{t}=\left\{\overline{\boldsymbol{X}}_{K}^{1}, \overline{\boldsymbol{S}}_{K}^{1}, Y^{1}, \ldots, \overline{\boldsymbol{X}}_{K}^{t}, \overline{\boldsymbol{S}}_{K}^{t}, Y^{t}\right\}$</p>
+<hr>
+<p><strong>Lemma 2</strong></p>
+<p>​    Fix $\epsilon \in (0, 1)$. Then, </p>
+<script type="math/tex; mode=display">
+\sum_{t \in L_{e}}\left(E_{\bar{X}_{K}^{t}}\left[Y \mid \overline{\boldsymbol{S}}_{K}^{t}\right]-Y^{t}\right) \leq \sqrt{\frac{T_{\epsilon} \log (1 / \delta)}{2}} \quad \text{w/ pbt $\geq 1-\delta$}</script><p>(Proof)</p>
+<p>​    Let $\boldsymbol{D}^{T} = \left\{\overline{\boldsymbol{X}}_{K}^{1}, \overline{\boldsymbol{S}}_{K}^{1}, \ldots, \overline{\boldsymbol{X}}_{K}^{T}, \overline{\boldsymbol{S}}_{K}^{T}\right\}$</p>
+<p>​    Since $Y^t \in (0, 1)$ and $Y^t$ are conditionally independent, by applying Hoeffding’s inequality</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+&P\left(\sum_{t \in L_{e}}\left(E_{\overline{\boldsymbol{x}}_{K}^{t}}\left[Y \mid \overline{\boldsymbol{s}}_{K}^{t}\right]-Y^{t}\right) \geq \sqrt{\frac{T_{\epsilon} \log (1 / \delta)}{2}} \mid \boldsymbol{d}^{T}\right) 
+
+\\
+=&P\left(\frac{1}{T_\epsilon}\sum_{t \in L_{e}}\left(E_{\overline{\boldsymbol{x}}_{K}^{t}}\left[Y \mid \overline{\boldsymbol{s}}_{K}^{t}\right]-Y^{t}\right) \geq \sqrt{\frac{\log (1 / \delta)}{2T_{\epsilon} }} \mid \boldsymbol{d}^{T}\right) \leq \exp(-2 T_{\epsilon}  \frac{\log (1 / \delta)}{2T_{\epsilon} } / (1-0)^2) =\delta
+\end{aligned}</script><p>​    Therefore,</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P\left(\sum_{t \in L_{e}}\left(E_{\overline{\boldsymbol{X}}_{K}^{t}}\left[Y \mid \overline{\boldsymbol{S}}_{K}^{t}\right]-Y^{t}\right) \geq \sqrt{\frac{T_{\epsilon} \log (1 / \delta)}{2}} \right) =& 
+\\
+\sum_{\boldsymbol d^T} P\left(\sum_{t \in L_{e}}\left(E_{\overline{\boldsymbol{X}}_{K}^{t}}\left[Y \mid \overline{\boldsymbol{S}}_{K}^{t}\right]-Y^{t}\right) \geq \sqrt{\frac{T_{\epsilon} \log (1 / \delta)}{2}} \mid \boldsymbol d^T \right) P(\boldsymbol d^T) \leq &
+\\
+\sum_{\boldsymbol d^T} \delta P(\boldsymbol d^T) = \delta&
+\end{aligned}</script><hr>
+<p><strong>Lemma 3</strong></p>
+<p>​    Fix $\epsilon &gt; 0$. Then w/ pbt $\geq 1-\delta$</p>
+<script type="math/tex; mode=display">
+^{\forall}T > 1, \quad R_{\epsilon}(T) \leq 12 K \sqrt{|\mathcal{S} \| \mathcal{X}| T_{\epsilon} \log (2 K|\mathcal{S} \| \mathcal{X}| T / \delta)}+4 K \sqrt{T_{\epsilon} \log (2 T / \delta)}</script><p>(Proof)</p>
+<p>​    Let $M^{\star}$ denote the underlying DTR.</p>
+<p>​    $\mathcal M_t$ is a set of DTR instances s.t. for any $M \in \mathcal M_t$, its system dynamics satisfy</p>
+<ul>
+<li>$\left|P_{\overline{\boldsymbol{x}}_{k}}^{M}\left(\cdot \mid \bar{s}_{k}\right)-\hat{P}_{\overline{\boldsymbol{x}}_{k}}^{t}\left(\cdot \mid \bar{s}_{k}\right)\right|_{1} \leq \sqrt{\frac{6\left|\mathcal{S}_{k+1}\right| \log \left(2 K\left|\overline{\boldsymbol{\mathcal { S }}}_{k}\right|\left|\overline{\boldsymbol{\mathcal { X }}}_{k}\right| t / \delta\right)}{\max \left\{1, N^{t}\left(\bar{s}_{k}, \overline{\boldsymbol{x}}_{k}\right)\right\}}}$</li>
+<li>$\left|E_{\overline{\boldsymbol{x}}_{K}}^{M}\left[Y \mid \overline{\boldsymbol{s}}_{K}\right]-\hat{E}_{\overline{\boldsymbol{x}}_{K}}^{t}\left[Y \mid \overline{\boldsymbol{s}}_{K}\right]\right| \leq \sqrt{\frac{2 \log (2 K|\mathcal{S} | \mathcal{X}| t / \delta)}{\max \left\{1, N^{t}\left(\overline{\boldsymbol{s}}_{K}, \overline{\boldsymbol{x}}_{K}\right)\right\}}}$</li>
+</ul>
+<p>​    <a href="">UCRL2, Appendix C.1</a>에서,</p>
+<ul>
+<li><p>$\varepsilon=\sqrt{\frac{2}{n} \log \left(\frac{2^{S} 20 S A t^{7}}{\delta}\right)} \leq \sqrt{\frac{14 S}{n} \log \left(\frac{2 A t}{\delta}\right)} \quad \text{and} \quad \varepsilon_{r}=\sqrt{\frac{1}{2 n} \log \left(\frac{120 S A t}{\delta}\right)} \leq \sqrt{\frac{7}{2 n} \log \left(\frac{2 S A t}{\delta}\right)}$</p>
+</li>
+<li><p>$\varepsilon=\sqrt{\frac{2 }{n} \log \left( \frac{2^{\left|\mathcal{S}_{k+1}\right|} 8K\left|\overline{\mathcal{S}}_{k}\right|\left|\overline{\mathcal{X}}_{k}\right| t^3} {\delta}\right)} \leq \sqrt{\frac{6 \mathcal S_{k+1}}{n} \log \left(\frac{2K\left|\overline{\mathcal{S}}_{k}\right|\left|\overline{\mathcal{X}}_{k}\right| t}{\delta}\right)} \quad \text{and} \quad \varepsilon_{r}=\sqrt{\frac{1}{2 n} \log \left(\frac{8 K^2 |\mathcal S| |\mathcal X| t^3}{\delta}\right)} \leq \sqrt{\frac{2}{n} \log \left(\frac{2K |\mathcal S| |\mathcal X| t}{\delta}\right)}$</p>
+</li>
+<li><p>로 바꾸면 $P\left(M^{\star} \notin \mathcal{M}_{t}\right) \leq \frac{\delta}{4 t^{2}}$</p>
+<ul>
+<li>(노테이션이 달라서 실수로 $t$를 timestep으로 착각하고 유도했었는데 비슷할 듯)</li>
+</ul>
+</li>
+<li><p>모든 episode에서 $M^\star \in \mathcal M_t$일 확률은 $1-\frac{\delta}{2}$보다 크다.</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P \left ( \cap_{t=1} ^\infty  \left\{ M^\star\in \mathcal M_t  \right\}\right) &= 1 - P \left ( \cup_{t=1} ^\infty  \left\{ M^\star \not\in \mathcal M_t  \right\}\right)
+\\
+&\geq 1 - \sum_{t=1}^\infty P \left (\left\{ M^\star \not\in \mathcal M_t  \right\}\right)
+\\
+&\geq 1 - \sum_{t=1}^\infty\frac{\delta}{4t^2}
+\\
+&\geq 1 - \frac{\delta}{2} \quad \because \sum_{t=1}^{\infty} \frac{1}{4 t^{2}} \leq \frac{\pi^{2}}{24} \delta<\frac{\delta}{2}
+\end{aligned}</script></li>
+<li><p>$\frac{\delta}{2}$만큼의 확률은 내주고 아래의 증명에서 모든 episode에서 $M^\star \in \mathcal M_t$인 경우만 고려하겠다.</p>
+</li>
+<li><script type="math/tex; mode=display">
+\begin{aligned}
+R_{\epsilon}(T) &=\sum_{t \in L_{f}} V_{\pi^{\star}}\left(M^{\star}\right)-Y^{t}
+\\
+=& \sum_{t \in L_{\epsilon}}\left(V_{\pi^{\star}}\left(M^{\star}\right)-E_{\overline{\boldsymbol{X}}_{K}^{t}}^{M_{t}}\left[Y \mid \overline{\boldsymbol{S}}_{K}^{t}\right]\right) &(19)
+\\
+&+\sum_{t \in L_{\epsilon}}\left(E_{\overline{\boldsymbol{X}}_{K}^{t}}^{M_{t}}\left[Y \mid \overline{\boldsymbol{S}}_{K}^{t}\right]-E_{\overline{\boldsymbol{X}}_{K}^{t}}\left[Y \mid \overline{\boldsymbol{S}}_{K}^{t}\right]\right) &(20)
+\\
+&+\sum_{t \in L_{\epsilon}}\left(E_{\overline{\boldsymbol{X}}_{K}^{t}}\left[Y \mid \bar{S}_{K}^{t}\right]-Y^{t}\right)&(21)
+\end{aligned}</script></li>
+<li><p><strong>Bounding Eq. (19)</strong></p>
+<ul>
+<li>Let $V_{\boldsymbol{\pi}}\left(\overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{x}}_{k-1} ; M\right)=E_{\boldsymbol{\pi}}^{M}\left[Y \mid \overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{x}}_{k-1}\right]$</li>
+<li>Let $V_{\boldsymbol{\pi}}\left(\overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{x}}_{k} ; M\right)=E_{\boldsymbol{\pi}}^{M}\left[Y \mid \overline{\boldsymbol{s}}_{k}, \overline{\boldsymbol{x}}_{k}\right]$</li>
+<li><p>Since $M^{\star} \in \mathcal{M}_{t}$, $\quad V_{\boldsymbol{\pi}^{<em>}}\left(s_{1} ; M^{</em>}\right) \leq V_{\boldsymbol{\pi}_{t}}\left(s_{1} ; M_{t}\right)$</p>
+</li>
+<li><p>Since $\pi_{t}$ is deterministic, $\quad V_{\boldsymbol{\pi}_{t}}\left(\overline{\boldsymbol{S}}_{k}^{t}, \overline{\boldsymbol{X}}_{k-1}^{t} ; M\right)=V_{\boldsymbol{\pi}_{t}}\left(\overline{\boldsymbol{S}}_{k}^{t}, \overline{\boldsymbol{X}}_{k}^{t} ; M\right)$</p>
+</li>
+<li><p>Thus, we have</p>
+</li>
+</ul>
+<script type="math/tex; mode=display">
+V_{\boldsymbol{\pi}^{\star}}\left(M^{\star}\right)-E_{\overline{\boldsymbol{X}}_{K}^{\mathrm{i}}}^{M_{t}}\left[Y \mid \overline{\boldsymbol{S}}_{K}^{t}\right] \leq V_{\boldsymbol{\pi}^{\star}}\left(M^{\star}\right)-V_{\boldsymbol{\pi}^{\star}}\left(\overline{\boldsymbol{S}}_{1}^{t} ; M^{\star}\right)+V_{\boldsymbol{\pi}_{t}}\left(\overline{\boldsymbol{S}}_{1}^{t}, \overline{\boldsymbol{X}}_{1}^{t} ; M_{t}\right)-E_{\overline{\boldsymbol{X}}_{K}^{t}}^{M_{t}}\left[Y \mid \overline{\boldsymbol{S}}_{K}^{t}\right]</script></li>
+</ul>
+<ul>
+<li>Let $M_{t}(k)$ denote a combined DTR from $M^{\star}$ and $M_t$ s.t.</li>
+</ul>
+<script type="math/tex; mode=display">
+\begin{aligned}
+P_{\overline{\boldsymbol{x}}_{i}}^{M_{t}(k)}\left(s_{i+1} \mid \overline{\boldsymbol{s}}_{i}\right)& = P_{\overline{\boldsymbol{x}}_{i}}\left(s_{i+1} \mid \bar{s}_{i}\right) \quad \text{for $i=0, 1, \ldots, k-1$}
+\\
+P_{\overline{\boldsymbol{x}}_{i}}^{M_{t}(k)}\left(s_{i+1} \mid \overline{\boldsymbol{s}}_{i}\right) &= P^{M_t}_{\overline{\boldsymbol{x}}_{i}}\left(s_{i+1} \mid \bar{s}_{i}\right) \quad \text{for $i=k, k+1, \ldots, K-1$}
+\end{aligned}</script><ul>
+<li><p>Then,</p>
+<ul>
+<li>$P_{\boldsymbol{\pi}}^{M_{t}(k)}\left(\overline{\boldsymbol{x}}_{K}, \overline{\boldsymbol{s}}_{K}, y\right)=P_{\overline{\boldsymbol{x}}_{K}}^{M_{t}}\left(y \mid \overline{\boldsymbol{s}}_{K}\right) \prod_{i=0}^{k-1} P_{\overline{\boldsymbol{x}}_{i}}\left(s_{i+1} \mid \overline{\boldsymbol{s}}_{i}\right) \prod_{j=k}^{K-1} P_{\overline{\boldsymbol{x}}_{j}}^{M_{t}}\left(s_{i+1} \mid \overline{\boldsymbol{s}}_{j}\right) \prod_{l=1}^{K-1} \pi_{l+1}\left(x_{l+1} \mid \overline{\boldsymbol{s}}_{l+1}, \overline{\boldsymbol{x}}_{l}\right)$</li>
+</ul>
+</li>
+<li><script type="math/tex; mode=display">
+\begin{aligned}
+V_{\boldsymbol{\pi}^{\star}}\left(M^{\star}\right)-E_{\overline{\boldsymbol{X}}_{K}^{\mathrm{i}}}^{M_{t}}\left[Y \mid \overline{\boldsymbol{S}}_{K}^{t}\right] &\leq V_{\boldsymbol{\pi}^{\star}}\left(M^{\star}\right)-V_{\boldsymbol{\pi}^{\star}}\left(\overline{\boldsymbol{S}}_{1}^{t} ; M^{\star}\right)+V_{\boldsymbol{\pi}_{t}}\left(\overline{\boldsymbol{S}}_{1}^{t}, \overline{\boldsymbol{X}}_{1}^{t} ; M_{t}\right)-E_{\overline{\boldsymbol{X}}_{K}^{t}}^{M_{t}}\left[Y \mid \overline{\boldsymbol{S}}_{K}^{t}\right]
+\\
+& = V_{\boldsymbol{\pi}^{\star}}\left(M^{\star}\right)-V_{\boldsymbol{\pi}^{\star}}\left(\overline{\boldsymbol{S}}_{1}^{t} ; M^{\star}\right)
+\\
+&
++\sum_{k=1}^{K-1} V_{\pi_{t}}\left(\overline{\boldsymbol{S}}_{k}^{t}, \overline{\boldsymbol{X}}_{k}^{t} ; M_{t}^{(k)}\right)-V_{\pi_{t}}\left(\overline{\boldsymbol{S}}_{k}^{t}, \overline{\boldsymbol{X}}_{k}^{t} ; M_{t}^{(k+1)}\right)
+\\
+&
++\sum_{k=1}^{K-1} V_{\boldsymbol{\pi}_{t}}\left(\overline{\boldsymbol{S}}_{k}^{t}, \overline{\boldsymbol{X}}_{k}^{t} ; M_{t}^{(k+1)}\right)-V_{\boldsymbol{\pi}_{t}}\left(\overline{\boldsymbol{S}}_{k+1}^{t}, \overline{\boldsymbol{X}}_{k}^{t} ; M_{t}^{(k+1)}\right)
+\\
+&
+=: \sum_{k=1}^{K-1} V_{\pi_{t}}\left(\overline{\boldsymbol{S}}_{k}^{t}, \overline{\boldsymbol{X}}_{k}^{t} ; M_{t}^{(k)}\right)-V_{\pi_{t}}\left(\overline{\boldsymbol{S}}_{k}^{t}, \overline{\boldsymbol{X}}_{k}^{t} ; M_{t}^{(k+1)}\right) + Z_{t}
+\end{aligned}</script><ul>
+<li><script type="math/tex; mode=display">
+\begin{aligned}
+&V_{\pi_{t}}\left(\bar{\boldsymbol S}_{k}^{t}, \overline{\boldsymbol{X}}_{k}^{t} ; M_{t}^{(k)}\right)-V_{\pi_{t}}\left(\bar{\boldsymbol S}_{k}^{t}, \overline{\boldsymbol{X}}_{k}^{t} ; M_{t}^{(k+1)}\right) \\
+&=\sum_{s_{k+1}}\left(P^{M_{t}}\left(s_{k+1} \mid \bar{\boldsymbol S}_{k}, \overline{\boldsymbol{X}}_{k}\right)-P\left(s_{k+1} \mid \bar{\boldsymbol S}_{k}, \overline{\boldsymbol{X}}_{k}\right)\right) V_{\pi_{t}}\left(s_{k+1}, \bar{\boldsymbol S}_{k}^{t}, \overline{\boldsymbol{X}}_{k}^{t} ; M_{t}\right) \\
+&\leq\left\|P_{\overline{\boldsymbol{x}}_{k}}^{M_{t}}\left(\mid \bar{\boldsymbol s}_{k}\right)-P_{\overline{\boldsymbol{x}}_{k}}\left(\cdot \mid \bar{\boldsymbol s}_{k}\right)\right\| \max _{s_{k+1}} v_{k+1}\left(s_{k+1}, \overline{\boldsymbol{S}}_{k}^{t}, \overline{\boldsymbol{X}}_{k}^{t} ; M_{t}\right)
+\\
+&\leq 2 \sqrt{6\left|\mathcal{S}_{k+1}\right| \log \left(2 K\left|\overline{\boldsymbol {\mathcal{S}}}_{k}\right|\left|\overline{\boldsymbol {\mathcal{X}}}_{k}\right| T / \delta\right)} \frac{1}{\sqrt{\max \left\{1, N^{t}\left(\overline{\boldsymbol{S}}_{k}^{t}, \overline{\boldsymbol{X}}_{k}^{t}\right)\right.}}
+\end{aligned}</script></li>
+<li><p>$\sum_{t \in L_{\epsilon}} \frac{1}{\sqrt{\max \left\{1, N^{t}\left(\overline{\boldsymbol{S}}_{k}^{t}, \overline{\boldsymbol{X}}_{k}^{t}\right)\right\}}} \leq(\sqrt{2}+1) \sqrt{T_{\epsilon}\left|\overline{\boldsymbol{\mathcal { S }}}_{k}\right|\left|\overline{\boldsymbol{\mathcal { X }}}_{k}\right|} \qquad \text{in UCRL2, appendix D}$</p>
+</li>
+</ul>
+</li>
+<li><script type="math/tex; mode=display">
+\begin{aligned}
+&\sum_{t \in L_{\epsilon}} \sum_{k=1}^{K-1} V_{\boldsymbol{\pi}_{t}}\left(\overline{\boldsymbol{S}}_{k}^{t}, \overline{\boldsymbol{X}}_{k}^{t} ; M_{t}^{(k)}\right)-V_{\boldsymbol{\pi}_{t}}\left(\overline{\boldsymbol{S}}_{k}^{t}, \overline{\boldsymbol{X}}_{k}^{t} ; M_{t}^{(k+1)}\right) \\
+
+&\leq \sum_{k=1}^{K-1} 2(\sqrt{2}+1) \sqrt{6 T_{\epsilon}\left|\overline{\boldsymbol{\mathcal{S}}}_{k+1}\right|\left|\overline{\boldsymbol{\mathcal { X }}}_{k}\right| \log \left(2 K\left|\overline{\boldsymbol{\mathcal { S }}}_{k}\right|\left|\overline{\boldsymbol{\mathcal { X }}}_{k}\right| T / \delta\right)} \\
+
+&\leq 2(\sqrt{2}+1)(K-1) \sqrt{6 T_{\epsilon}|\boldsymbol{\mathcal{S}} \| \boldsymbol{\mathcal{X}}| \log (2 K|\boldsymbol {\mathcal{S}} \| \boldsymbol{\mathcal{X}}| T / \delta)} & (24)
+\end{aligned}</script></li>
+<li><p>Since $E \left [\left|Z_{t}\right| \right] \leq K$ and $E\left[Z_{t+1} \mid \mathcal{H}_{t}\right]=0$,</p>
+<ul>
+<li>$Z_t$ is a martingale difference sequence w.r.t. $\{ \overline{\boldsymbol{X}}_{K}^{t}, \overline{\boldsymbol{S}}_{K}^{t}, Y^{t}\}_{t=1, 2, \ldots}$</li>
+</ul>
+</li>
+<li><script type="math/tex; mode=display">
+\begin{aligned}
+P\left(\sum_{t \in L_{\epsilon}} Z_{t} \leq K \sqrt{6 T_{\epsilon} \log (2 T / \delta)} \right) & \geq 1- \exp\left( -\frac{2K^2 6T_{\epsilon} \log \left( 2T / \delta\right)}{T_\epsilon (2K)^2}\right) & \because \text{Azuma-Hoeffding inequality}
+\\
+&= 1 - \frac{\delta^3}{8T^3}
+\\
+& \geq 1 - \frac{\delta}{8T^2}  &\because \delta^2 \leq T
+\end{aligned}</script></li>
+<li><p>Since $\sum_{T=1}^{\infty} \frac{\delta}{8 T^{2}} \leq \frac{\pi^{2}}{48} \delta&lt;\frac{\delta}{4}$,</p>
+<ul>
+<li><script type="math/tex; mode=display">
+P\left(\sum_{t \in L_{\epsilon}} Z_{t} \leq K \sqrt{6 T_{\epsilon} \log (2 T / \delta)} \right) \geq 1-\frac{\delta}{4} \quad \text{for all }T \quad (25)</script></li>
+</ul>
+</li>
+<li><p>Eqs. (24) and (25) combined give</p>
+<ul>
+<li><script type="math/tex; mode=display">
+\begin{aligned}
+&\sum_{t \in L_{\epsilon}}\left(V_{\boldsymbol{\pi}^{*}}\left(M^{*}\right)-E_{\overline{\boldsymbol{X}}_{K}^{t}}^{M_{t}}\left[Y \mid \overline{\boldsymbol{S}}_{K}^{t}\right]\right) \\
+&\leq 2(\sqrt{2}+1)(K-1) \sqrt{6 T_{\epsilon}|\boldsymbol{\mathcal{S}} \| \boldsymbol{\mathcal{X}}| \log (2 K|\boldsymbol {\mathcal{S}} \| \boldsymbol{\mathcal{X}}| T / \delta)}+K \sqrt{6 T_{\epsilon} \log (2 T / \delta)}
+\end{aligned}</script></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>Bounding Eq. (20)</strong></p>
+<ul>
+<li><script type="math/tex; mode=display">
+\begin{aligned}
+E_{\overline{\boldsymbol{X}}_{K}^{t}}^{M_{t}}\left[Y \mid \overline{\boldsymbol{S}}_{K}^{t}\right]-E_{\overline{\boldsymbol{X}}_{K}^{t}}\left[Y \mid \overline{\boldsymbol{S}}_{K}^{t}\right]
+
+&\leq \left|E_{\overline{\boldsymbol{x}}_{K}}^{M_{t}}\left[Y \mid \overline{\boldsymbol{S}}_{K}^{t}\right]-\hat{E}_{\overline{\boldsymbol{x}}_{K}}^{t}\left[Y \mid \overline{\boldsymbol{S}}_{K}^{t}\right]\right|+\left|E_{\overline{\boldsymbol{X}}_{K}^{t}}\left[Y \mid \overline{\boldsymbol{S}}_{K}^{t}\right]-\hat{E}_{\overline{\boldsymbol{x}}_{K}}^{t}\left[Y \mid \overline{\boldsymbol{S}}_{K}^{t}\right]\right|
+\\
+&\leq 2 \sqrt{2 \log (2 K|\boldsymbol{\mathcal{S}} \| \boldsymbol{\mathcal{X}}| T / \delta)} \frac{1}{\sqrt{\max \left\{1, N^{t}\left(\overline{\boldsymbol{S}}_{K}^{t}, \overline{\boldsymbol{X}}_{K}^{t}\right)\right\}}}
+\\
+
+\\
+& \leq 2(\sqrt{2}+1) \sqrt{2 T_{\epsilon}|\mathcal{S} \| \mathcal{X}| \log (2 K|\mathcal{S} \| \mathcal{X}| T / \delta)}  
+
+\\ & \because \text{UCRL2 appendix D} \sum_{t \in L_{\epsilon}} \frac{1}{\sqrt{\max \left\{1, N^{t}\left(\overline{\boldsymbol{S}}_{K}^{t}, \overline{\boldsymbol{X}}_{K}^{t}\right)\right\}}} \leq(\sqrt{2}+1) \sqrt{T_{\epsilon}|\boldsymbol{\mathcal{S}} \| \boldsymbol{\mathcal{X}}|}
+\end{aligned}</script></li>
+</ul>
+</li>
+<li><p><strong>Bounding Eq. (21)</strong></p>
+<ul>
+<li><p>Lemma 2에서 $\sqrt{\frac{T_{\epsilon} \log (1 / \delta)}{2}} $ 대신에 $\sqrt{\frac{3 T_{\epsilon} \log (2 T / \delta)}{2}}$를 대입하면,</p>
+<ul>
+<li><script type="math/tex; mode=display">
+\sum_{t \in L_{\epsilon}}\left(E_{\overline{\boldsymbol{X}}_{K}^{t}}\left[Y \mid \overline{\boldsymbol{S}}_{K}^{t}\right]-Y^{t}\right) \leq \sqrt{\frac{3 T_{\epsilon} \log (2 T / \delta)}{2}} \quad \text{w/ pbt }\geq 1- \exp\left( -2T_{\epsilon}\frac{3 \log (2 T / \delta)}{2 T_{\epsilon}}\right)\geq 1-\frac{\delta}{8T^2}</script></li>
+</ul>
+</li>
+<li><p>Since $\sum_{T=1}^{\infty} \frac{\delta}{8 T^{2}} \leq \frac{\pi^{2}}{48} \delta&lt;\frac{\delta}{4}$,</p>
+<ul>
+<li><script type="math/tex; mode=display">
+\sum_{t \in L_{\epsilon}}\left(E_{\overline{\boldsymbol{X}}_{K}^{t}}\left[Y \mid \overline{\boldsymbol{S}}_{K}^{t}\right]-Y^{t}\right) \leq \sqrt{\frac{3 T_{\epsilon} \log (2 T / \delta)}{2}} \quad \text{w/ pbt }\geq 1 -\frac{\delta}{4}</script></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Hence,</p>
+<ul>
+<li>$\begin{aligned}<br>R_{\epsilon}(T) &amp; \leq  2(\sqrt{2}+1)(K-1) \sqrt{6 T_{\epsilon}|\boldsymbol{\mathcal{S}} | \boldsymbol{\mathcal{X}}| \log (2 K|\boldsymbol {\mathcal{S}} | \boldsymbol{\mathcal{X}}| T / \delta)}+K \sqrt{6 T_{\epsilon} \log (2 T / \delta)} \\ &amp;+ 2(\sqrt{2}+1) \sqrt{2 T_{\epsilon}|\mathcal{S} | \mathcal{X}| \log (2 K|\mathcal{S} | \mathcal{X}| T / \delta)} + \sqrt{\frac{3 T_{\epsilon} \log (2 T / \delta)}{2}}  \quad \text{w/ pbt}\geq 1-\frac{\delta}{2}-\frac{\delta}{4}-\frac{\delta}{4}=1-\delta \\ &amp;\leq 12 K \sqrt{|\mathcal{S}||\mathcal{X}| T_{\epsilon} \log (2 K|\mathcal{S} | \mathcal{X}| T / \delta)}+4 K \sqrt{T_{\epsilon} \log (2 T / \delta)} \quad \text{: Simplification}<br>\end{aligned}$</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p><strong>Theorem 1</strong> (Upper bound)</p>
+<p>​    The regret of UC-DTR is bounded by w/ probability $\geq 1-\delta$</p>
+<script type="math/tex; mode=display">
+R(T) \leq12 K \sqrt{| \boldsymbol{\mathcal{S}}|| \boldsymbol{\mathcal{X}}| T \log (2 K|\boldsymbol{\mathcal{S}} \| \boldsymbol{\mathcal{X}}| T / \delta)}+4 K \sqrt{T \log (2 T / \delta)}</script><p>(Proof)</p>
+<p>​    Fix $\epsilon = 0$</p>
+<p>​    Then, $T_{\epsilon} = T$ and $R_{\epsilon}(T) = R(T)$</p>
+<p>​    By Lemma 3,</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+R(T) \leq 12 K \sqrt{|\mathcal{S}||\mathcal{X}| T \log (2 K|\mathcal{S} \| \mathcal{X}| T / \delta)}+4 K \sqrt{T \log (2 T / \delta)} \quad \text{: Simplification}
+\end{aligned}</script><hr>
+<p><strong>Theorem 2</strong> (Gap-dependent upper bound)</p>
+<p>​    Let $\mathbf{\Pi}^{-}$ denote the set of sub-optimal policies $\left\{\boldsymbol{\pi} \in \boldsymbol{\Pi}: V_{\boldsymbol{\pi}}\left(M^{\star}\right)&lt;V_{\boldsymbol{\pi}^{\star}}\left(M^{\star}\right)\right\}$</p>
+<p>​    Let $\Delta_{\boldsymbol{\pi}}=V_{\boldsymbol{\pi}^{\star}}\left(M^{\star}\right)-V_{\boldsymbol{\pi}}\left(M^{\star}\right)$</p>
+<p>​    Then, the expected regret of UC-DTR with parameter $\delta=\frac{1}{T}$ is bounded by</p>
+<script type="math/tex; mode=display">
+E[R(T)] \leq \max _{\boldsymbol{\pi} \in \Pi^{-}}\left\{\frac{33^{2} K^{2}|\boldsymbol{\mathcal{S}}||\boldsymbol{\mathcal{X}}| \log (T)}{\Delta_{\pi}}+\frac{32}{\Delta_{\pi}^{3}}+\frac{4}{\Delta_{\pi}}\right\}+1</script><p>(Proof)</p>
+<p>​    By Lemma 3,</p>
+<script type="math/tex; mode=display">
+R_{\epsilon}(T) \leq 23 K \sqrt{|\boldsymbol{\mathcal{S}}||\boldsymbol{\mathcal{X}}| T_{\epsilon} \log (T / \delta)} \qquad \text{(w/ pbt $\geq 1-\delta$)}</script><p>​    Since $R_{\epsilon}(T) \geq \epsilon T_{\epsilon}$,</p>
+<script type="math/tex; mode=display">
+T_{\epsilon} \leq \frac{23^{2} K^{2}|\boldsymbol{\mathcal{S}} \| \boldsymbol{\mathcal{X}}| \log (T / \delta)}{\epsilon^{2}} \qquad \text{(w/ pbt $\geq 1-\delta$)}</script><p>​    Therefore,</p>
+<script type="math/tex; mode=display">
+R_{\epsilon}(T) \leq \frac{23^{2} K^{2}| \boldsymbol{\mathcal{S}} \| \boldsymbol{\mathcal{X}}| \log (T / \delta)}{\epsilon}  \qquad \text{(w/ pbt $\geq 1-\delta$)}</script><p>​    Let $\Delta = \arg \min _{\boldsymbol{\pi} \in \boldsymbol{\Pi}^{-}} \Delta_{\boldsymbol{\pi}}$</p>
+<p>​    Let $\epsilon=\frac{\Delta}{2}$</p>
+<p>​    Let $\delta=\frac{1}{T}$</p>
+<p>​    Then,</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+E\left[R_{\frac{\Delta}{2}}(T)\right] & \leq  \frac{23^{2} K^{2}|\boldsymbol{\mathcal{S}} \| \boldsymbol{\mathcal{X}}| \log (T / \frac{1}{T})}{\frac{\Delta}{2}} \left(1- \delta\right) + T \delta & \because R(T) \leq T
+\\
+&\leq \frac{46^{2} K^{2}| \boldsymbol{\mathcal{S}} \| \boldsymbol{\mathcal{X}}| \log (T)}{\Delta}+1
+\end{aligned}</script><blockquote>
+<p>논문에선 $33^2$이라고 했는데 어떻게 derive 된 것?</p>
+</blockquote>
+<p>​    $\epsilon$-good episode들도 고려해보자.</p>
+<p>​    Let $\tilde{R}_{\epsilon}(T)$ denote the regret in $\epsilon$-good episodes.</p>
+<p>​    Let $\tilde T_{\epsilon}$ be the total number of $\epsilon$-good episodes.</p>
+<p>​    Let $\tilde L_{\epsilon}$ be the indices of $\epsilon$-good episodes.</p>
+<p>​    Consider the event $\{\tilde{T}_{\frac{\Delta}{2}}=t \}$</p>
+<p>​    Then, $\{\tilde{T}_{\frac{\Delta}{2}}=t \}$ implies</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\tilde{R}_{\epsilon}(T)=\sum_{i \in \tilde{L}_{\frac{\Delta}{2}}} V_{\boldsymbol{\pi}^{*}}\left(M^{*}\right)-Y^{i} &\leq t \frac{\Delta}{2}
+\\
+&\Leftrightarrow
+\\
+\sum_{i \in \tilde{L}_{\frac{\Delta}{2}}} V_{\boldsymbol{\pi}^{*}}\left(M^{*}\right)-V_{\boldsymbol{\pi}_{i}}\left(M^{*}\right)-Y^{i} &\leq t \frac{\Delta}{2}-\sum_{i \in \tilde{L}_{\frac{\Delta}{2}}} V_{\boldsymbol{\pi}_{i}}\left(M^{*}\right)
+\\
+&\Leftrightarrow
+\\
+\sum_{i \in \tilde{L}_{\frac{\Delta}{2}}} \Delta_{\boldsymbol{\pi}_{i}}-Y^{i} &\leq t \frac{\Delta}{2}-\sum_{i \in \tilde{L}_{\frac{\Delta}{2}}} V_{\boldsymbol{\pi}_{i}}\left(M^{*}\right)
+\\
+&\Rightarrow
+\\
+\sum_{i \in \tilde{L}_{\frac{\Delta}{2}}} \Delta-Y^{i} &\leq t \frac{\Delta}{2}-\sum_{i \in \tilde{L}_{\frac{\Delta}{2}}} V_{\boldsymbol{\pi}_{i}}\left(M^{*}\right)
+\\
+&\Leftrightarrow
+\\
+\sum_{i \in \tilde{L}_{\frac{\Delta}{2}}} V_{\boldsymbol{\pi}_{i}}\left(M^{*}\right)-Y^{i} &\leq-t \frac{\Delta}{2}
+\end{aligned}</script><p>​    Therefore,</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+E\left[\tilde{R}_{\frac{\Delta}{2}}(T)\right] &\leq \frac{\Delta}{2} E\left[\tilde{T}_{\frac{\Delta}{2}}(T)\right] \leq \frac{\Delta}{2} \sum_{t=1}^{T} t P\left(\tilde{T}_{\frac{\Delta}{2}}=t\right)
+\\
+&\leq \frac{\Delta}{2} \sum_{t=1}^{T} t P\left(\sum_{i \in \tilde{L}_{\frac{\Delta}{2}}} V_{\boldsymbol{\pi}_{i}}\left(M^{*}\right)-Y^{i} \leq-t \frac{\Delta}{2}\right)
+\\
+&= \frac{\Delta}{2} \sum_{t=1}^{T} t P\left(\sum_{i \in \tilde{L}_{\frac{\Delta}{2}}} C_i \leq-t \frac{\Delta}{2}\right) &\text{where $C_{i}=V_{\boldsymbol{\pi}_{i}}\left(M^{*}\right)-Y^{t}$}
+\\
+&\leq \frac{\Delta}{2} \sum_{t=1}^{T} te^{-\frac{\Delta^{2} t}{8}} &\text{$\left|C_{t}\right|<1$, $E\left[C_{t+1} \mid \mathcal{H}^{t}\right]=0$, Azuma-Hoeffding }
+\\
+&\leq \frac{\Delta}{2} \frac{64}{\Delta^{4}}\left(\frac{\Delta^{2}}{8}+1\right) e^{-\frac{\Delta^{2}}{8}}
+&\text{I don't know}
+\\
+& \leq \frac{32}{\Delta^{3}}+\frac{4}{\Delta}
+\end{aligned}</script><blockquote>
+<p>마지막에서 두번째 부등식은 유도하지 못했다.</p>
+</blockquote>
+<p>​    Hence,</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+E[R(T)]&=E\left[R_{\frac{\Delta}{2}}(T)\right]+E\left[\tilde{R}_{\frac{\Delta}{2}}(T)\right]
+\\
+&\leq \frac{33^{2} K^{2}|\mathcal{S} \| \mathcal{X}| \log (T)}{\Delta}+\frac{32}{\Delta^{3}}+\frac{4}{\Delta}+1
+\end{aligned}</script><hr>
+<p><strong>Theorem 3</strong> (Lower bound)</p>
+<p>​    For any algorithm, there is a DTR $M$ with horizon $K$ s.t.</p>
+<script type="math/tex; mode=display">
+E[R(T)] \geq 0.05 \sqrt{|\mathcal{S} \| \mathcal{X}| T} \quad \text{where $T\geq|\boldsymbol{\mathcal{S}} \| \boldsymbol{\mathcal{X}}|$}</script><p>(Proof)</p>
+<p>​    <a href="">P. Auer, 2002</a>를 보고 다시 증명해보겠다.</p>
+<hr>
+<h2 id="A-1-2-Proofs-of-Theorems-4-to-6-Lemma-1-and-Corollary-2"><a href="#A-1-2-Proofs-of-Theorems-4-to-6-Lemma-1-and-Corollary-2" class="headerlink" title="A.1.2 Proofs of Theorems 4 to 6, Lemma 1, and Corollary 2"></a>A.1.2 Proofs of Theorems 4 to 6, Lemma 1, and Corollary 2</h2><p>이번 섹션에서, DTR의 transition probaility의 bound에 대한 증명을 하겠다.</p>
+<p>증명은 Pearl의 counterfactual variable와 axioms of composition, effectiveness, and reversibility에 기반한다.</p>
+<hr>
+<p>$Y_{\boldsymbol{x}}(\boldsymbol{u})$은 potential outcome of $Y$ to intervention $do(\boldsymbol{x})$에서 situation $\boldsymbol U = \boldsymbol u$일 때의 해이다.</p>
+<blockquote>
+<p>Exogenous variable과 CF variable이 대응되므로 CF를 exogenous로 갖는 DTR을 생각해보자.</p>
+<p>아래첨자 2단으로 사용하면 수식 변환이 안되어서 작성 중단</p>
+</blockquote>
 
     </div>
 
@@ -600,7 +905,7 @@ E[R(T)] \leq \max _{\boldsymbol{\pi} \in \Pi_{\boldsymbol{\mathcal{c}}}^{-}}\lef
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-Abstract"><span class="nav-text">0. Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1. Introduction</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-Preliminaries"><span class="nav-text">1.1 Preliminaries</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Optimizing-Dynamic-Treatment-Regimes"><span class="nav-text">2. Optimizing Dynamic Treatment Regimes</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-The-UC-DTR-Algorithm"><span class="nav-text">2.1 The UC-DTR Algorithm</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-1-Finding-Optimistic-DTRs"><span class="nav-text">2.1.1 Finding Optimistic DTRs</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Theoretical-Analysis"><span class="nav-text">2.2 Theoretical Analysis</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Learning-from-Confounded-Observations"><span class="nav-text">3. Learning from Confounded Observations</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Bounds-and-Partial-Identification-in-DTRs"><span class="nav-text">3.1 Bounds and Partial Identification in DTRs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-The-Causal-UC-DTR-Algorithm"><span class="nav-text">3.2 The Causal UC-DTR Algorithm</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Experiments"><span class="nav-text">4 Experiments</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-Abstract"><span class="nav-text">0. Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1. Introduction</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-Preliminaries"><span class="nav-text">1.1 Preliminaries</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Optimizing-Dynamic-Treatment-Regimes"><span class="nav-text">2. Optimizing Dynamic Treatment Regimes</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-The-UC-DTR-Algorithm"><span class="nav-text">2.1 The UC-DTR Algorithm</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-1-Finding-Optimistic-DTRs"><span class="nav-text">2.1.1 Finding Optimistic DTRs</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Theoretical-Analysis"><span class="nav-text">2.2 Theoretical Analysis</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Learning-from-Confounded-Observations"><span class="nav-text">3. Learning from Confounded Observations</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Bounds-and-Partial-Identification-in-DTRs"><span class="nav-text">3.1 Bounds and Partial Identification in DTRs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-The-Causal-UC-DTR-Algorithm"><span class="nav-text">3.2 The Causal UC-DTR Algorithm</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Experiments"><span class="nav-text">4 Experiments</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Appendix-1"><span class="nav-text">Appendix 1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#A-1-1-Proof-of-Theorems-1-to-3"><span class="nav-text">A.1.1 Proof of Theorems 1 to 3</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#A-1-2-Proofs-of-Theorems-4-to-6-Lemma-1-and-Corollary-2"><span class="nav-text">A.1.2 Proofs of Theorems 4 to 6, Lemma 1, and Corollary 2</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

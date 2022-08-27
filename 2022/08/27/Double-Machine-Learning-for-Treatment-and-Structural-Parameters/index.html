@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leequant761.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="수학적으로 들어가면 끝도 없을 것 같아서 엄밀성은 없음을 미리 고지 학습이 왜 되는 지에 대해서 느끼는 게 목적 자세히 읽으면 보완할 예정">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Double Machine Learning for Treatment and Structural Parameters">
+<meta property="og:url" content="https://leequant761.github.io/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/index.html">
+<meta property="og:site_name" content="Study Repo">
+<meta property="og:description" content="수학적으로 들어가면 끝도 없을 것 같아서 엄밀성은 없음을 미리 고지 학습이 왜 되는 지에 대해서 느끼는 게 목적 자세히 읽으면 보완할 예정">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leequant761.github.io/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220825155242896.png">
+<meta property="og:image" content="https://leequant761.github.io/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220825155436699.png">
+<meta property="og:image" content="https://leequant761.github.io/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220825161311852.png">
+<meta property="og:image" content="https://leequant761.github.io/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220825161502986.png">
+<meta property="og:image" content="https://leequant761.github.io/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220825164728101.png">
+<meta property="og:image" content="https://leequant761.github.io/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220825170024414.png">
+<meta property="og:image" content="https://leequant761.github.io/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220825171100857.png">
+<meta property="og:image" content="https://leequant761.github.io/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220825172701598.png">
+<meta property="og:image" content="https://leequant761.github.io/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220825172754477.png">
+<meta property="og:image" content="https://leequant761.github.io/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220826012638782.png">
+<meta property="og:image" content="https://leequant761.github.io/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220826015916846.png">
+<meta property="og:image" content="https://leequant761.github.io/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220826020316841.png">
+<meta property="og:image" content="https://leequant761.github.io/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220826020557010.png">
+<meta property="og:image" content="https://leequant761.github.io/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220826020701545.png">
+<meta property="article:published_time" content="2022-08-27T03:14:29.000Z">
+<meta property="article:modified_time" content="2022-08-27T03:23:17.269Z">
+<meta property="article:author" content="JaeHyun Lee">
+<meta property="article:tag" content="paper review">
+<meta property="article:tag" content="causal estimation">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leequant761.github.io/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220825155242896.png">
+
+<link rel="canonical" href="https://leequant761.github.io/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Double Machine Learning for Treatment and Structural Parameters | Study Repo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Study Repo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leequant761.github.io/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="JaeHyun Lee">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Study Repo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Double Machine Learning for Treatment and Structural Parameters
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-08-27 12:14:29 / Modified: 12:23:17" itemprop="dateCreated datePublished" datetime="2022-08-27T12:14:29+09:00">2022-08-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Causality/" itemprop="url" rel="index"><span itemprop="name">Causality</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Causality/Learning/" itemprop="url" rel="index"><span itemprop="name">Learning</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>수학적으로 들어가면 끝도 없을 것 같아서 엄밀성은 없음을 미리 고지</p>
+<p>학습이 왜 되는 지에 대해서 느끼는 게 목적</p>
+<p>자세히 읽으면 보완할 예정</p>
+</blockquote>
+<span id="more"></span>
+<h1 id="0-Summary"><a href="#0-Summary" class="headerlink" title="0. Summary"></a>0. Summary</h1><ul>
+<li>Problem<ul>
+<li>Inference on a low dimensional parameter $\theta_0$</li>
+<li>in the presence of high dimensional parameter $\eta_0$</li>
+</ul>
+</li>
+<li>Our approach<ul>
+<li>$\eta_0$을 위해 ML method로 처리</li>
+</ul>
+</li>
+<li>문제<ul>
+<li>ML method는 오버피팅을 막기 위해 regularization bias를 추가한다.</li>
+<li>그러한 $\hat \eta$으로 만든 $\hat \theta$은 heavy bias를 갖는다.</li>
+<li>$\hat \theta$은 $N^{-\frac{1}{2}}-$consistency를 만족하지 못한다.</li>
+</ul>
+</li>
+<li>해결책<ul>
+<li>Neyman-orthogonal score(NOS)<ul>
+<li>nuisance parameter에 대해 sensitivity를 줄이기에,</li>
+<li>$\hat \eta$이 $N^{-\frac{1}{2}}-$을 만족 못해도 됨</li>
+</ul>
+</li>
+<li>Cross-fitting<ul>
+<li>같은 샘플로 $\hat \eta$, $\hat \theta$를 학습했을 때의 상관관계를 제거하기 위함</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>보이게 되는 것<ul>
+<li>$\hat \theta$<ul>
+<li>$N^{-\frac{1}{2}}-$consistency</li>
+<li>asymptotically normal distribution</li>
+<li>unbiased</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="1-INTRODUCTION-AND-MOTIVATION"><a href="#1-INTRODUCTION-AND-MOTIVATION" class="headerlink" title="1. INTRODUCTION AND MOTIVATION"></a>1. INTRODUCTION AND MOTIVATION</h1><h2 id="1-1-Motivation"><a href="#1-1-Motivation" class="headerlink" title="1.1. Motivation"></a>1.1. Motivation</h2><p><strong>Example 1.1</strong></p>
+<ul>
+<li>$X = (X_1, \ldots, X_p)$</li>
+<li>$D= m_0(X) + V$<ul>
+<li>$\mathbb E[V \mid X] = 0$</li>
+</ul>
+</li>
+<li>$Y = D\theta_0 + g(X) + U$<ul>
+<li>$\mathbb E[U \mid X, D    ] = 0$</li>
+</ul>
+</li>
+</ul>
+<hr>
+<ul>
+<li>$p$가 고차원일 때,<ul>
+<li>ML 메소드를 써서 </li>
+<li>nuisance parameter space의 엔트로피가 sample이 늘어감에 따라 늘어가는 방식 채택<ul>
+<li>$\eta_0 = (m_0, g_0)$</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p><strong>Regularization Bias</strong></p>
+<img src="/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220825155242896.png" class="">
+<ul>
+<li><ul>
+<li>$\mid \sqrt n (\hat \theta - \theta_0) \mid \rightarrow _P \infty$</li>
+<li>$N^{-\frac{1}{2}}-$consistency를 만족하지 못함</li>
+</ul>
+</li>
+</ul>
+<img src="/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220825155436699.png" class="">
+<ul>
+<li>$b$텀이 regularization bias로 인해 발산하게 된다.<ul>
+<li>특히, ML 메소드는 $\hat g$이 대부분 $N^{-\frac{1}{4}}-$consistency</li>
+</ul>
+</li>
+</ul>
+<p><strong>Overcoming Regularization Biases using Orthogonalization</strong></p>
+<ul>
+<li>$D$에서 $X$의 영향을 지우는 방식으로 orthogonalized regressor를 얻자</li>
+</ul>
+<ol>
+<li>$I^c$로 부터 학습한 $\hat m_0$를 갖고서</li>
+<li>$I$ 샘플들에 $\hat V_i = D_i - \hat m_0(X_i)$로 변환하고</li>
+<li>$-\hat Y_i$</li>
+</ol>
+<img src="/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220825161311852.png" class="">
+<ul>
+<li>$\hat V_i$의 기댓값이 0이라 기존 문제가 해결된다.</li>
+</ul>
+<img src="/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220825161502986.png" class="">
+<hr>
+<ul>
+<li>이제 해야할 것은 orthogonalization의 원리를 이해하는 것이다.</li>
+</ul>
+<h1 id="2-CONSTRUCTION-OF-NEYMAN-ORTHOGONAL-SCORE-MOMENT-FUNCTION"><a href="#2-CONSTRUCTION-OF-NEYMAN-ORTHOGONAL-SCORE-MOMENT-FUNCTION" class="headerlink" title="2. CONSTRUCTION OF NEYMAN ORTHOGONAL SCORE/MOMENT FUNCTION"></a>2. CONSTRUCTION OF NEYMAN ORTHOGONAL SCORE/MOMENT FUNCTION</h1><h2 id="2-1-Moment-Condition-Estimating-Equation-Framework"><a href="#2-1-Moment-Condition-Estimating-Equation-Framework" class="headerlink" title="2.1  Moment Condition/Estimating Equation Framework"></a>2.1  Moment Condition/Estimating Equation Framework</h2><ul>
+<li>$\psi = (\psi_1, \ldots, \psi_{d_\theta})^\prime$<ul>
+<li>vector of known score functions</li>
+</ul>
+</li>
+<li>$\theta_0$<ul>
+<li>true target parameter</li>
+</ul>
+</li>
+<li>$\eta_0$<ul>
+<li>true nuisance parameter</li>
+</ul>
+</li>
+<li>$\mathcal T_N$<ul>
+<li>nuisance realization set</li>
+<li>is a properly shrinking neighborhood of $\eta_0$</li>
+</ul>
+</li>
+<li>$\theta_0$ satisfies the moment condition<ul>
+<li>$\mathbb E_P [\psi(W; \theta_0, \eta_0)] = 0$<ul>
+<li>$W \sim P$</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Score $\psi$ is said to be NOS if<ul>
+<li>$\partial_\eta \mathbb E_P [\psi(W; \theta_0, \eta)] = 0$<ul>
+<li>$\eta \approx \eta_0$ 일 때</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-2-Construction-of-Neyman-Orthogonal-Scores"><a href="#2-2-Construction-of-Neyman-Orthogonal-Scores" class="headerlink" title="2.2 Construction of Neyman Orthogonal Scores"></a>2.2 Construction of Neyman Orthogonal Scores</h2><p><strong>후보1 : log-likelihood function w.r.t. $W$</strong></p>
+<ul>
+<li>$\psi = \frac{\partial l}{\partial \theta}$ 로 둘 경우, $\theta_0$는 moment condtion을 만족하나</li>
+<li>일반적으로 NOS 조건을 만족하지 못한다.</li>
+</ul>
+<p><strong>NOS example (see Lemma 2.1)</strong></p>
+<img src="/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220825164728101.png" class="">
+<ul>
+<li><ul>
+<li>$\mu = J_{\theta \beta} J_{\beta\beta}^{-1}\in \mathbb R^{d_\theta \times d_\beta}$<ul>
+<li>invertible =&gt; </li>
+</ul>
+</li>
+<li>$\eta = (\beta, \text{vec}(\mu))$</li>
+<li>$J$<ul>
+<li>Jacobian of log-likelihood w.r.t. $(\theta, \beta)$</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>위에서 구한 NOS를 <strong>Example 1.1</strong>에 적용할 경우</p>
+<img src="/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220825170024414.png" class="">
+<hr>
+<h3 id="2-2-3-NOS-for-Likelihood"><a href="#2-2-3-NOS-for-Likelihood" class="headerlink" title="2.2.3. NOS for Likelihood"></a>2.2.3. NOS for Likelihood</h3><ul>
+<li>$\mathcal B$ 를 set of functions로 가정</li>
+<li>Let $\ell(W; \theta, \beta)$ be a known criterion function<ul>
+<li>$\eta$로 안쓰고 $\beta$로 쓰는 이유는 nuisance에 $\theta$ 관련된게 포함되어서</li>
+</ul>
+</li>
+<li>Let $\beta_\theta = \arg \max _{\beta \in \mathcal B} \mathbb E_P(l(W; \theta, \beta))$</li>
+<li>Consider $\psi = \frac{d \ell(W; \theta, \eta(\theta))}{d\theta}$<ul>
+<li>$\eta_0 (\theta) = \eta_0$</li>
+</ul>
+</li>
+<li>적절한 $l$에 대해 $\psi$ 는 NOS를 만족한다. (see Lemma 2.5)</li>
+</ul>
+<p>위에서 구한 NOS를 <strong>Example 1.1</strong>에 적용할 경우</p>
+<img src="/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220825171100857.png" class="">
+<h3 id="2-2-4-NOS-for-Conditional-Moment-Restriction"><a href="#2-2-4-NOS-for-Conditional-Moment-Restriction" class="headerlink" title="2.2.4 NOS for Conditional Moment Restriction"></a>2.2.4 NOS for Conditional Moment Restriction</h3><ul>
+<li>Let $Z, R, W$ be random vectors w/ $d_z \leq d_r \leq d_w$<ul>
+<li>$Z \subset R \subset W$</li>
+</ul>
+</li>
+<li>Let $h_0$ be a vector-values functional nuisance parameter<ul>
+<li>$\mathcal Z \rightarrow \mathbb R^{d_h}$</li>
+</ul>
+</li>
+<li>Score function $\psi = m(W; \theta_0, h_0(Z)) \mid R$<ul>
+<li>이는 likelihood 명시가 없어서 rich model을 커버한다</li>
+</ul>
+</li>
+<li>Lemma 2.6 says<ul>
+<li>moment condition + Lp-norm are finite for all $h \in \mathcal H$</li>
+<li>위의 조건이 만족됐을 때, $\psi$는 NOS다.</li>
+</ul>
+</li>
+</ul>
+<p>위에서 구한 NOS를 <strong>Example 1.1</strong>에 적용할 경우</p>
+<ul>
+<li>$m(W; \theta_0, \nu) = Y-D\theta - \nu$ 로 둔다면,</li>
+</ul>
+<img src="/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220825172701598.png" class="">
+<ul>
+<li>이 나오는 데 $Y$의 noise의 분산이 estimate안되어서 $1$로 fix하면</li>
+</ul>
+<img src="/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220825172754477.png" class="">
+<ul>
+<li>효율성은 떨어지는 편이다.</li>
+</ul>
+<h1 id="3-DML"><a href="#3-DML" class="headerlink" title="3. DML"></a>3. DML</h1><h2 id="3-1-Definition-of-DML-and-Its-Basic-Properties"><a href="#3-1-Definition-of-DML-and-Its-Basic-Properties" class="headerlink" title="3.1 Definition of DML and Its Basic Properties"></a>3.1 Definition of DML and Its Basic Properties</h2><p><strong>Definition 3.1 (DML1)</strong></p>
+<ol>
+<li><p>K-fold random partition $(I_k)_{k=1}^K$ w/ size $n = \frac{N}{K}$</p>
+<p>For each $k$</p>
+</li>
+<li><p>Construct the estimator $\tilde \eta_{0, k} = \hat \eta_0(W_i)_{i \in I_k^c}$</p>
+</li>
+<li><p>Construct the estimator $\tilde \theta_{0, k}$ as the solution of $\mathbb E_{n,k} [\psi(W; \tilde \theta_{0, k}, \tilde \eta_{0, k})] = 0$</p>
+<p>where</p>
+<ul>
+<li>$\psi$ : NOS</li>
+<li>$\mathbb E_{n, k}$ : Empirical expectation over the $k$-th fold</li>
+</ul>
+</li>
+<li><p>Aggregate the estimators</p>
+<ul>
+<li>$\tilde\theta_0 = \frac{1}{K}\sum_{k=1}^K \tilde \theta_{0, k}$</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p><strong>Definition 3.2 (DML2)</strong></p>
+<ol>
+<li><p>K-fold random partition $(I_k)_{k=1}^K$ w/ size $n = \frac{N}{K}$</p>
+<p>For each $k$</p>
+</li>
+<li><p>Construct the estimator $\tilde \eta_{0, k} = \hat \eta_0(W_i)_{i \in I_k^c}$</p>
+</li>
+<li><p>Construct the estimator $\tilde \theta_{0}$ as the solution of </p>
+<p>$\frac{1}{K} \sum_{k=1}^K\mathbb E_{n,k} [\psi(W; \tilde \theta_{0}, \tilde \eta_{0, k})] = 0$</p>
+<p>where</p>
+<ul>
+<li>$\psi$ : NOS</li>
+<li>$\mathbb E_{n, k}$ : Empirical expectation over the $k$-th fold</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p>$\tilde \theta_0$는 $N^{-\frac{1}{2}}-$consistency를 만족한다.</p>
+<h2 id="3-2-Moment-Condition-Models-with-Linear-Scores"><a href="#3-2-Moment-Condition-Models-with-Linear-Scores" class="headerlink" title="3.2 Moment Condition Models with Linear Scores"></a>3.2 Moment Condition Models with Linear Scores</h2><script type="math/tex; mode=display">
+\psi(w; \theta, \eta) = \psi^a(w; \eta) \theta + \psi^b(w; \eta) \quad {}^\forall w \in \mathcal W, \theta \in \Theta, \eta \in T</script><ul>
+<li>Let $c_0 &gt;0$, $c_1 &gt; 0$, and $c_0\leq c_1$</li>
+<li>Let $s&gt; 0$ and $q&gt;2$</li>
+<li>Let $\{\delta_N \}_{N\geq 1}$ and $\{\Delta_N \}_{N\geq 1}$ be positive sequences converging to zero</li>
+<li>Let $K \geq 2$ be some fixed integer</li>
+<li>Let $\{ \mathcal P_N\}_{N\geq 1}$ be some sequence of set of probability dist $P$ of $W$</li>
+</ul>
+<p><strong>Assumption 3.1</strong> (Linear Scores with Approximate Neyman Orthogonality)</p>
+<ul>
+<li>$^{\forall}N \geq 3$ and $P \in \mathcal P_N$<ul>
+<li>$\theta_0$ satisfies moment cond</li>
+<li>$\psi(w; \theta, \eta) = \psi^a(w; \eta) \theta + \psi^b(w; \eta)$<ul>
+<li>linearity</li>
+</ul>
+</li>
+<li>$\mathbb E_P[\psi (W; \theta, \eta)]$ is twice continuously diffble w.r.t. $\eta$<ul>
+<li>smoothness</li>
+</ul>
+</li>
+<li>singular values of $J_0:= \mathbb E_P[\psi^a(W; \eta_0)]$ are between $c_0$ and $c_1$</li>
+<li>Orthogonality</li>
+</ul>
+</li>
+</ul>
+<img src="/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220826012638782.png" class="">
+<p><strong>Assumption 3.2</strong>  (Score Regularity and Quality of Nuisance Parameter Estimators) </p>
+<ul>
+<li><p>$^{\forall}N \geq 3$ and $P \in \mathcal P_N$</p>
+<ul>
+<li><p>Given random $I \subset [N]$ w/ size $n = \frac{N}{K}$</p>
+<ul>
+<li>$\hat \eta_0 \in \mathcal T_N$ w/ pbt $1-\Delta_N$</li>
+</ul>
+</li>
+<li><p>where $\mathcal T_N$</p>
+<ul>
+<li>$\eta_0 \in \mathcal T_N$</li>
+<li>$m_N := \sup_{\eta \in \mathcal T_N} (\mathbb E_P [| \psi(W;  \theta_0, \eta)|^q])^{\frac{1}{q}} \leq c_1$</li>
+<li>$m_N^\prime := \sup_{\eta \in \mathcal T_N} (\mathbb E_P [| \psi^a(W; \eta)|^q])^{\frac{1}{q}} \leq c_1$</li>
+</ul>
+</li>
+<li><p>statistical rates $r_N$, $r_N^\prime$, and $\lambda_N^\prime$ hold:</p>
+</li>
+<li><p>All eigenvalues of the matrix are bounded from below by $c_0$</p>
+</li>
+</ul>
+</li>
+</ul>
+<img src="/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220826015916846.png" class="">
+<p>만약 $\psi$가 smooth할 경우</p>
+<script type="math/tex; mode=display">
+\mathbb E_P [\psi(W; \theta_0, \eta_0) \psi(W; \theta_0, \eta_0)^\prime]</script><hr>
+<p>$\epsilon_N$은 $\hat\eta_0$의 수렴속도와 관련있으며 대부분의 ML 메소드는 $\epsilon_N = o(N^{-\frac{1}{4}})$</p>
+<p><strong>Theorem 3.1. (Properties of the DML)</strong></p>
+<p>If $\delta_N \geq N^{-\frac{1}{2}}$,</p>
+<img src="/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220826020316841.png" class="">
+<ul>
+<li>orthogonal score에 기반한 estimator가 $\sqrt N$-consistent를 만족함을 의미한다.</li>
+</ul>
+<p><strong>Theorem 3.2. (Variance Estimator for DML)</strong></p>
+<img src="/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220826020557010.png" class="">
+<p><strong>Corollary 3.1. (Uniformly Valid Confidence Bands)</strong></p>
+<img src="/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/image-20220826020701545.png" class="">
+<h2 id="3-3-Models-with-Nonlinear-Scores"><a href="#3-3-Models-with-Nonlinear-Scores" class="headerlink" title="3.3. Models with Nonlinear Scores"></a>3.3. Models with Nonlinear Scores</h2><p>보강예정</p>
+<h2 id="3-4-Finite-Sample-Adjustments-to-Incorporate-Uncertainty-Induced-by-Sample-Splitting"><a href="#3-4-Finite-Sample-Adjustments-to-Incorporate-Uncertainty-Induced-by-Sample-Splitting" class="headerlink" title="3.4. Finite-Sample Adjustments to Incorporate Uncertainty Induced by Sample Splitting"></a>3.4. Finite-Sample Adjustments to Incorporate Uncertainty Induced by Sample Splitting</h2><p>보강예정</p>
+<h1 id="4-INFERENCE-IN-PARTIALLY-LINEAR-MODELS"><a href="#4-INFERENCE-IN-PARTIALLY-LINEAR-MODELS" class="headerlink" title="4. INFERENCE IN PARTIALLY LINEAR MODELS"></a>4. INFERENCE IN PARTIALLY LINEAR MODELS</h1><h2 id="4-1-Inference-in-Partially-Linear-Regression-Models"><a href="#4-1-Inference-in-Partially-Linear-Regression-Models" class="headerlink" title="4.1. Inference in Partially Linear Regression Models"></a>4.1. Inference in Partially Linear Regression Models</h2>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/paper-review/" rel="tag"># paper review</a>
+              <a href="/tags/causal-estimation/" rel="tag"># causal estimation</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/10/03/The-Causal-Neural-Connection-Expressiveness-Learnability-and-Inference/" rel="prev" title="The Causal-Neural Connection Expressiveness, Learnability, and Inference">
+      <i class="fa fa-chevron-left"></i> The Causal-Neural Connection Expressiveness, Learnability, and Inference
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/08/27/Meta-learners-for-Estimating-Heterogeneous-Treatment-Effect/" rel="next" title="Meta-learners for Estimating Heterogeneous Treatment Effect">
+      Meta-learners for Estimating Heterogeneous Treatment Effect <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0-Summary"><span class="nav-text">0. Summary</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-INTRODUCTION-AND-MOTIVATION"><span class="nav-text">1. INTRODUCTION AND MOTIVATION</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-Motivation"><span class="nav-text">1.1. Motivation</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-CONSTRUCTION-OF-NEYMAN-ORTHOGONAL-SCORE-MOMENT-FUNCTION"><span class="nav-text">2. CONSTRUCTION OF NEYMAN ORTHOGONAL SCORE&#x2F;MOMENT FUNCTION</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Moment-Condition-Estimating-Equation-Framework"><span class="nav-text">2.1  Moment Condition&#x2F;Estimating Equation Framework</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Construction-of-Neyman-Orthogonal-Scores"><span class="nav-text">2.2 Construction of Neyman Orthogonal Scores</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-3-NOS-for-Likelihood"><span class="nav-text">2.2.3. NOS for Likelihood</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-4-NOS-for-Conditional-Moment-Restriction"><span class="nav-text">2.2.4 NOS for Conditional Moment Restriction</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-DML"><span class="nav-text">3. DML</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Definition-of-DML-and-Its-Basic-Properties"><span class="nav-text">3.1 Definition of DML and Its Basic Properties</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Moment-Condition-Models-with-Linear-Scores"><span class="nav-text">3.2 Moment Condition Models with Linear Scores</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-Models-with-Nonlinear-Scores"><span class="nav-text">3.3. Models with Nonlinear Scores</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-Finite-Sample-Adjustments-to-Incorporate-Uncertainty-Induced-by-Sample-Splitting"><span class="nav-text">3.4. Finite-Sample Adjustments to Incorporate Uncertainty Induced by Sample Splitting</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-INFERENCE-IN-PARTIALLY-LINEAR-MODELS"><span class="nav-text">4. INFERENCE IN PARTIALLY LINEAR MODELS</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-Inference-in-Partially-Linear-Regression-Models"><span class="nav-text">4.1. Inference in Partially Linear Regression Models</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">JaeHyun Lee</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JaeHyun Lee</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://leequant761.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://leequant761.github.io/2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/";
+    this.page.identifier = "2022/08/27/Double-Machine-Learning-for-Treatment-and-Structural-Parameters/";
+    this.page.title = "Double Machine Learning for Treatment and Structural Parameters";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://leequant761.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>
